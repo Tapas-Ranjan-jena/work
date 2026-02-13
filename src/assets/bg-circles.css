@@ -1,0 +1,240 @@
+/* ========================= */
+/* LEFT PANEL BASE */
+/* ========================= */
+
+.auth-left {
+  position: relative;
+  background: linear-gradient(135deg, #2b4cb3, #1597e5);
+  overflow: hidden;
+  border-top-right-radius: 28px;
+  border-bottom-right-radius: 28px;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+/* ========================= */
+/* CENTER CONTENT */
+/* ========================= */
+
+.auth-left-content {
+  position: relative;
+  max-width: 440px;
+  margin: auto;
+  margin-top: 80px;   /* ⭐ moved content slightly up */
+  z-index: 2;
+}
+
+/* ========================= */
+/* LOGO */
+/* ========================= */
+
+.logo-block {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo-block img {
+  height: 160px;   /* ⭐ YOUR BIG LOGO */
+}
+
+.logo-underline {
+  width: 75%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.65);
+  margin: 14px auto 0;
+}
+
+/* ========================= */
+/* TEXT */
+/* ========================= */
+
+.auth-heading {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.auth-subtext {
+  margin-top: 18px;
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+/* ========================= */
+/* FEATURES */
+/* ========================= */
+
+.auth-features {
+  list-style: none;
+  padding: 0;
+  margin-top: 28px;
+}
+
+.auth-features li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 15px;
+}
+
+.auth-features li::before {
+  content: "✓";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2b4cb3;
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: 12px;
+}
+
+/* ========================= */
+/* FOOTER */
+/* ========================= */
+
+.auth-footer {
+  position: absolute;
+  bottom: 26px;
+  left: 48px;
+  font-size: 12px;
+  opacity: 0.75;
+  z-index: 2;
+}
+
+/* ========================= */
+/* CONCENTRIC RINGS */
+/* ========================= */
+
+.circle-ring {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  right: -260px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.circle-ring.outer {
+  width: 560px;
+  height: 560px;
+  border-width: 48px;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.circle-ring.middle {
+  width: 460px;
+  height: 460px;
+  border-width: 48px;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.circle-ring.inner {
+  width: 360px;
+  height: 360px;
+  border-width: 48px;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* =============================== */
+/* ACCENT CIRCLES */
+/* =============================== */
+
+.accent-circle.top-left {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  top: 40px;
+  left: 40px;
+  z-index: 1;
+}
+
+.accent-circle.bottom-left {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  bottom: -160px;
+  left: -120px;
+  z-index: 1;
+}
+
+.auth-left-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* ===================================================== */
+/* RESPONSIVE BREAKPOINTS */
+/* ===================================================== */
+
+@media (max-width: 1200px) {
+
+  .auth-heading {
+    font-size: 34px;
+  }
+
+  .auth-left-content {
+    margin-top: 60px;  /* ⭐ slightly tighter on smaller laptops */
+  }
+
+  .circle-ring.outer {
+    width: 480px;
+    height: 480px;
+  }
+
+  .circle-ring.middle {
+    width: 400px;
+    height: 400px;
+  }
+
+  .circle-ring.inner {
+    width: 320px;
+    height: 320px;
+  }
+}
+
+@media (max-width: 991px) {
+  .auth-left {
+    display: none !important;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .auth-heading {
+    font-size: 24px;
+  }
+
+  .auth-subtext {
+    font-size: 14px;
+  }
+
+  .card {
+    border-radius: 12px;
+  }
+}
+
+/* ===================================================== */
+/* AUTH FORM TYPOGRAPHY */
+/* ===================================================== */
+
+.auth-title {
+  font-size: 24px;
+}
+
+@media (min-width:576px){
+  .auth-title{
+    font-size:26px;
+  }
+}
+
+.auth-form-area {
+  padding: 20px;
+}

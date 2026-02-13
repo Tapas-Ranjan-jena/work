@@ -1,0 +1,25 @@
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
+
+/* =============================== */
+/* PRIMARY GRADIENT BUTTON         */
+/* =============================== */
+
+.btn-gradient {
+  background: linear-gradient(45deg, #1a73e8, #2b4cb3) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(45deg, #155ec4, #243b8f) !important;
+  color: #ffffff !important;
+}
+
+.btn-gradient:focus,
+.btn-gradient:active {
+  background: linear-gradient(45deg, #155ec4, #243b8f) !important;
+  box-shadow: 0 0 0 0.2rem rgba(43, 76, 179, 0.25);
+}
