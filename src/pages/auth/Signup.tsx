@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
-import AuthLayout from "../layouts/AuthLayout"
-import GoogleIcon from "../assets/icons/google.svg"
-import AppleIcon from "../assets/icons/apple.svg"
+import AuthLayout from "../../layouts/AuthLayout"
+import GoogleIcon from "../../assets/icons/google.svg"
+import AppleIcon from "../../assets/icons/apple.svg"
 
 export default function Signup() {
   return (
@@ -38,11 +38,11 @@ export default function Signup() {
           <div className="row g-3 mb-3">
             <div className="col-12 col-sm-6">
               <label className="form-label small">First name</label>
-              <input className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
             </div>
             <div className="col-12 col-sm-6">
               <label className="form-label small">Last name</label>
-              <input className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
             </div>
           </div>
 
@@ -50,11 +50,11 @@ export default function Signup() {
           <div className="row g-3 mb-3">
             <div className="col-12 col-sm-6">
               <label className="form-label small">Company / Firm Name</label>
-              <input className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
             </div>
             <div className="col-12 col-sm-6">
               <label className="form-label small">GST No</label>
-              <input className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
             </div>
           </div>
 
@@ -62,23 +62,23 @@ export default function Signup() {
           <div className="row g-3 mb-3">
             <div className="col-12 col-sm-6">
               <label className="form-label small">Email</label>
-              <input type="email" className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+              <input type="email" className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
             </div>
             <div className="col-12 col-sm-6">
               <label className="form-label small">Phone Number</label>
-              <input className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
             </div>
           </div>
 
           {/* ================= PASSWORD ================= */}
           <div className="mb-3">
             <label className="form-label small">Password</label>
-            <input type="password" className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+            <input type="password" className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
           </div>
 
           <div className="mb-3">
             <label className="form-label small">Re-type password</label>
-            <input type="password" className="form-control" style={{ minHeight:46, borderRadius:8 }}/>
+            <input type="password" className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
           </div>
 
           {/* ================= GENDER ================= */}
@@ -101,7 +101,7 @@ export default function Signup() {
           {/* ================= SIGNUP BUTTON ================= */}
           <button
             className="btn btn-gradient w-100 py-2"
-            style={{ minHeight:46, borderRadius:8, fontWeight:500 }}
+            style={{ minHeight: 46, borderRadius: 8, fontWeight: 500 }}
           >
             Sign up
           </button>
@@ -118,12 +118,12 @@ export default function Signup() {
           <div className="text-center my-3 text-muted small">OR</div>
 
           <button className="btn btn-outline-secondary w-100 mb-2 d-flex align-items-center justify-content-center gap-2">
-            <img src={GoogleIcon} alt="Google" width={18}/>
+            <img src={GoogleIcon} alt="Google" width={18} />
             <span>Continue with Google</span>
           </button>
 
           <button className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
-            <img src={AppleIcon} alt="Apple" width={18}/>
+            <img src={AppleIcon} alt="Apple" width={18} />
             <span>Continue with Apple</span>
           </button>
 

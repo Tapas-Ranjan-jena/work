@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import type { ChangeEvent } from "react"
-import AuthLayout from "../layouts/AuthLayout"
+import AuthLayout from "../../layouts/AuthLayout"
 
 export default function ForgotPassword() {
 

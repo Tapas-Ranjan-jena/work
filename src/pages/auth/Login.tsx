@@ -1,15 +1,27 @@
-import { Link } from "react-router-dom"
-import AuthLayout from "../layouts/AuthLayout"
-import GoogleIcon from "../assets/icons/google.svg"
-import AppleIcon from "../assets/icons/apple.svg"
-import FingerprintIcon from "../assets/icons/fingerprint.svg"
+import { Link, useNavigate } from "react-router-dom"
+import AuthLayout from "../../layouts/AuthLayout"
+import GoogleIcon from "../../assets/icons/google.svg"
+import AppleIcon from "../../assets/icons/apple.svg"
+import FingerprintIcon from "../../assets/icons/fingerprint.svg"
 
 export default function Login() {
+
+  // ⭐ NAVIGATION HOOK
+  const navigate = useNavigate()
+
+  // ⭐ TEMP LOGIN HANDLER (no backend yet)
+  const handleLogin = () => {
+    // later API call will come here
+
+    // 👉 go to dashboard
+    navigate("/dashboard")
+  }
+
   return (
     <AuthLayout>
 
-      {/* ⭐ RESPONSIVE WRAPPER */}
-      <div className="w-100 d-flex justify-content-center px-3 px-sm-4">
+      {/* ⭐ CENTERED WRAPPER INSIDE AUTHLAYOUT */}
+      <div className="w-100 d-flex justify-content-center align-items-center">
 
         <div
           className="
@@ -40,12 +52,12 @@ export default function Login() {
           <div className="d-flex flex-column flex-sm-row gap-2 mb-3">
 
             <button className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src={GoogleIcon} alt="Google" width={18}/>
+              <img src={GoogleIcon} alt="Google" width={18} />
               <span className="small">Continue with Google</span>
             </button>
 
             <button className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src={AppleIcon} alt="Apple" width={18}/>
+              <img src={AppleIcon} alt="Apple" width={18} />
               <span className="small">Continue with Apple</span>
             </button>
 
@@ -62,7 +74,7 @@ export default function Login() {
               type="email"
               className="form-control"
               placeholder="Enter your registered email"
-              style={{ minHeight:46, borderRadius:8 }}
+              style={{ minHeight: 46, borderRadius: 8 }}
             />
           </div>
 
@@ -75,15 +87,16 @@ export default function Login() {
               type="password"
               className="form-control"
               placeholder="Enter your password"
-              style={{ minHeight:46, borderRadius:8 }}
+              style={{ minHeight: 46, borderRadius: 8 }}
             />
           </div>
 
           {/* ================= SIGN IN BUTTON ================= */}
 
           <button
+            onClick={handleLogin}   /* ⭐ THIS WAS MISSING */
             className="btn btn-gradient w-100 py-2"
-            style={{ minHeight:46, borderRadius:8, fontWeight:500 }}
+            style={{ minHeight: 46, borderRadius: 8, fontWeight: 500 }}
           >
             Sign in
           </button>
@@ -105,19 +118,19 @@ export default function Login() {
 
             <div
               style={{
-                width:36,
-                height:36,
-                borderRadius:8,
-                backgroundColor:"#2b4cb3",
-                display:"flex",
-                alignItems:"center",
-                justifyContent:"center"
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                backgroundColor: "#2b4cb3",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }}
             >
-              <img src={FingerprintIcon} alt="Fingerprint" width={20}/>
+              <img src={FingerprintIcon} alt="Fingerprint" width={20} />
             </div>
 
-            <span style={{ fontSize:14 }}>
+            <span style={{ fontSize: 14 }}>
               Login with Fingerprint
             </span>
 

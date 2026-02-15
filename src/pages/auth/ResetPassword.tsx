@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { ChangeEvent } from "react"
-import AuthLayout from "../layouts/AuthLayout"
+import AuthLayout from "../../layouts/AuthLayout"
 
 export default function ResetPassword() {
 
@@ -81,20 +81,20 @@ export default function ResetPassword() {
               className="form-control"
               placeholder="Enter your password"
               style={{
-                minHeight:46,
-                borderRadius:8,
-                paddingRight:40
+                minHeight: 46,
+                borderRadius: 8,
+                paddingRight: 40
               }}
             />
 
             <span
               onClick={() => setShowNew(!showNew)}
               style={{
-                position:"absolute",
-                right:12,
-                top:38,
-                cursor:"pointer",
-                opacity:0.6
+                position: "absolute",
+                right: 12,
+                top: 38,
+                cursor: "pointer",
+                opacity: 0.6
               }}
             >
               👁
@@ -114,20 +114,20 @@ export default function ResetPassword() {
               className="form-control"
               placeholder="Confirm new password"
               style={{
-                minHeight:46,
-                borderRadius:8,
-                paddingRight:40
+                minHeight: 46,
+                borderRadius: 8,
+                paddingRight: 40
               }}
             />
 
             <span
               onClick={() => setShowConfirm(!showConfirm)}
               style={{
-                position:"absolute",
-                right:12,
-                top:38,
-                cursor:"pointer",
-                opacity:0.6
+                position: "absolute",
+                right: 12,
+                top: 38,
+                cursor: "pointer",
+                opacity: 0.6
               }}
             >
               👁
@@ -144,9 +144,9 @@ export default function ResetPassword() {
             type="button"
             className="btn btn-gradient w-100 py-2 mt-3"
             style={{
-              minHeight:46,
-              borderRadius:8,
-              fontWeight:500
+              minHeight: 46,
+              borderRadius: 8,
+              fontWeight: 500
             }}
             onClick={handleSave}
           >

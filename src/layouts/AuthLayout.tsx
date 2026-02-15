@@ -8,20 +8,21 @@ type AuthLayoutProps = {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="container-fluid min-vh-100">
-      <div className="row min-vh-100">
+    <div
+      className="container-fluid"
+      style={{
+        height: "calc(100vh - 10px)",   // ⭐ reduce total height by 10px
+        paddingTop: "5px",              // ⭐ uniform gap top
+        paddingBottom: "5px",           // ⭐ uniform gap bottom
+        background: "#f4f6fb"
+      }}
+    >
+      <div
+        className="row g-0 h-100"
+      >
 
         {/* ================= LEFT PANEL ================= */}
         <div className="col-md-6 d-none d-md-flex auth-left text-white">
-
-          {/* Accent circles */}
-          <div className="accent-circle top-left"></div>
-          <div className="accent-circle bottom-left"></div>
-
-          {/* Concentric rings */}
-          <div className="circle-ring outer"></div>
-          <div className="circle-ring middle"></div>
-          <div className="circle-ring inner"></div>
 
           <div className="auth-left-content">
 
@@ -53,8 +54,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           </small>
         </div>
 
-        {/* ================= RIGHT SIDE (FORMS) ================= */}
-
+        {/* ================= RIGHT SIDE ================= */}
         <div
           className="
             col-12
@@ -63,8 +63,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             align-items-center
             justify-content-center
             bg-white
-            px-3
-            px-sm-4
+            px-3 px-sm-4
           "
         >
           <div className="w-100 d-flex justify-content-center">

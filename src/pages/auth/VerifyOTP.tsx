@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import type { ChangeEvent } from "react"
-import AuthLayout from "../layouts/AuthLayout"
+import AuthLayout from "../../layouts/AuthLayout"
 
 export default function VerifyOTP() {
 
   const navigate = useNavigate()
 
   // OTP digits
-  const [otp, setOtp] = useState<string[]>(["","","","","",""])
+  const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""])
   const [error, setError] = useState<string>("")
 
   const handleChange = (value: string, index: number) => {
@@ -52,8 +52,8 @@ export default function VerifyOTP() {
             text-center
           "
           style={{
-            maxWidth:460,
-            borderRadius:12
+            maxWidth: 460,
+            borderRadius: 12
           }}
         >
 
@@ -74,7 +74,7 @@ export default function VerifyOTP() {
           {/* OTP INPUTS */}
           <div className="d-flex flex-wrap justify-content-center gap-2 mb-2">
 
-            {otp.map((digit, index)=>(
+            {otp.map((digit, index) => (
               <input
                 key={index}
                 value={digit}
@@ -84,11 +84,11 @@ export default function VerifyOTP() {
                 }
                 className="form-control text-center"
                 style={{
-                  width:"14%",
-                  minWidth:42,
-                  height:46,
-                  borderRadius:10,
-                  fontSize:18
+                  width: "14%",
+                  minWidth: 42,
+                  height: 46,
+                  borderRadius: 10,
+                  fontSize: 18
                 }}
               />
             ))}
@@ -106,9 +106,9 @@ export default function VerifyOTP() {
             onClick={handleVerify}
             className="btn btn-gradient w-100 py-2 mt-3"
             style={{
-              minHeight:46,
-              borderRadius:8,
-              fontWeight:500
+              minHeight: 46,
+              borderRadius: 8,
+              fontWeight: 500
             }}
           >
             Verify & Continue
@@ -120,9 +120,9 @@ export default function VerifyOTP() {
             <span
               onClick={handleResend}
               style={{
-                color:"#2f6bff",
-                cursor:"pointer",
-                fontWeight:500
+                color: "#2f6bff",
+                cursor: "pointer",
+                fontWeight: 500
               }}
             >
               Resend email
