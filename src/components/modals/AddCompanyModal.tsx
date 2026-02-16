@@ -14,18 +14,15 @@ export default function AddCompanyModal({ onClose }: Props) {
 
   const handleSubmit = () => {
 
-    // ⭐ basic validation
-    if(!companyName || !cin){
+    if (!companyName || !cin) {
       alert("Please enter Company Name and CIN")
       return
     }
 
-    // ⭐ Fake ID (later replace with backend ID)
     const fakeClientId = Date.now()
 
     onClose()
 
-    // ⭐ Pass data to dashboard
     navigate(`/clients/${fakeClientId}`, {
       state: {
         companyName,
@@ -35,39 +32,85 @@ export default function AddCompanyModal({ onClose }: Props) {
   }
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" onClick={onClose}>
 
-      <div className="modal-box">
+      <div
+        className="modal-box"
+        onClick={(e) => e.stopPropagation()}
+      >
 
-        <h5 className="fw-bold mb-3">Add Company</h5>
+        {/* ===== HEADER ===== */}
+        <div
+          className="d-flex justify-content-between align-items-center"
+          style={{
+            borderBottom: "1px solid #e5e5e5",
+            paddingBottom: 12,
+            marginBottom: 18
+          }}
+        >
+          <h5 className="fw-bold mb-0">Add Company</h5>
 
-        <div className="mb-2">
-          <label className="form-label small">Company Name</label>
-          <input
-            className="form-control"
-            placeholder="24 Moontimes News Private Limited"
-            value={companyName}
-            onChange={(e)=>setCompanyName(e.target.value)}
-          />
+          <span
+            style={{ cursor: "pointer", fontSize: 18 }}
+            onClick={onClose}
+          >
+            ✕
+          </span>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label small">CIN / LLPIN</label>
-          <input
-            className="form-control"
-            placeholder="U74999KA2024PTC123456"
-            value={cin}
-            onChange={(e)=>setCin(e.target.value)}
-          />
+
+        {/* ===== FORM BODY (LEFT LABEL | RIGHT INPUT) ===== */}
+        <div className="container-fluid">
+
+          {/* Company Name */}
+          <div className="row align-items-center mb-3">
+            <div className="col-md-4 small">Company Name</div>
+
+            <div className="col-md-8">
+              <input
+                className="form-control"
+                placeholder="24 Moontimes News Private Limited"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* CIN */}
+          <div className="row align-items-center mb-3">
+            <div className="col-md-4 small">CIN / LLPIN</div>
+
+            <div className="col-md-8">
+              <input
+                className="form-control"
+                placeholder="U74999KA2024PTC123456"
+                value={cin}
+                onChange={(e) => setCin(e.target.value)}
+              />
+            </div>
+          </div>
+
         </div>
 
-        <div className="d-flex justify-content-end gap-2">
-          <button className="btn btn-outline-secondary" onClick={onClose}>
+
+        {/* ===== FOOTER ===== */}
+        <div
+          className="d-flex justify-content-end gap-2"
+          style={{
+            borderTop: "1px solid #e5e5e5",
+            paddingTop: 14,
+            marginTop: 18
+          }}
+        >
+          <button
+            className="btn btn-outline-secondary"
+            onClick={onClose}
+          >
             Cancel
           </button>
 
           <button
-            className="btn btn-primary"
+            className="btn btn-gradient"
             onClick={handleSubmit}
           >
             Save

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import AddFilesModal from "../../../../../components/modals/AddFilesModal"
+import DataTableCard from "../../../../../components/common/DataTableCard"
 
 export default function FilesTab() {
 
@@ -11,26 +12,26 @@ export default function FilesTab() {
   return (
     <div>
 
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <DataTableCard
+        title="Files"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => setOpenModal(true)}
+          >
+            + Add Files
+          </button>
+        }
+        showToolbar
+        showEntries
+        showExport   // ⭐ Excel + Print added
+        showSearch
+      >
 
-        <h6 className="fw-bold m-0">Files</h6>
-
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={() => setOpenModal(true)}
-        >
-          + Add Files
-        </button>
-
-      </div>
-
-      {/* TABLE */}
-      <div className="client-table">
-
+        {/* ================= TABLE ================= */}
         <div className="table-responsive">
 
-          <table className="table align-middle mb-0">
+          <table className="table align-middle mb-0 table-bordered">
 
             <thead>
               <tr>
@@ -66,9 +67,9 @@ export default function FilesTab() {
 
         </div>
 
-      </div>
+      </DataTableCard>
 
-      {/* MODAL */}
+      {/* ================= MODAL ================= */}
       {openModal && (
         <AddFilesModal onClose={() => setOpenModal(false)} />
       )}

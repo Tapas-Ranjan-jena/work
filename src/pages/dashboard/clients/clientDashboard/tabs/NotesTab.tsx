@@ -1,5 +1,6 @@
 import { useState } from "react"
 import AddNoteModal from "../../../../../components/modals/AddNoteModal"
+import DataTableCard from "../../../../../components/common/DataTableCard"
 
 export default function NotesTab() {
 
@@ -10,26 +11,24 @@ export default function NotesTab() {
   return (
     <div>
 
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-
-        <h6 className="fw-bold m-0">Notes</h6>
-
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={() => setOpenModal(true)}
-        >
-          + Add Notes
-        </button>
-
-      </div>
-
-      {/* TABLE */}
-      <div className="client-table">
+      <DataTableCard
+        title="Notes"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => setOpenModal(true)}
+          >
+            + Add Notes
+          </button>
+        }
+        showToolbar
+        showEntries
+        showSearch
+        /* ❌ showExport REMOVED */
+      >
 
         <div className="table-responsive">
-
-          <table className="table align-middle mb-0">
+          <table className="table table-bordered align-middle mb-0">
 
             <thead>
               <tr>
@@ -58,12 +57,10 @@ export default function NotesTab() {
             </tbody>
 
           </table>
-
         </div>
 
-      </div>
+      </DataTableCard>
 
-      {/* MODAL */}
       {openModal && (
         <AddNoteModal onClose={() => setOpenModal(false)} />
       )}

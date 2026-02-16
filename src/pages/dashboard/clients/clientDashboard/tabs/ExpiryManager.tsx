@@ -7,11 +7,23 @@ export default function ExpiryManager() {
   return (
     <div>
 
-      {/* SUB TABS */}
-      <div className="client-tabs mb-3">
+      {/* ⭐ SUB TABS WITH GREY BACKGROUND */}
+      <div
+        className="client-tabs mb-3"
+        style={{
+          background:"#F5F5F6",
+          padding:"6px 10px",
+          borderRadius:"6px",
+          border:"1px solid #e2e2e2"
+        }}
+      >
 
         <button
           className={`client-tab ${activeTab === "due" ? "active" : ""}`}
+          style={{
+            background:"transparent",
+            border:"none"
+          }}
           onClick={() => setActiveTab("due")}
         >
           Due for Expiry
@@ -19,6 +31,10 @@ export default function ExpiryManager() {
 
         <button
           className={`client-tab ${activeTab === "expired" ? "active" : ""}`}
+          style={{
+            background:"transparent",
+            border:"none"
+          }}
           onClick={() => setActiveTab("expired")}
         >
           Expired
@@ -26,16 +42,41 @@ export default function ExpiryManager() {
 
       </div>
 
-      {/* TABLE */}
-      <div className="client-table">
 
-        <div className="d-flex justify-content-between align-items-center p-2 border-bottom">
+      {/* ================= TABLE CARD ================= */}
+      <div
+        style={{
+          border:"1px solid #e2e2e2",
+          borderRadius:"6px",
+          overflow:"hidden",
+          background:"#fff"
+        }}
+      >
 
+        {/* ⭐ TOOLBAR (GREY STRIP) */}
+        <div
+          className="d-flex justify-content-between align-items-center flex-wrap gap-2"
+          style={{
+            background:"#F5F5F6",
+            borderBottom:"1px solid #e2e2e2",
+            padding:"8px 10px"
+          }}
+        >
+
+          {/* LEFT SIDE */}
           <div className="d-flex gap-2">
-            <button className="btn btn-light btn-sm">Show 10 rows</button>
-            <button className="btn btn-light btn-sm">Excel</button>
+
+            <button className="btn btn-light btn-sm">
+              Show 10 rows
+            </button>
+
+            <button className="btn btn-light btn-sm">
+              Excel
+            </button>
+
           </div>
 
+          {/* RIGHT SIDE */}
           <input
             className="form-control form-control-sm"
             placeholder="Search"
@@ -44,8 +85,11 @@ export default function ExpiryManager() {
 
         </div>
 
+
+        {/* ================= TABLE ================= */}
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle mb-0 table-bordered">
+
             <thead>
               <tr>
                 <th>#</th>
@@ -61,10 +105,20 @@ export default function ExpiryManager() {
                 </td>
               </tr>
             </tbody>
+
           </table>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center p-2 border-top">
+
+        {/* ⭐ FOOTER BAR */}
+        <div
+          className="d-flex justify-content-between align-items-center"
+          style={{
+            background:"#F5F5F6",
+            borderTop:"1px solid #e2e2e2",
+            padding:"8px 10px"
+          }}
+        >
 
           <small className="text-muted">
             Showing 0 to 0 of 0 entries

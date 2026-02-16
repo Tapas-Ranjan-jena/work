@@ -1,62 +1,65 @@
 import { useState } from "react"
 import AddInvoiceModal from "../../../../../components/modals/AddInvoiceModal"
+import DataTableCard from "../../../../../components/common/DataTableCard"
 
 export default function InvoiceTab() {
 
-    const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false)
 
-    return (
-        <div>
+  return (
+    <div>
 
-            {/* HEADER */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
+      <DataTableCard
+        title="Invoice"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => setOpen(true)}
+          >
+            + Add Invoice
+          </button>
+        }
+        showToolbar
+        showEntries
+        
+        showExport
+        showSearch
+      >
 
-                <h6 className="fw-bold m-0">Invoice</h6>
+        {/* ================= TABLE ================= */}
+        <div className="table-responsive">
 
-                <button
-                    className="btn btn-outline-dark btn-sm"
-                    onClick={() => setOpen(true)}
-                >
-                    + Add Invoice
-                </button>
+          <table className="table table-bordered align-middle mb-0">
 
-            </div>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Assignment</th>
+                <th>Bill date</th>
+                <th>Due date</th>
+                <th>Invoice value</th>
+                <th>Payment received</th>
+                <th>Status</th>
+              </tr>
+            </thead>
 
-            {/* TABLE DESIGN SAME AS SCREENSHOT */}
-            <div className="client-table">
+            <tbody>
+              <tr>
+                <td colSpan={7} className="text-center text-muted py-4">
+                  No record found.
+                </td>
+              </tr>
+            </tbody>
 
-                <div className="table-responsive">
-
-                    <table className="table align-middle mb-0">
-
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Assignment</th>
-                                <th>Bill date</th>
-                                <th>Due date</th>
-                                <th>Invoice value</th>
-                                <th>Payment received</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td colSpan={7} className="text-center text-muted py-4">
-                                    No record found.
-                                </td>
-                            </tr>
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-            {open && <AddInvoiceModal onClose={() => setOpen(false)} />}
+          </table>
 
         </div>
-    )
+
+      </DataTableCard>
+
+      {/* ================= MODAL ================= */}
+      {open && <AddInvoiceModal onClose={() => setOpen(false)} />}
+
+    </div>
+  )
 }

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import DataTableCard from "../../../../../../components/common/DataTableCard"
 
 export default function Insurance() {
 
@@ -7,22 +8,26 @@ export default function Insurance() {
   return (
     <div>
 
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h6 className="fw-bold m-0">Insurance</h6>
+      {/* ⭐ REUSABLE DATA TABLE CARD */}
+      <DataTableCard
+        title="Insurance"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={()=>setOpenModal(true)}
+          >
+            + Add Insurance
+          </button>
+        }
+        showToolbar
+        showEntries
+        showSearch
+        showExport={false}   // ⭐ NO Excel / Print
+      >
 
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={()=>setOpenModal(true)}
-        >
-          + Add Insurance
-        </button>
-      </div>
-
-      {/* TABLE */}
-      <div className="client-table">
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle mb-0 table-bordered">
+
             <thead>
               <tr>
                 <th>Company Name</th>
@@ -45,94 +50,90 @@ export default function Insurance() {
 
           </table>
         </div>
-      </div>
+
+      </DataTableCard>
 
       {/* ⭐ MODAL */}
       {openModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
+        <div
+          className="modal-overlay"
+          onClick={()=>setOpenModal(false)}
+        >
 
-            <h5 className="fw-bold mb-3">Add Insurance</h5>
+          <div
+            className="modal-box"
+            onClick={(e)=>e.stopPropagation()}
+          >
 
-            {/* FORM GRID */}
-            <div className="row g-3">
+            {/* ===== HEADER ===== */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderBottom:"1px solid #e5e5e5",
+                paddingBottom:12,
+                marginBottom:16
+              }}
+            >
+              <h5 className="fw-bold m-0">Add Insurance</h5>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Company name" />
-              </div>
+              <span
+                style={{cursor:"pointer",fontSize:18}}
+                onClick={()=>setOpenModal(false)}
+              >
+                ✕
+              </span>
+            </div>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Name of Insurance Company" />
-              </div>
+            {/* ===== FORM BODY ===== */}
+            <div className="container-fluid">
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Name of Insurance Broker / Agent" />
-              </div>
+              {[
+                "Company name",
+                "Name of Insurance Company",
+                "Name of Insurance Broker / Agent",
+                "Policy Type",
+                "Sum Insured (In Rs.)",
+                "Policy Number",
+                "Policy Commencement Date",
+                "Policy/Renewal Date",
+                "Start From",
+                "Expiry Date",
+                "Asset Insured",
+                "Amount Paid (In Rs.)",
+                "Payment date",
+                "Mode of Payment",
+                "Key Terms",
+                "Remarks",
+                "Alert User",
+                "Alert Before"
+              ].map((label,index)=>(
+                <div key={index} className="row align-items-center mb-3">
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Policy Type" />
-              </div>
+                  <div className="col-md-4">
+                    <label className="small">{label}</label>
+                  </div>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Sum Insured (In Rs.)" />
-              </div>
+                  <div className="col-md-8">
+                    <input
+                      className="form-control"
+                      placeholder={label}
+                    />
+                  </div>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Policy Number" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Policy Commencement Date" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Policy/Renewal Date" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Start From" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Expiry Date" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Asset Insured" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Amount Paid (In Rs.)" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Payment date" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Mode of Payment" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Key Terms" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Remarks" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Alert User" />
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Alert Before" />
-              </div>
+                </div>
+              ))}
 
             </div>
 
-            {/* FOOTER */}
-            <div className="d-flex justify-content-between align-items-center mt-4">
+            {/* ===== FOOTER ===== */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderTop:"1px solid #e5e5e5",
+                marginTop:20,
+                paddingTop:14
+              }}
+            >
 
               <button className="btn btn-light btn-sm">
                 📎 Upload File

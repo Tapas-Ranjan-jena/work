@@ -5,12 +5,12 @@ export default function Topbar() {
       {/* ================= LEFT SIDE ================= */}
       <div className="topbar-left">
 
-        {/* ⭐ LOGO SLOT */}
+        {/* LOGO */}
         <div className="topbar-logo">
-          <img src="/logo.svg" alt="logo" />
+          <img src="../../assets/comgini-logo-nav.jpg" alt="logo" />
         </div>
 
-        {/* ⭐ SEARCH WITH ICON */}
+        {/* SEARCH */}
         <div className="topbar-search-wrapper">
           <i className="bi bi-search search-icon"></i>
           <input
@@ -24,10 +24,19 @@ export default function Topbar() {
       {/* ================= RIGHT SIDE ================= */}
       <div className="topbar-right">
 
-        {/* ⭐ Bootstrap Icons */}
-        <i className="bi bi-bell topbar-icon"></i>
-        <i className="bi bi-envelope topbar-icon"></i>
+        {/* ICONS */}
+        <div className="topbar-icon-circle">
+          <i className="bi bi-bell"></i>
+        </div>
 
+        <div className="topbar-icon-circle">
+          <i className="bi bi-envelope"></i>
+        </div>
+
+        {/* ⭐ WHITE DIVIDER */}
+        <div className="topbar-divider"></div>
+
+        {/* PROFILE */}
         <div className="topbar-profile">
           <div className="avatar">JC</div>
           <span className="profile-name">Jessie Cosenza</span>

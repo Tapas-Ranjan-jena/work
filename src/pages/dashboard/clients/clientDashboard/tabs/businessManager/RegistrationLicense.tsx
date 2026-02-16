@@ -1,4 +1,5 @@
 import { useState } from "react"
+import DataTableCard from "../../../../../../components/common/DataTableCard"
 
 export default function RegistrationLicense() {
 
@@ -7,22 +8,25 @@ export default function RegistrationLicense() {
   return (
     <div>
 
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h6 className="fw-bold m-0">Registration/License</h6>
+      {/* ⭐ REUSABLE TABLE CARD */}
+      <DataTableCard
+        title="Registration/License"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={()=>setOpenModal(true)}
+          >
+            + Add Registration
+          </button>
+        }
+        showToolbar
+        showEntries
+        showSearch
+        showExport={false}   // ⭐ No Excel / Print
+      >
 
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={()=>setOpenModal(true)}
-        >
-          + Add Registration
-        </button>
-      </div>
-
-      {/* TABLE */}
-      <div className="client-table">
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle mb-0 table-bordered">
 
             <thead>
               <tr>
@@ -46,101 +50,105 @@ export default function RegistrationLicense() {
 
           </table>
         </div>
-      </div>
 
-      {/* ⭐ FULL MODAL */}
+      </DataTableCard>
+
+
+      {/* ⭐ MODAL (UNCHANGED DESIGN) */}
       {openModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
+        <div
+          className="modal-overlay"
+          onClick={()=>setOpenModal(false)}
+        >
 
-            {/* HEADER */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
+          <div
+            className="modal-box"
+            onClick={(e)=>e.stopPropagation()}
+          >
+
+            {/* ===== HEADER ===== */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderBottom:"1px solid #e5e5e5",
+                paddingBottom:12,
+                marginBottom:16
+              }}
+            >
               <h5 className="fw-bold m-0">Add Registration</h5>
-              <span style={{cursor:"pointer"}} onClick={()=>setOpenModal(false)}>✕</span>
+
+              <span
+                style={{cursor:"pointer",fontSize:18}}
+                onClick={()=>setOpenModal(false)}
+              >
+                ✕
+              </span>
             </div>
 
-            {/* FORM GRID */}
-            <div className="row g-3">
+            {/* ===== FORM BODY ===== */}
+            <div className="container-fluid">
 
-              <div className="col-md-6">
-                <label className="form-label small">Company name</label>
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
+              {[
+                {label:"Company name", type:"select"},
+                {label:"Registration / License", type:"select"},
+                {label:"Status", type:"select"},
+                {label:"Applied On"},
+                {label:"Regn./Licence Name"},
+                {label:"Regn./Licence Number"},
+                {label:"Regn./Licence Type", type:"select"},
+                {label:"Valid From"},
+                {label:"Expiry date"},
+                {label:"Key Terms"},
+                {label:"Alert User"},
+                {label:"Alert Before", type:"select"}
+              ].map((field,index)=>(
+                <div key={index} className="row align-items-center mb-3">
 
-              <div className="col-md-6">
-                <label className="form-label small">Registration / License</label>
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
+                  <div className="col-md-4">
+                    <label className="small">{field.label}</label>
+                  </div>
 
-              <div className="col-md-6">
-                <label className="form-label small">Status</label>
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
+                  <div className="col-md-8">
+                    {field.type === "select" ? (
+                      <select className="form-select">
+                        <option>Select</option>
+                      </select>
+                    ) : (
+                      <input
+                        className="form-control"
+                        placeholder={field.label}
+                      />
+                    )}
+                  </div>
 
-              <div className="col-md-6">
-                <label className="form-label small">Applied On</label>
-                <input className="form-control" placeholder="Applied On"/>
-              </div>
+                </div>
+              ))}
 
-              <div className="col-md-6">
-                <label className="form-label small">Regn./Licence Name</label>
-                <input className="form-control" placeholder="Regn./Licence Name"/>
-              </div>
+              <div className="row align-items-start mb-2">
+                <div className="col-md-4">
+                  <label className="small">Remarks</label>
+                </div>
 
-              <div className="col-md-6">
-                <label className="form-label small">Regn./Licence Number</label>
-                <input className="form-control" placeholder="Regn./Licence Number"/>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small">Regn./Licence Type</label>
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small">Valid Form</label>
-                <input className="form-control" placeholder="Valid Form"/>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small">Expiry date</label>
-                <input className="form-control" placeholder="Expiry Date"/>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small">Key Terms</label>
-                <input className="form-control" placeholder="Key Terms"/>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small">Alert User</label>
-                <input className="form-control" placeholder="Alert User"/>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small">Alert Before</label>
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
-
-              <div className="col-12">
-                <label className="form-label small">Remarks</label>
-                <textarea className="form-control" rows={3} placeholder="Remarks"></textarea>
+                <div className="col-md-8">
+                  <textarea
+                    className="form-control"
+                    rows={3}
+                    placeholder="Remarks"
+                  />
+                </div>
               </div>
 
             </div>
 
-            {/* FOOTER */}
-            <div className="d-flex justify-content-between align-items-center mt-4">
+            {/* ===== FOOTER ===== */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderTop:"1px solid #e5e5e5",
+                marginTop:20,
+                paddingTop:14
+              }}
+            >
 
               <button className="btn btn-light btn-sm">
                 📎 Upload File

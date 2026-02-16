@@ -16,13 +16,14 @@ export default function ClientInfoLayout(){
   return (
     <div>
 
-      {/* SECOND LEVEL TABS */}
-      <div className="client-tabs mb-3">
+      {/* ⭐ SECOND LEVEL TABS (uses existing client-tabs styling) */}
+      <div className="client-tabs">
 
-        {tabs.map(tab=>(
+        {tabs.map((tab)=>(
           <NavLink
             key={tab.path}
             to={`/clients/${clientId}/info/${tab.path}`}
+            end
             className={({isActive}) =>
               `client-tab ${isActive ? "active" : ""}`
             }
@@ -33,6 +34,7 @@ export default function ClientInfoLayout(){
 
       </div>
 
+      {/* ⭐ CHILD ROUTES */}
       <Outlet/>
 
     </div>

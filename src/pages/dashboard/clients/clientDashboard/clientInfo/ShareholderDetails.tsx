@@ -1,15 +1,7 @@
-import InfoTable from "./components/InfoTable"
+import DataTableCard from "../../../../../components/common/DataTableCard"
 
 export default function ShareholderDetails(){
 
-  const columns = [
-    {label:"Shareholder Name", key:"name"},
-    {label:"Father Name", key:"father"},
-    {label:"Type of share", key:"type"},
-    {label:"Number of Share", key:"shares"},
-  ]
-
-  // ⭐ future API data will replace this
   const data = [
     {
       name:"GULSHAN KUMAR MAGON",
@@ -25,5 +17,45 @@ export default function ShareholderDetails(){
     }
   ]
 
-  return <InfoTable columns={columns} data={data}/>
+  return (
+    <DataTableCard>
+
+      <div className="table-responsive">
+
+        <table className="table table-bordered align-middle mb-0">
+
+          <thead>
+            <tr>
+              <th>Shareholder Name</th>
+              <th>Father Name</th>
+              <th>Type of share</th>
+              <th>Number of Share</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="text-center text-muted py-4">
+                  No record found.
+                </td>
+              </tr>
+            ) : (
+              data.map((row,index)=>(
+                <tr key={index}>
+                  <td>{row.name}</td>
+                  <td>{row.father}</td>
+                  <td>{row.type}</td>
+                  <td>{row.shares}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </DataTableCard>
+  )
 }

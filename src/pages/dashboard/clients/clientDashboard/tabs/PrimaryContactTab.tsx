@@ -1,5 +1,6 @@
 import { useState } from "react"
 import AddContactModal from "../../../../../components/modals/AddContactModal"
+import DataTableCard from "../../../../../components/common/DataTableCard"
 
 type Contact = {
   id: number
@@ -13,8 +14,7 @@ type Contact = {
 
 export default function PrimaryContactTab() {
 
-  // ⭐ Modal state
-  const [openModal,setOpenModal] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
 
   // ⭐ Later replace with API data
   const contacts: Contact[] = []
@@ -22,26 +22,29 @@ export default function PrimaryContactTab() {
   return (
     <div>
 
-      {/* ================= HEADER ================= */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <DataTableCard
+        title="Primary Contact"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => setOpenModal(true)}
+          >
+            + Add Contact
+          </button>
+        }
 
-        <h6 className="fw-bold m-0">Primary Contact</h6>
+        /* ⭐ TOOLBAR AUTO GENERATED */
+        showToolbar
+        showEntries
+        
+        showExport
+        showSearch
+      >
 
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={() => setOpenModal(true)}
-        >
-          + Add Contact
-        </button>
-
-      </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="client-table">
-
+        {/* ================= TABLE ================= */}
         <div className="table-responsive">
 
-          <table className="table align-middle mb-0">
+          <table className="table table-bordered align-middle mb-0">
 
             <thead>
               <tr>
@@ -79,7 +82,7 @@ export default function PrimaryContactTab() {
 
         </div>
 
-      </div>
+      </DataTableCard>
 
       {/* ================= MODAL ================= */}
       {openModal && (

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import DataTableCard from "../../../../../../components/common/DataTableCard"
 
 export default function ContractAgreement() {
 
@@ -7,22 +8,26 @@ export default function ContractAgreement() {
   return (
     <div>
 
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h6 className="fw-bold m-0">Contract/Agreement</h6>
+      {/* ⭐ REUSABLE TABLE CARD */}
+      <DataTableCard
+        title="Contract/Agreement"
+        addButton={
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={()=>setOpenModal(true)}
+          >
+            + Add Agreement
+          </button>
+        }
+        showToolbar      // ⭐ only toolbar
+        showEntries
+        showSearch
+        showExport={false}   // ⭐ IMPORTANT — NO Excel/Print
+      >
 
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={()=>setOpenModal(true)}
-        >
-          + Add Agreement
-        </button>
-      </div>
-
-      {/* TABLE */}
-      <div className="client-table">
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
+          <table className="table align-middle mb-0 table-bordered">
+
             <thead>
               <tr>
                 <th>Company Name</th>
@@ -45,86 +50,100 @@ export default function ContractAgreement() {
 
           </table>
         </div>
-      </div>
 
-      {/* ⭐ FULL MODAL UI (MATCHED TO DESIGN) */}
+      </DataTableCard>
+
+      {/* ⭐ MODAL */}
       {openModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
+        <div
+          className="modal-overlay"
+          onClick={()=>setOpenModal(false)}
+        >
 
-            <h5 className="fw-bold mb-3">Add Agreement</h5>
+          <div
+            className="modal-box"
+            onClick={(e)=>e.stopPropagation()}
+          >
 
-            <div className="row g-3">
+            {/* ===== HEADER WITH DIVIDER ===== */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderBottom:"1px solid #e5e5e5",
+                paddingBottom:12,
+                marginBottom:16
+              }}
+            >
+              <h5 className="fw-bold m-0">Add Agreement</h5>
 
-              {/* ROW 1 */}
-              <div className="col-md-6">
-                <select className="form-select">
-                  <option>-</option>
-                </select>
-              </div>
+              <span
+                style={{cursor:"pointer",fontSize:18}}
+                onClick={()=>setOpenModal(false)}
+              >
+                ✕
+              </span>
+            </div>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Contract Name"/>
-              </div>
+            {/* ===== FORM BODY ===== */}
+            <div className="container-fluid">
 
-              {/* ROW 2 */}
-              <div className="col-md-6">
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
+              {[
+                {label:"Company", type:"select"},
+                {label:"Contract Name"},
+                {label:"Category", type:"select"},
+                {label:"Contract Value (in Rs.)"},
+                {label:"Contract Period"},
+                {label:"Name of Party"},
+                {label:"Date of Execution"},
+                {label:"Start From"},
+                {label:"Expiry Date"},
+                {label:"Key Terms"},
+                {label:"Alert User"},
+                {label:"Alert Before", type:"select"}
+              ].map((field,index)=>(
+                <div key={index} className="row align-items-center mb-3">
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Contract Value (in Rs.)"/>
-              </div>
+                  <div className="col-md-4">
+                    <label className="small">{field.label}</label>
+                  </div>
 
-              {/* ROW 3 */}
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Contract Period"/>
-              </div>
+                  <div className="col-md-8">
+                    {field.type === "select" ? (
+                      <select className="form-select">
+                        <option>Select</option>
+                      </select>
+                    ) : (
+                      <input
+                        className="form-control"
+                        placeholder={field.label}
+                      />
+                    )}
+                  </div>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Name of Party"/>
-              </div>
+                </div>
+              ))}
 
-              {/* ROW 4 */}
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Date of Execution"/>
-              </div>
+              <div className="row align-items-start mb-2">
+                <div className="col-md-4">
+                  <label className="small">Remarks</label>
+                </div>
 
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Start From"/>
-              </div>
-
-              {/* ROW 5 */}
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Expiry Date"/>
-              </div>
-
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Key Terms"/>
-              </div>
-
-              {/* ROW 6 */}
-              <div className="col-md-6">
-                <input className="form-control" placeholder="Alert User"/>
-              </div>
-
-              <div className="col-md-6">
-                <select className="form-select">
-                  <option>Select</option>
-                </select>
-              </div>
-
-              {/* REMARKS */}
-              <div className="col-12">
-                <textarea className="form-control" placeholder="Remarks"/>
+                <div className="col-md-8">
+                  <textarea className="form-control" placeholder="Remarks"/>
+                </div>
               </div>
 
             </div>
 
-            {/* FOOTER */}
-            <div className="d-flex justify-content-between align-items-center mt-4">
+            {/* ===== FOOTER ===== */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderTop:"1px solid #e5e5e5",
+                marginTop:20,
+                paddingTop:14
+              }}
+            >
 
               <button className="btn btn-outline-secondary btn-sm">
                 Upload File

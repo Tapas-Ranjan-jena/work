@@ -20,19 +20,36 @@ export default function Expenses() {
       </div>
 
       {/* ================= TABLE CARD ================= */}
-      <div className="client-table">
+      <div
+        style={{
+          border:"1px solid #e2e2e2",
+          borderRadius:"6px",
+          overflow:"hidden",
+          background:"#fff"
+        }}
+      >
 
-        {/* ⭐ FIXED FILTER BAR (MAIN PROBLEM AREA) */}
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 p-2 border-bottom">
+        {/* ⭐ FILTER BAR (FINAL ALIGNMENT FIX) */}
+        <div
+          className="d-flex align-items-center justify-content-between flex-wrap gap-2"
+          style={{
+            background:"#F5F5F6",
+            borderBottom:"1px solid #e2e2e2",
+            padding:"8px 10px"
+          }}
+        >
 
-          {/* LEFT SIDE */}
-          <div className="d-flex align-items-center gap-2 flex-wrap">
-
+          {/* ========= LEFT ========= */}
+          <div className="d-flex align-items-center gap-2">
             <select className="form-select form-select-sm" style={{width:"80px"}}>
               <option>100</option>
             </select>
 
             <button className="btn btn-light btn-sm">👁</button>
+          </div>
+
+          {/* ========= CENTER ========= */}
+          <div className="d-flex align-items-center gap-2 flex-wrap">
 
             <select className="form-select form-select-sm" style={{width:"140px"}}>
               <option>-Assignment-</option>
@@ -54,7 +71,7 @@ export default function Expenses() {
 
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* ========= RIGHT ========= */}
           <div className="d-flex align-items-center gap-2">
             <button className="btn btn-light btn-sm">Excel</button>
             <button className="btn btn-light btn-sm">Print</button>
@@ -70,8 +87,7 @@ export default function Expenses() {
 
         {/* ================= TABLE ================= */}
         <div className="table-responsive">
-          <table className="table align-middle mb-0">
-
+          <table className="table align-middle mb-0 table-bordered">
             <thead>
               <tr>
                 <th>Date</th>
@@ -93,7 +109,6 @@ export default function Expenses() {
                 </td>
               </tr>
             </tbody>
-
           </table>
         </div>
 
@@ -101,86 +116,78 @@ export default function Expenses() {
 
       {/* ================= ADD EXPENSE MODAL ================= */}
       {openModal && (
-        <div className="modal-overlay">
-          <div className="modal-box" style={{maxWidth:"650px"}}>
+        <div className="modal-overlay" onClick={()=>setOpenModal(false)}>
+          <div
+            className="modal-box"
+            style={{maxWidth:"720px"}}
+            onClick={(e)=>e.stopPropagation()}
+          >
 
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            {/* HEADER */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderBottom:"1px solid #e5e5e5",
+                paddingBottom:12,
+                marginBottom:16
+              }}
+            >
               <h5 className="fw-bold m-0">Add Expense</h5>
-              <span style={{cursor:"pointer"}} onClick={()=>setOpenModal(false)}>✕</span>
+              <span style={{cursor:"pointer",fontSize:18}} onClick={()=>setOpenModal(false)}>✕</span>
             </div>
 
-            <div className="row g-3">
+            {/* FORM BODY */}
+            <div className="container-fluid">
+              {[
+                {label:"Date of expense", type:"date"},
+                {label:"Category", type:"select"},
+                {label:"Amount"},
+                {label:"Title"},
+                {label:"Description", type:"textarea"},
+                {label:"Client", type:"select"},
+                {label:"Assignment", type:"select"},
+                {label:"Team member", type:"select"},
+                {label:"TAX", type:"select"},
+                {label:"Second TAX", type:"select"}
+              ].map((field,index)=>(
+                <div key={index} className="row align-items-start mb-3">
 
-              <div className="col-12">
-                <label className="small">Date of expense</label>
-                <input type="date" className="form-control"/>
-              </div>
+                  <div className="col-md-4">
+                    <label className="small">{field.label}</label>
+                  </div>
 
-              <div className="col-12">
-                <label className="small">Category</label>
-                <select className="form-select">
-                  <option>Comply Relax Renewal Fees</option>
-                </select>
-              </div>
+                  <div className="col-md-8">
+                    {field.type === "select" ? (
+                      <select className="form-select"><option>-</option></select>
+                    ) : field.type === "textarea" ? (
+                      <textarea className="form-control" />
+                    ) : (
+                      <input
+                        type={field.type === "date" ? "date" : "text"}
+                        className="form-control"
+                        placeholder={field.label}
+                      />
+                    )}
+                  </div>
 
-              <div className="col-12">
-                <label className="small">Amount</label>
-                <input className="form-control" placeholder="Amount"/>
-              </div>
-
-              <div className="col-12">
-                <label className="small">Title</label>
-                <input className="form-control" placeholder="Title"/>
-              </div>
-
-              <div className="col-12">
-                <label className="small">Description</label>
-                <textarea className="form-control"/>
-              </div>
-
-              <div className="col-12">
-                <label className="small">Client</label>
-                <select className="form-select"><option>-</option></select>
-              </div>
-
-              <div className="col-12">
-                <label className="small">Assignment</label>
-                <select className="form-select"><option>-</option></select>
-              </div>
-
-              <div className="col-12">
-                <label className="small">Team member</label>
-                <select className="form-select"><option>-</option></select>
-              </div>
-
-              <div className="col-12">
-                <label className="small">TAX</label>
-                <select className="form-select"><option>-</option></select>
-              </div>
-
-              <div className="col-12">
-                <label className="small">Second TAX</label>
-                <select className="form-select"><option>-</option></select>
-              </div>
-
+                </div>
+              ))}
             </div>
 
-            <div className="d-flex justify-content-between mt-4">
-              <button className="btn btn-light btn-sm">
-                Upload File
-              </button>
+            {/* FOOTER */}
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{
+                borderTop:"1px solid #e5e5e5",
+                marginTop:20,
+                paddingTop:14
+              }}
+            >
+              <button className="btn btn-light btn-sm">Upload File</button>
 
               <div className="d-flex gap-2">
-                <button
-                  className="btn btn-outline-secondary btn-sm"
-                  onClick={()=>setOpenModal(false)}
-                >
-                  Close
-                </button>
-
-                <button className="btn btn-gradient btn-sm">
-                  Save
-                </button>
+                <button className="btn btn-outline-secondary btn-sm" onClick={()=>setOpenModal(false)}>Close</button>
+                <button className="btn btn-gradient btn-sm">Save</button>
               </div>
             </div>
 
