@@ -29,7 +29,7 @@ export default function Expenses() {
         }}
       >
 
-        {/* ⭐ FILTER BAR (FINAL ALIGNMENT FIX) */}
+        {/* ⭐ FILTER BAR */}
         <div
           className="d-flex align-items-center justify-content-between flex-wrap gap-2"
           style={{
@@ -39,7 +39,6 @@ export default function Expenses() {
           }}
         >
 
-          {/* ========= LEFT ========= */}
           <div className="d-flex align-items-center gap-2">
             <select className="form-select form-select-sm" style={{width:"80px"}}>
               <option>100</option>
@@ -48,7 +47,6 @@ export default function Expenses() {
             <button className="btn btn-light btn-sm">👁</button>
           </div>
 
-          {/* ========= CENTER ========= */}
           <div className="d-flex align-items-center gap-2 flex-wrap">
 
             <select className="form-select form-select-sm" style={{width:"140px"}}>
@@ -71,7 +69,6 @@ export default function Expenses() {
 
           </div>
 
-          {/* ========= RIGHT ========= */}
           <div className="d-flex align-items-center gap-2">
             <button className="btn btn-light btn-sm">Excel</button>
             <button className="btn btn-light btn-sm">Print</button>
@@ -186,9 +183,63 @@ export default function Expenses() {
               <button className="btn btn-light btn-sm">Upload File</button>
 
               <div className="d-flex gap-2">
-                <button className="btn btn-outline-secondary btn-sm" onClick={()=>setOpenModal(false)}>Close</button>
-                <button className="btn btn-gradient btn-sm">Save</button>
+
+                {/* CLOSE BUTTON */}
+                <button
+                  className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+                  onClick={()=>setOpenModal(false)}
+                >
+                  <span
+                    style={{
+                      width:18,
+                      height:18,
+                      borderRadius:"50%",
+                      border:"1.5px solid #000",
+                      display:"inline-flex",
+                      alignItems:"center",
+                      justifyContent:"center"
+                    }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M18 6L6 18M6 6L18 18"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
+                  Close
+                </button>
+
+                {/* SAVE BUTTON */}
+                <button className="btn btn-gradient btn-sm d-flex align-items-center gap-2">
+                  <span
+                    style={{
+                      width:18,
+                      height:18,
+                      borderRadius:"50%",
+                      background:"#fff",
+                      display:"inline-flex",
+                      alignItems:"center",
+                      justifyContent:"center"
+                    }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M20 6L9 17L4 12"
+                        stroke="#2b4cb3"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  Save
+                </button>
+
               </div>
+
             </div>
 
           </div>

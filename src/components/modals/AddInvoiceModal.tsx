@@ -31,7 +31,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
           </span>
         </div>
 
-
         {/* ===== NOTE TEXT ===== */}
         <p
           className="small text-danger"
@@ -44,11 +43,9 @@ export default function AddInvoiceModal({ onClose }: Props) {
           2. Please update your company / firm profile before generating invoice.
         </p>
 
-
-        {/* ===== FORM BODY (LABEL LEFT | INPUT RIGHT) ===== */}
+        {/* ===== FORM BODY ===== */}
         <div className="container-fluid">
 
-          {/* First Name */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">First Name</div>
             <div className="col-md-9">
@@ -56,7 +53,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Bill + Due */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Bill date</div>
 
@@ -73,7 +69,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Invoice Type */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Invoice Type</div>
             <div className="col-md-9">
@@ -81,7 +76,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Client */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Client</div>
             <div className="col-md-9">
@@ -89,7 +83,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* TAX */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">TAX</div>
 
@@ -106,7 +99,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Recurring */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Recurring</div>
             <div className="col-md-9">
@@ -114,7 +106,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Note */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Note</div>
             <div className="col-md-9">
@@ -122,7 +113,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Labels */}
           <div className="row align-items-center mb-2">
             <div className="col-md-3 small">Labels</div>
             <div className="col-md-9">
@@ -131,7 +121,6 @@ export default function AddInvoiceModal({ onClose }: Props) {
           </div>
 
         </div>
-
 
         {/* ===== FOOTER ===== */}
         <div
@@ -142,14 +131,57 @@ export default function AddInvoiceModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
+          {/* CLOSE BUTTON */}
           <button
-            className="btn btn-outline-secondary btn-sm"
+            className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
             onClick={onClose}
           >
+            <span
+              style={{
+                width:18,
+                height:18,
+                borderRadius:"50%",
+                border:"1.5px solid #000",
+                display:"inline-flex",
+                alignItems:"center",
+                justifyContent:"center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
             Close
           </button>
 
-          <button className="btn btn-gradient btn-sm">
+          {/* SAVE BUTTON */}
+          <button className="btn btn-gradient btn-sm d-flex align-items-center gap-2">
+            <span
+              style={{
+                width:18,
+                height:18,
+                borderRadius:"50%",
+                background:"#fff",
+                display:"inline-flex",
+                alignItems:"center",
+                justifyContent:"center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M20 6L9 17L4 12"
+                  stroke="#2b4cb3"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
             Save
           </button>
         </div>

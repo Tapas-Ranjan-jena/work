@@ -1,16 +1,16 @@
+import { createPortal } from "react-dom"
+
 type Props = {
   onClose: () => void
 }
 
 export default function AddClientPortalModal({ onClose }: Props) {
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
+  return createPortal(
 
-      <div
-        className="modal-box"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay">
+
+      <div className="modal-box">
 
         {/* ===== HEADER ===== */}
         <div
@@ -31,11 +31,9 @@ export default function AddClientPortalModal({ onClose }: Props) {
           </span>
         </div>
 
-
-        {/* ===== FORM (LEFT LABEL | RIGHT INPUT) ===== */}
+        {/* ===== FORM GRID ===== */}
         <div className="container-fluid">
 
-          {/* First Name */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">First Name</div>
             <div className="col-md-8">
@@ -43,7 +41,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Last Name */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Last Name</div>
             <div className="col-md-8">
@@ -51,7 +48,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Email */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Email</div>
             <div className="col-md-8">
@@ -59,7 +55,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Phone */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Phone</div>
             <div className="col-md-8">
@@ -67,7 +62,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Skype */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Skype</div>
             <div className="col-md-8">
@@ -75,7 +69,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Job Title */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Job Title</div>
             <div className="col-md-8">
@@ -83,33 +76,30 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Gender */}
+          {/* GENDER */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Gender</div>
-
             <div className="col-md-8 d-flex gap-3">
               <label>
                 <input type="radio" name="gender" defaultChecked /> Male
               </label>
-
               <label>
                 <input type="radio" name="gender" /> Female
               </label>
             </div>
           </div>
 
-          {/* Hidden menus */}
+          {/* HIDDEN MENU */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">
               Hide menus from client portal
             </div>
-
             <div className="col-md-8">
               <input className="form-control" placeholder="Hidden menus" />
             </div>
           </div>
 
-          {/* Password */}
+          {/* PASSWORD */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Password</div>
 
@@ -122,10 +112,9 @@ export default function AddClientPortalModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Checkbox */}
+          {/* CHECKBOX */}
           <div className="row mb-2">
             <div className="col-md-4"></div>
-
             <div className="col-md-8 small">
               <label>
                 <input
@@ -140,7 +129,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
 
         </div>
 
-
         {/* ===== FOOTER ===== */}
         <div
           className="d-flex justify-content-end gap-2"
@@ -150,19 +138,66 @@ export default function AddClientPortalModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
+          {/* CLOSE BUTTON */}
           <button
-            className="btn btn-outline-secondary"
+            className="btn btn-outline-secondary d-flex align-items-center gap-2"
             onClick={onClose}
           >
+            <span
+              style={{
+                width: 18,
+                height: 18,
+                borderRadius: "50%",
+                border: "1.5px solid #000",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
             Close
           </button>
 
-          <button className="btn btn-gradient">
+
+          {/* SAVE BUTTON */}
+          <button className="btn btn-gradient d-flex align-items-center gap-2">
+            <span
+              style={{
+                width: 18,
+                height: 18,
+                borderRadius: "50%",
+                background: "#fff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M20 6L9 17L4 12"
+                  stroke="#2b4cb3"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
             Save
           </button>
+
         </div>
 
       </div>
-    </div>
+    </div>,
+
+    document.body   // ⭐ THIS FIXES YOUR ISSUE
   )
 }

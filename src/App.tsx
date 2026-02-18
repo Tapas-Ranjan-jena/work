@@ -12,6 +12,11 @@ import DashboardLayout from "./layouts/DashboardLayout"
 import DashboardHome from "./pages/dashboard/DashboardHome"
 import ClientsPage from "./pages/dashboard/clients/ClientsPage"
 
+/* ================= BULK SENDER ================= */
+import BulkSenderLayout from "./pages/dashboard/bulkSender/BulkSenderLayout"
+import BulkWhatsApp from "./pages/dashboard/bulkSender/BulkWhatsapp"
+import BulkGmail from "./pages/dashboard/bulkSender/BulkGmail"
+
 /* ================= CLIENT DASHBOARD ================= */
 import ClientDashboardLayout from "./pages/dashboard/clients/clientDashboard/ClientDashboardLayout"
 
@@ -24,7 +29,7 @@ import NotesTab from "./pages/dashboard/clients/clientDashboard/tabs/NotesTab"
 import FilesTab from "./pages/dashboard/clients/clientDashboard/tabs/FilesTab"
 import EventsTab from "./pages/dashboard/clients/clientDashboard/tabs/EventsTab"
 import Assignments from "./pages/dashboard/clients/clientDashboard/tabs/Assignments"
-import Expenses from "./pages/dashboard/clients/clientDashboard/tabs/Expenses" // ✅ REAL PAGE
+import Expenses from "./pages/dashboard/clients/clientDashboard/tabs/Expenses"
 
 /* ================= BUSINESS MANAGER ================= */
 import BusinessManagerLayout from "./pages/dashboard/clients/clientDashboard/tabs/businessManager/BusinessManagerLayout"
@@ -58,13 +63,20 @@ export default function App() {
       <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* ================= DASHBOARD ================= */}
+      {/* ================= DASHBOARD ROOT ================= */}
       <Route path="/" element={<DashboardLayout />}>
 
         <Route index element={<Navigate to="dashboard" replace />} />
 
         <Route path="dashboard" element={<DashboardHome />} />
         <Route path="clients" element={<ClientsPage />} />
+
+        {/* ================= BULK SENDER ================= */}
+        <Route path="bulk-sender" element={<BulkSenderLayout />}>
+          <Route index element={<Navigate to="whatsapp" replace />} />
+          <Route path="whatsapp" element={<BulkWhatsApp />} />
+          <Route path="gmail" element={<BulkGmail />} />
+        </Route>
 
         {/* ================= CLIENT DASHBOARD ================= */}
         <Route path="clients/:clientId" element={<ClientDashboardLayout />}>
@@ -88,7 +100,6 @@ export default function App() {
           <Route path="portal" element={<ClientPortal />} />
           <Route path="primary-contact" element={<PrimaryContact />} />
           <Route path="assignments" element={<Assignments />} />
-
           <Route path="invoice" element={<InvoiceTab />} />
           <Route path="payments" element={<PaymentsTab />} />
           <Route path="notes" element={<NotesTab />} />
@@ -103,7 +114,6 @@ export default function App() {
             <Route path="contract-agreement" element={<ContractAgreement />} />
           </Route>
 
-          {/* ✅ NOW REAL EXPENSES PAGE LOADS */}
           <Route path="expiry-manager" element={<ExpiryManager />} />
           <Route path="expenses" element={<Expenses />} />
 
@@ -117,3 +127,4 @@ export default function App() {
     </Routes>
   )
 }
+

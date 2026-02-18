@@ -43,21 +43,21 @@ export default function DataTableCard({
             <>
               <span
                 style={{
-                  width:"18px",
-                  height:"18px",
-                  borderRadius:"50%",
-                  border:"1.5px solid #000",
-                  display:"inline-flex",
-                  alignItems:"center",
-                  justifyContent:"center",
-                  fontSize:"13px",
-                  marginRight:"6px",
-                  lineHeight:"1"
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  border: "1.5px solid #000",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                  marginRight: "6px",
+                  lineHeight: "1"
                 }}
               >
                 +
               </span>
-              {child.replace("+","").trim()}
+              {child.replace("+", "").trim()}
             </>
           )
         }
@@ -76,14 +76,14 @@ export default function DataTableCard({
       {(title || addButton) && (
         <div
           style={{
-            background:"#F5F5F6",
-            padding:"10px 14px",
-            border:"1px solid #e2e2e2",
-            borderBottom:"none",
-            borderRadius:"6px 6px 0 0",
-            display:"flex",
-            justifyContent:"space-between",
-            alignItems:"center"
+            background: "#F5F5F6",
+            padding: "10px 14px",
+            border: "1px solid #e2e2e2",
+            borderBottom: "none",
+            borderRadius: "6px 6px 0 0",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
           }}
         >
           <h6 className="fw-semibold m-0">{title}</h6>
@@ -94,10 +94,10 @@ export default function DataTableCard({
       {/* ================= CARD BODY ================= */}
       <div
         style={{
-          border:"1px solid #e2e2e2",
-          borderRadius:title ? "0 0 6px 6px" : "6px",
-          overflow:"hidden",
-          background:"#fff"
+          border: "1px solid #e2e2e2",
+          borderRadius: title ? "0 0 6px 6px" : "6px",
+          overflow: "hidden",
+          background: "#fff"
         }}
       >
 
@@ -106,9 +106,9 @@ export default function DataTableCard({
           <div
             className="d-flex justify-content-between align-items-center flex-wrap gap-2"
             style={{
-              background:"#fff",
-              borderBottom:"1px solid #e2e2e2",
-              padding:"8px 10px"
+              background: "#fff",
+              borderBottom: "1px solid #e2e2e2",
+              padding: "8px 10px"
             }}
           >
 
@@ -119,14 +119,14 @@ export default function DataTableCard({
                 <>
                   <select
                     className="form-select form-select-sm"
-                    style={{width:"70px"}}
+                    style={{ width: "70px" }}
                   >
                     <option>100</option>
                   </select>
 
                   <button
                     className="btn btn-light btn-sm"
-                    style={{border:"1px solid #c6c6c6"}}
+                    style={{ border: "1px solid #c6c6c6" }}
                   >
                     <i className="bi bi-eye"></i>
                   </button>
@@ -146,14 +146,14 @@ export default function DataTableCard({
                 <>
                   <button
                     className="btn btn-light btn-sm"
-                    style={{border:"1px solid #c6c6c6"}}
+                    style={{ border: "1px solid #c6c6c6" }}
                   >
                     Excel
                   </button>
 
                   <button
                     className="btn btn-light btn-sm"
-                    style={{border:"1px solid #c6c6c6"}}
+                    style={{ border: "1px solid #c6c6c6" }}
                   >
                     Print
                   </button>
@@ -161,17 +161,17 @@ export default function DataTableCard({
               )}
 
               {showSearch && (
-                <div style={{position:"relative"}}>
+                <div style={{ position: "relative" }}>
                   <i
                     className="bi bi-search"
                     style={{
-                      position:"absolute",
-                      left:"8px",
-                      top:"50%",
-                      transform:"translateY(-50%)",
-                      fontSize:"13px",
-                      color:"#888",
-                      pointerEvents:"none"
+                      position: "absolute",
+                      left: "8px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      fontSize: "13px",
+                      color: "#888",
+                      pointerEvents: "none"
                     }}
                   />
 
@@ -179,8 +179,8 @@ export default function DataTableCard({
                     className="form-control form-control-sm"
                     placeholder="Search"
                     style={{
-                      width:"180px",
-                      paddingLeft:"26px"
+                      width: "180px",
+                      paddingLeft: "26px"
                     }}
                   />
                 </div>
@@ -192,19 +192,22 @@ export default function DataTableCard({
         )}
 
         {/* ================= TABLE CONTENT ================= */}
-        {children}
+        <div className="mobile-table-scroll">
+          {children}
+        </div>
+
 
         {/* ⭐⭐⭐ BOTTOM FOOTER (YOUR NEW PART) ⭐⭐⭐ */}
         <div
           style={{
-            background:"#F5F5F6",
-            borderTop:"1px solid #e2e2e2",
-            padding:"6px 10px",
-            display:"flex",
-            justifyContent:"space-between",
-            alignItems:"center",
-            fontSize:"12px",
-            color:"#555"
+            background: "#F5F5F6",
+            borderTop: "1px solid #e2e2e2",
+            padding: "6px 10px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontSize: "12px",
+            color: "#555"
           }}
         >
           {/* LEFT TEXT */}
@@ -217,14 +220,14 @@ export default function DataTableCard({
 
             <button
               className="btn btn-light btn-sm"
-              style={{padding:"2px 6px",border:"1px solid #c6c6c6"}}
+              style={{ padding: "2px 6px", border: "1px solid #c6c6c6" }}
             >
               «
             </button>
 
             <button
               className="btn btn-light btn-sm"
-              style={{padding:"2px 6px",border:"1px solid #c6c6c6"}}
+              style={{ padding: "2px 6px", border: "1px solid #c6c6c6" }}
             >
               »
             </button>

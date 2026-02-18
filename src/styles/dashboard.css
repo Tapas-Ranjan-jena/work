@@ -23,10 +23,14 @@
   padding:0 24px;
   color:#fff;
   flex-shrink:0;
-  z-index:1200;
+  z-index:3000;
+
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
 }
 
-/* ⭐ LEFT SIDE */
 .topbar-left{
   display:flex;
   align-items:center;
@@ -45,7 +49,7 @@
 .topbar-search-wrapper{
   position:relative;
   flex:1;
-  max-width:720px; /* ⭐ aligned with dashboard */
+  max-width:720px;
   margin-left:10px;
   min-width:0;
 }
@@ -89,26 +93,18 @@
   gap:14px;
 }
 
-/* ⭐ WHITE ICON CIRCLE */
 .topbar-icon-circle{
   width:36px;
   height:36px;
   border-radius:50%;
-
-  /* ⭐ REMOVE WHITE FILL */
   background:transparent;
-
-  /* ⭐ ADD WHITE BORDER ONLY */
   border:1.5px solid rgba(255,255,255,0.8);
-
   color:#ffffff;
-
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
   font-size:16px;
-
   transition:all .2s ease;
 }
 
@@ -117,17 +113,19 @@
   border-color:#ffffff;
   transform:translateY(-1px);
 }
+
 .topbar-divider{
   width:1px;
   height:26px;
   background:rgba(255,255,255,0.6);
   margin:0 6px;
 }
+
 .topbar-profile{
   display:flex;
-  align-items:center;      /* ⭐ keeps avatar + name same row */
+  align-items:center;
   gap:10px;
-  white-space:nowrap;      /* ⭐ prevents name wrapping */
+  white-space:nowrap;
 }
 
 .avatar{
@@ -150,6 +148,7 @@
   flex:1;
   display:flex;
   overflow:hidden;
+  margin-top:70px;
 }
 
 /* ===================================================== */
@@ -165,6 +164,7 @@
   flex-shrink:0;
   overflow-y:auto;
   transition:all .3s ease;
+  z-index:2000;
 }
 
 .sidebar-menu{
@@ -228,6 +228,7 @@
   flex:1;
   overflow:auto;
   padding:20px;
+  -webkit-overflow-scrolling:touch;
 }
 
 /* ===================================================== */
@@ -297,12 +298,15 @@
   gap:18px;
   flex-wrap:nowrap;
   overflow-x:auto;
+  overflow-y:hidden;
   white-space:nowrap;
   background:#F5F5F6;
   padding:10px 14px 0 14px;
   border-bottom:1px solid #e2e2e2;
   margin-bottom:16px;
   scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
 }
 
 .client-tabs::-webkit-scrollbar{ display:none; }
@@ -429,27 +433,84 @@
 }
 
 /* ===================================================== */
-/* MOBILE */
+/* MOBILE SIDEBAR OVERLAY */
 /* ===================================================== */
 
 @media(max-width:991px){
+
   .sidebar{
     position:fixed;
-    left:-260px;
+    left:-100%;
     top:70px;
+    width:100%;
     height:calc(100vh - 70px);
+    background:#0b0b0b;
+    z-index:2000;
+    padding-top:10px;
+    transition:left .3s ease;
+    pointer-events:none;
   }
-  .sidebar.open{ left:0; }
+
+  .sidebar.open{
+    left:0;
+    pointer-events:auto;
+  }
+
+  .sidebar-backdrop{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100vh;
+    background:rgba(0,0,0,0.45);
+    z-index:1900;
+  }
+
+  .topbar-search-wrapper{
+    display:none;
+  }
+
+  .topbar-left{ gap:10px; }
+  .topbar-right{ gap:8px; }
+
+  /* ⭐ PRO MOBILE STACK */
+  .dashboard-stats{
+    grid-template-columns:1fr;
+  }
+
+  .details-row{
+    grid-template-columns:140px 1fr;
+  }
+
+  .details-row.full{
+    grid-template-columns:140px 1fr;
+  }
+
+  .dashboard-content{
+    padding:14px;
+  }
 }
 
-@media(max-width:576px){
-  .dashboard-content{ padding:12px; }
-  .topbar{ padding:0 12px; }
-  .topbar-search-wrapper{ display:none; }
+/* ===================================================== */
+/* GLOBAL MOBILE POLISH */
+/* ===================================================== */
+
+html,body{
+  overflow-x:hidden;
 }
-/* =====================================
-   ADD BUTTON + ICON CIRCLE STYLE
-===================================== */
+
+.dashboard-wrapper,
+.dashboard-body,
+.dashboard-main,
+.dashboard-content{
+  min-width:0;
+  max-width:100%;
+}
+
+.topbar-icon-circle,
+.sidebar-item{
+  -webkit-tap-highlight-color:transparent;
+}
 
 /* PLUS ICON CIRCLE */
 .btn .add-icon{
@@ -462,4 +523,44 @@
   justify-content:center;
   font-size:13px;
   margin-right:6px;
+}
+/* ======================================
+   MOBILE TAB DROPDOWN (PRO VERSION)
+====================================== */
+
+.mobile-tab-select{
+  display:none;
+  width:100%;
+  height:38px;
+  border-radius:6px;
+  border:1px solid #dcdcdc;
+  padding:0 10px;
+  margin-bottom:10px;
+  background:#fff;
+}
+
+/* ⭐ Switch tabs → select on mobile */
+@media(max-width:991px){
+
+  .desktop-tabs{
+    display:none;
+  }
+
+  .mobile-tab-select{
+    display:block;
+  }
+}
+/* =====================================
+   MOBILE TABLE HORIZONTAL SCROLL
+===================================== */
+
+.mobile-table-scroll{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ⭐ makes tables scroll instead of breaking layout */
+.mobile-table-scroll table{
+  min-width:700px;   /* adjust if needed */
 }

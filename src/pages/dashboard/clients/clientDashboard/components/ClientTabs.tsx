@@ -1,8 +1,10 @@
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useParams, useLocation, useNavigate } from "react-router-dom"
 
 export default function ClientTabs(){
 
   const { clientId } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const tabs = [
     { label:"Compliance Manager", path:"compliance", static:true },
@@ -20,48 +22,67 @@ export default function ClientTabs(){
     { label:"Expenses", path:"expenses" },
   ]
 
+  /* ⭐⭐⭐ FIXED ACTIVE TAB DETECTION ⭐⭐⭐ */
+  const segments = location.pathname.split("/")
+  const activeMainTab = segments[3]   // <-- THIS IS THE FIX
+
   return (
-    <div className="client-tabs">
+    <>
+      {/* ⭐ MOBILE SELECT */}
+      <div className="d-md-none mb-2">
+        <select
+          className="form-select"
+          value={activeMainTab}
+          onChange={(e)=>navigate(`/clients/${clientId}/${e.target.value}`)}
+        >
+          {tabs.filter(t=>!t.static).map(tab=>(
+            <option key={tab.path} value={tab.path}>
+              {tab.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {tabs.map((tab)=>{
+      {/* ⭐ DESKTOP TABS */}
+      <div className="client-tabs d-none d-md-flex">
 
-        /* ⭐ Compliance Manager → NOT A LINK */
-        if(tab.static){
-  return(
-    <div
-      key={tab.path}
-      style={{
-        background:"linear-gradient(90deg,#3346a8 0%,#2f64c6 45%,#2fa0dc 100%)",
-        color:"#fff",
-        fontSize:"12px",
-        padding:"6px 10px",
-        borderRadius:"4px",
-        fontWeight:500,
-        flexShrink:0,
-        display:"flex",
-        alignItems:"center"
-      }}
-    >
-      {tab.label}
-    </div>
-  )
-}
+        {tabs.map((tab)=>{
 
+          if(tab.static){
+            return(
+              <div
+                key={tab.path}
+                style={{
+                  background:"linear-gradient(90deg,#3346a8 0%,#2f64c6 45%,#2fa0dc 100%)",
+                  color:"#fff",
+                  fontSize:"12px",
+                  padding:"6px 10px",
+                  borderRadius:"4px",
+                  fontWeight:500,
+                  flexShrink:0,
+                  display:"flex",
+                  alignItems:"center"
+                }}
+              >
+                {tab.label}
+              </div>
+            )
+          }
 
-        /* ⭐ NORMAL TABS */
-        return(
-          <NavLink
-            key={tab.path}
-            to={`/clients/${clientId}/${tab.path}`}
-            className={({isActive}) =>
-              `client-tab ${isActive ? "active" : ""}`
-            }
-          >
-            {tab.label}
-          </NavLink>
-        )
-      })}
+          return(
+            <NavLink
+              key={tab.path}
+              to={`/clients/${clientId}/${tab.path}`}
+              className={({isActive}) =>
+                `client-tab ${isActive ? "active" : ""}`
+              }
+            >
+              {tab.label}
+            </NavLink>
+          )
+        })}
 
-    </div>
+      </div>
+    </>
   )
 }

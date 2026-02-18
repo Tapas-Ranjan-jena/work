@@ -31,11 +31,9 @@ export default function AddEventModal({ onClose }: Props) {
           </span>
         </div>
 
-
-        {/* ===== FORM BODY (LABEL LEFT | INPUT RIGHT) ===== */}
+        {/* ===== FORM BODY ===== */}
         <div className="container-fluid">
 
-          {/* Title */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Title</div>
             <div className="col-md-9">
@@ -43,7 +41,6 @@ export default function AddEventModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Description */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Description</div>
             <div className="col-md-9">
@@ -51,7 +48,6 @@ export default function AddEventModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Start */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Start date</div>
 
@@ -68,7 +64,6 @@ export default function AddEventModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* End */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">End date</div>
 
@@ -85,7 +80,6 @@ export default function AddEventModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Location */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Location</div>
             <div className="col-md-9">
@@ -93,7 +87,6 @@ export default function AddEventModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Labels */}
           <div className="row align-items-center mb-3">
             <div className="col-md-3 small">Labels</div>
             <div className="col-md-9">
@@ -157,7 +150,6 @@ export default function AddEventModal({ onClose }: Props) {
 
         </div>
 
-
         {/* ===== FOOTER ===== */}
         <div
           className="d-flex justify-content-end gap-2"
@@ -167,14 +159,57 @@ export default function AddEventModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
+          {/* CLOSE BUTTON */}
           <button
-            className="btn btn-outline-secondary btn-sm"
+            className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
             onClick={onClose}
           >
+            <span
+              style={{
+                width:18,
+                height:18,
+                borderRadius:"50%",
+                border:"1.5px solid #000",
+                display:"inline-flex",
+                alignItems:"center",
+                justifyContent:"center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
             Close
           </button>
 
-          <button className="btn btn-gradient btn-sm">
+          {/* SAVE BUTTON */}
+          <button className="btn btn-gradient btn-sm d-flex align-items-center gap-2">
+            <span
+              style={{
+                width:18,
+                height:18,
+                borderRadius:"50%",
+                background:"#fff",
+                display:"inline-flex",
+                alignItems:"center",
+                justifyContent:"center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M20 6L9 17L4 12"
+                  stroke="#2b4cb3"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
             Save
           </button>
         </div>

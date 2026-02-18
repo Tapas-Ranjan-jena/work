@@ -31,11 +31,9 @@ export default function AddContactModal({ onClose }: Props) {
           </span>
         </div>
 
-
-        {/* ===== FORM (LEFT LABEL | RIGHT INPUT) ===== */}
+        {/* ===== FORM ===== */}
         <div className="container-fluid">
 
-          {/* First Name */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">First Name</div>
             <div className="col-md-8">
@@ -43,7 +41,6 @@ export default function AddContactModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Last Name */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Last Name</div>
             <div className="col-md-8">
@@ -51,7 +48,6 @@ export default function AddContactModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Email */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Email</div>
             <div className="col-md-8">
@@ -59,7 +55,6 @@ export default function AddContactModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Phone */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Phone</div>
             <div className="col-md-8">
@@ -67,7 +62,6 @@ export default function AddContactModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Skype */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Skype</div>
             <div className="col-md-8">
@@ -75,7 +69,6 @@ export default function AddContactModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* Job Title */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Job Title</div>
             <div className="col-md-8">
@@ -102,7 +95,6 @@ export default function AddContactModal({ onClose }: Props) {
 
         </div>
 
-
         {/* ===== FOOTER ===== */}
         <div
           className="d-flex justify-content-end gap-2"
@@ -112,14 +104,57 @@ export default function AddContactModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
+          {/* CLOSE BUTTON */}
           <button
-            className="btn btn-outline-secondary btn-sm"
+            className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
             onClick={onClose}
           >
+            <span
+              style={{
+                width:18,
+                height:18,
+                borderRadius:"50%",
+                border:"1.5px solid #000",
+                display:"inline-flex",
+                alignItems:"center",
+                justifyContent:"center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
             Close
           </button>
 
-          <button className="btn btn-gradient btn-sm">
+          {/* SAVE BUTTON */}
+          <button className="btn btn-gradient btn-sm d-flex align-items-center gap-2">
+            <span
+              style={{
+                width:18,
+                height:18,
+                borderRadius:"50%",
+                background:"#fff",
+                display:"inline-flex",
+                alignItems:"center",
+                justifyContent:"center"
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M20 6L9 17L4 12"
+                  stroke="#2b4cb3"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
             Save
           </button>
         </div>

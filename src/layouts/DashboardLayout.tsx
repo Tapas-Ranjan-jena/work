@@ -1,34 +1,32 @@
 import { Outlet } from "react-router-dom"
+import { useState } from "react"
 import Sidebar from "../components/layout/Sidebar"
 import Topbar from "../components/layout/Topbar"
 import "../styles/dashboard.css"
 
 export default function DashboardLayout() {
 
+  // ⭐ Sidebar state lives here
+  const [open, setOpen] = useState(false)
+
   return (
     <div className="dashboard-wrapper">
 
-      {/* ⭐ TOPBAR NOW ABOVE EVERYTHING */}
-      <Topbar />
+      {/* ⭐ PASS open + setOpen */}
+      <Topbar open={open} setOpen={setOpen} />
 
-      {/* ⭐ BODY AREA (SIDEBAR + CONTENT) */}
       <div className="dashboard-body">
 
-        {/* SIDEBAR */}
-        <Sidebar />
+        {/* ⭐ Sidebar already correct */}
+        <Sidebar open={open} setOpen={setOpen} />
 
-        {/* MAIN AREA */}
         <div className="dashboard-main">
-
-          {/* PAGE CONTENT */}
           <main className="dashboard-content">
             <Outlet />
           </main>
-
         </div>
 
       </div>
-
     </div>
   )
 }

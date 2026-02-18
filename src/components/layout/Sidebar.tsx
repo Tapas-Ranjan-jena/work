@@ -1,27 +1,44 @@
-import { NavLink } from "react-router-dom"
-import { useState } from "react"
+import { NavLink, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
 
-export default function Sidebar() {
+type Props = {
+  open: boolean
+  setOpen: (val:boolean)=>void
+}
 
-  const [open, setOpen] = useState(false)
+export default function Sidebar({ open, setOpen }: Props) {
+
+  const location = useLocation()
+
+  /* ⭐ BULK SENDER DROPDOWN STATE */
+  const [bulkOpen,setBulkOpen] = useState(false)
+
+  /* ⭐ AUTO OPEN IF ROUTE ACTIVE */
+  useEffect(()=>{
+    if(location.pathname.includes("/bulk-sender")){
+      setBulkOpen(true)
+    }
+  },[location.pathname])
 
   return (
     <>
-      {/* MOBILE TOGGLE BUTTON */}
-      <button
-        className="sidebar-toggle d-md-none"
-        onClick={() => setOpen(!open)}
-      >
-        ☰
-      </button>
+      {/* ⭐ BACKDROP FOR MOBILE */}
+      {open && (
+        <div
+          className="sidebar-backdrop d-lg-none"
+          onClick={()=>setOpen(false)}
+        />
+      )}
 
       <div className={`sidebar ${open ? "open" : ""}`}>
-
         <div className="sidebar-menu">
 
-          {/* ================= MENU ITEMS ================= */}
-
-          <NavLink to="/dashboard" className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}>
+          {/* ================= DASHBOARD ================= */}
+          <NavLink
+            to="/dashboard"
+            onClick={()=>setOpen(false)}
+            className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+          >
             <span className="sidebar-left">
               <i className="bi bi-speedometer2"></i>
               Dashboard
@@ -29,7 +46,53 @@ export default function Sidebar() {
             <i className="bi bi-chevron-right sidebar-arrow"></i>
           </NavLink>
 
-          <NavLink to="/clients" className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}>
+          {/* ================= BULK SENDER DROPDOWN ================= */}
+          <div
+            className={`sidebar-item ${bulkOpen ? "active" : ""}`}
+            onClick={()=>setBulkOpen(!bulkOpen)}
+            style={{cursor:"pointer"}}
+          >
+            <span className="sidebar-left">
+              <i className="bi bi-send"></i>
+              Bulk Sender
+            </span>
+            <i className={`bi ${bulkOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
+          </div>
+
+          {bulkOpen && (
+            <div style={{paddingLeft:"36px",display:"flex",flexDirection:"column",gap:"4px"}}>
+
+              <NavLink
+                to="/bulk-sender/whatsapp"
+                onClick={()=>setOpen(false)}
+                className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                <span className="sidebar-left">
+                  <i className="bi bi-whatsapp"></i>
+                  Bulk WhatsApp
+                </span>
+              </NavLink>
+
+              <NavLink
+                to="/bulk-sender/gmail"
+                onClick={()=>setOpen(false)}
+                className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                <span className="sidebar-left">
+                  <i className="bi bi-google"></i>
+                  Bulk Gmail
+                </span>
+              </NavLink>
+
+            </div>
+          )}
+
+          {/* ================= CLIENTS ================= */}
+          <NavLink
+            to="/clients"
+            onClick={()=>setOpen(false)}
+            className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+          >
             <span className="sidebar-left">
               <i className="bi bi-folder2-open"></i>
               Clients
@@ -37,6 +100,7 @@ export default function Sidebar() {
             <i className="bi bi-chevron-right sidebar-arrow"></i>
           </NavLink>
 
+          {/* ================= STATIC ITEMS ================= */}
           <div className="sidebar-item">
             <span className="sidebar-left">
               <i className="bi bi-file-earmark-text"></i>
