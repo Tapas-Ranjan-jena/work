@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 
 type Props = {
   open: boolean
-  setOpen: (val:boolean)=>void
+  setOpen: (val: boolean) => void
 }
 
 export default function Sidebar({ open, setOpen }: Props) {
@@ -11,14 +11,27 @@ export default function Sidebar({ open, setOpen }: Props) {
   const location = useLocation()
 
   /* ⭐ BULK SENDER DROPDOWN STATE */
-  const [bulkOpen,setBulkOpen] = useState(false)
+  const [bulkOpen, setBulkOpen] = useState(false)
 
-  /* ⭐ AUTO OPEN IF ROUTE ACTIVE */
-  useEffect(()=>{
-    if(location.pathname.includes("/bulk-sender")){
+  /* ⭐ MASTERS DROPDOWN STATE */
+  const [mastersOpen, setMastersOpen] = useState(false)
+
+  /* ⭐ AUTO OPEN DROPDOWNS IF ROUTE ACTIVE */
+  useEffect(() => {
+    if (location.pathname.includes("/bulk-sender")) {
       setBulkOpen(true)
     }
-  },[location.pathname])
+    if (location.pathname.includes("/masters")) {
+      setMastersOpen(true)
+    }
+  }, [location.pathname])
+
+  /* ⭐ VERY IMPORTANT — close sidebar ONLY on mobile */
+  const handleNavClick = () => {
+    if (window.innerWidth < 992) {
+      setOpen(false)
+    }
+  }
 
   return (
     <>
@@ -26,7 +39,7 @@ export default function Sidebar({ open, setOpen }: Props) {
       {open && (
         <div
           className="sidebar-backdrop d-lg-none"
-          onClick={()=>setOpen(false)}
+          onClick={() => setOpen(false)}
         />
       )}
 
@@ -36,8 +49,8 @@ export default function Sidebar({ open, setOpen }: Props) {
           {/* ================= DASHBOARD ================= */}
           <NavLink
             to="/dashboard"
-            onClick={()=>setOpen(false)}
-            className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+            onClick={handleNavClick}
+            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
           >
             <span className="sidebar-left">
               <i className="bi bi-speedometer2"></i>
@@ -46,11 +59,11 @@ export default function Sidebar({ open, setOpen }: Props) {
             <i className="bi bi-chevron-right sidebar-arrow"></i>
           </NavLink>
 
-          {/* ================= BULK SENDER DROPDOWN ================= */}
+          {/* ================= BULK SENDER ================= */}
           <div
             className={`sidebar-item ${bulkOpen ? "active" : ""}`}
-            onClick={()=>setBulkOpen(!bulkOpen)}
-            style={{cursor:"pointer"}}
+            onClick={() => setBulkOpen(!bulkOpen)}
+            style={{ cursor: "pointer" }}
           >
             <span className="sidebar-left">
               <i className="bi bi-send"></i>
@@ -60,12 +73,12 @@ export default function Sidebar({ open, setOpen }: Props) {
           </div>
 
           {bulkOpen && (
-            <div style={{paddingLeft:"36px",display:"flex",flexDirection:"column",gap:"4px"}}>
+            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
 
               <NavLink
                 to="/bulk-sender/whatsapp"
-                onClick={()=>setOpen(false)}
-                className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
               >
                 <span className="sidebar-left">
                   <i className="bi bi-whatsapp"></i>
@@ -75,8 +88,8 @@ export default function Sidebar({ open, setOpen }: Props) {
 
               <NavLink
                 to="/bulk-sender/gmail"
-                onClick={()=>setOpen(false)}
-                className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
               >
                 <span className="sidebar-left">
                   <i className="bi bi-google"></i>
@@ -90,8 +103,8 @@ export default function Sidebar({ open, setOpen }: Props) {
           {/* ================= CLIENTS ================= */}
           <NavLink
             to="/clients"
-            onClick={()=>setOpen(false)}
-            className={({isActive}) => `sidebar-item ${isActive ? "active" : ""}`}
+            onClick={handleNavClick}
+            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
           >
             <span className="sidebar-left">
               <i className="bi bi-folder2-open"></i>
@@ -100,23 +113,68 @@ export default function Sidebar({ open, setOpen }: Props) {
             <i className="bi bi-chevron-right sidebar-arrow"></i>
           </NavLink>
 
-          {/* ================= STATIC ITEMS ================= */}
-          <div className="sidebar-item">
+          {/* ================= REQUESTED DOCUMENTS ================= */}
+          <NavLink
+            to="/requested-documents"
+            onClick={handleNavClick}
+            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+          >
             <span className="sidebar-left">
               <i className="bi bi-file-earmark-text"></i>
               Requested Documents
             </span>
             <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </div>
+          </NavLink>
 
-          <div className="sidebar-item">
+          {/* ================= MASTERS DROPDOWN ================= */}
+          <div
+            className={`sidebar-item ${mastersOpen ? "active" : ""}`}
+            onClick={() => setMastersOpen(!mastersOpen)}
+            style={{ cursor: "pointer" }}
+          >
             <span className="sidebar-left">
               <i className="bi bi-diagram-3"></i>
               Masters
             </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
+            <i className={`bi ${mastersOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
           </div>
 
+          {mastersOpen && (
+            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
+
+              <NavLink
+                to="/masters/company-master"
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                Company Master
+              </NavLink>
+
+              <NavLink
+                to="/masters/director-kmp"
+                onClick={() => setOpen(false)}
+                className={({ isActive }) =>
+                  `sidebar-item ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="sidebar-left">
+                  <i className="bi bi-person-badge"></i>
+                  Director/KMP Master
+                </span>
+              </NavLink>
+
+              <div className="sidebar-item">Shareholder Master</div>
+              <div className="sidebar-item">Debenture holder Master</div>
+              <div className="sidebar-item">Auditor Master</div>
+              <div className="sidebar-item">PCS Firm Master</div>
+              <div className="sidebar-item">RTA Master</div>
+              <div className="sidebar-item">Client groups</div>
+              <div className="sidebar-item">MIS Report</div>
+
+            </div>
+          )}
+
+          {/* ================= OTHER STATIC ITEMS ================= */}
           <div className="sidebar-item">
             <span className="sidebar-left">
               <i className="bi bi-building"></i>

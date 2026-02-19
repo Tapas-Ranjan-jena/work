@@ -12,10 +12,27 @@ import DashboardLayout from "./layouts/DashboardLayout"
 import DashboardHome from "./pages/dashboard/DashboardHome"
 import ClientsPage from "./pages/dashboard/clients/ClientsPage"
 
+/* ================= REQUESTED DOCUMENTS ================= */
+import RequestedDocuments from "./pages/dashboard/requestedDocuments/RequestedDocuments"
+
 /* ================= BULK SENDER ================= */
 import BulkSenderLayout from "./pages/dashboard/bulkSender/BulkSenderLayout"
 import BulkWhatsApp from "./pages/dashboard/bulkSender/BulkWhatsapp"
 import BulkGmail from "./pages/dashboard/bulkSender/BulkGmail"
+
+/* ================= MASTERS ================= */
+import MastersLayout from "./pages/dashboard/masters/MastersLayout"
+import CompanyList from "./pages/dashboard/masters/companyMaster/CompanyList"
+import InactiveCompanies from "./pages/dashboard/masters/companyMaster/InactiveCompanies"
+import AddCompanyLLP from "./pages/dashboard/masters/companyMaster/AddCompanyLLP"
+
+/* ⭐ DIRECTOR/KMP PAGES */
+import DirectorsList from "./pages/dashboard/masters/directorKMP/DirectorsList"
+import CompanyWiseDirectors from "./pages/dashboard/masters/directorKMP/CompanyWiseDirectors"
+import DIR8MBP1 from "./pages/dashboard/masters/directorKMP/DIR8MBP1"
+import InactiveDirectors from "./pages/dashboard/masters/directorKMP/InactiveDirectors"
+import AddDirector from "./pages/dashboard/masters/directorKMP/AddDirector"
+import AddKMP from "./pages/dashboard/masters/directorKMP/AddKMP"
 
 /* ================= CLIENT DASHBOARD ================= */
 import ClientDashboardLayout from "./pages/dashboard/clients/clientDashboard/ClientDashboardLayout"
@@ -68,14 +85,38 @@ export default function App() {
 
         <Route index element={<Navigate to="dashboard" replace />} />
 
+        {/* ⭐ MAIN PAGES */}
         <Route path="dashboard" element={<DashboardHome />} />
         <Route path="clients" element={<ClientsPage />} />
+
+        {/* ================= REQUESTED DOCUMENTS ================= */}
+        <Route path="requested-documents" element={<RequestedDocuments />} />
 
         {/* ================= BULK SENDER ================= */}
         <Route path="bulk-sender" element={<BulkSenderLayout />}>
           <Route index element={<Navigate to="whatsapp" replace />} />
           <Route path="whatsapp" element={<BulkWhatsApp />} />
           <Route path="gmail" element={<BulkGmail />} />
+        </Route>
+
+        {/* ================= MASTERS MODULE ================= */}
+        <Route path="masters" element={<MastersLayout />}>
+
+          <Route index element={<Navigate to="company-master" replace />} />
+
+          {/* COMPANY MASTER */}
+          <Route path="company-master" element={<CompanyList />} />
+          <Route path="inactive-companies" element={<InactiveCompanies />} />
+          <Route path="add-company" element={<AddCompanyLLP />} />
+
+          {/* ⭐ DIRECTOR/KMP MASTER (FIXED PATHS) */}
+          <Route path="director-kmp" element={<DirectorsList />} />
+          <Route path="director-kmp/company-wise" element={<CompanyWiseDirectors />} />
+          <Route path="director-kmp/dir8-mbp1" element={<DIR8MBP1 />} />
+          <Route path="director-kmp/inactive" element={<InactiveDirectors />} />
+          <Route path="director-kmp/add-director" element={<AddDirector />} />
+          <Route path="director-kmp/add-kmp" element={<AddKMP />} />
+
         </Route>
 
         {/* ================= CLIENT DASHBOARD ================= */}
@@ -85,7 +126,7 @@ export default function App() {
 
           <Route path="compliance" element={<ComplianceManager />} />
 
-          {/* ================= CLIENT INFO ================= */}
+          {/* CLIENT INFO */}
           <Route path="info" element={<ClientInfoLayout />}>
             <Route index element={<Navigate to="details" replace />} />
             <Route path="details" element={<ClientDetailsTab />} />
@@ -96,7 +137,7 @@ export default function App() {
             <Route path="mca-transaction" element={<MCATransaction />} />
           </Route>
 
-          {/* ================= MAIN TABS ================= */}
+          {/* MAIN TABS */}
           <Route path="portal" element={<ClientPortal />} />
           <Route path="primary-contact" element={<PrimaryContact />} />
           <Route path="assignments" element={<Assignments />} />
@@ -106,7 +147,7 @@ export default function App() {
           <Route path="files" element={<FilesTab />} />
           <Route path="events" element={<EventsTab />} />
 
-          {/* ================= BUSINESS MANAGER ================= */}
+          {/* BUSINESS MANAGER */}
           <Route path="business-manager" element={<BusinessManagerLayout />}>
             <Route index element={<Navigate to="registration" replace />} />
             <Route path="registration" element={<RegistrationLicense />} />
@@ -127,4 +168,3 @@ export default function App() {
     </Routes>
   )
 }
-

@@ -165,7 +165,22 @@
   overflow-y:auto;
   transition:all .3s ease;
   z-index:2000;
+
+  /* ⭐ REQUIRED */
+  position:relative;
 }
+
+/* ⭐ DESKTOP SIDEBAR COLLAPSE (REAL WIDTH CHANGE) */
+@media(min-width:992px){
+
+  /* CLOSED STATE */
+  .sidebar:not(.open){
+    width:0;
+    overflow:hidden;
+  }
+
+}
+
 
 .sidebar-menu{
   display:flex;
@@ -212,6 +227,7 @@
   opacity:.7;
 }
 
+
 /* ===================================================== */
 /* MAIN AREA */
 /* ===================================================== */
@@ -222,7 +238,11 @@
   flex-direction:column;
   overflow:hidden;
   min-width:0;
+
+  /* ⭐ REQUIRED FIX — allow layout to stretch when sidebar closes */
+  transition:all .3s ease;
 }
+
 
 .dashboard-content{
   flex:1;
