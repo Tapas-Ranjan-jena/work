@@ -4,6 +4,14 @@ import Sidebar from "../components/layout/Sidebar"
 import Topbar from "../components/layout/Topbar"
 import "../styles/dashboard.css"
 
+
+/* ✅ ADD THIS TYPE EXPORT — REQUIRED FOR CHILD PAGES */
+export type DashboardOutletContext = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+
 export default function DashboardLayout() {
 
   /* ⭐ OPEN BY DEFAULT ON DESKTOP */

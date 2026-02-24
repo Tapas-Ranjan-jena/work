@@ -1,5 +1,4 @@
-import { Outlet } from "react-router-dom"
-import { useOutletContext } from "react-router-dom"
+import { Outlet, useOutletContext } from "react-router-dom"
 import PageTopBar from "../../../components/common/PageTopBar"
 
 type LayoutContext = {
@@ -20,8 +19,8 @@ export default function MasterLayout() {
         onMenuClick={() => setOpen(prev => !prev)}
       />
 
-      {/* ⭐ Page Content */}
-      <Outlet />
+      {/* ⭐ VERY IMPORTANT — FORWARD CONTEXT TO CHILD PAGES */}
+      <Outlet context={{ open, setOpen }} />
 
     </div>
   )

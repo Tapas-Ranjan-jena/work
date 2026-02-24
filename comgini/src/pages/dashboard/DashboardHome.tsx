@@ -1,4 +1,15 @@
+import PageTopBar from "../../components/common/PageTopBar"
+import { useOutletContext } from "react-router-dom"
+
+type LayoutContext = {
+  setOpen: (val: boolean | ((prev:boolean)=>boolean)) => void
+  open: boolean
+}
+
 export default function DashboardHome() {
+
+  // ⭐ GET SIDEBAR CONTROL FROM DashboardLayout
+  const { setOpen } = useOutletContext<LayoutContext>()
 
   // ⭐ Dummy stats (later replace with API data)
   const stats = [
@@ -10,6 +21,11 @@ export default function DashboardHome() {
 
   return (
     <div className="container-fluid">
+
+      {/* ⭐ PAGE TOPBAR */}
+      <PageTopBar
+        onMenuClick={() => setOpen(prev => !prev)}
+      />
 
       {/* ================= HEADER ================= */}
       <div className="mb-4">
@@ -56,15 +72,9 @@ export default function DashboardHome() {
               </h6>
 
               <ul className="list-group list-group-flush small">
-                <li className="list-group-item">
-                  New client added
-                </li>
-                <li className="list-group-item">
-                  Compliance task updated
-                </li>
-                <li className="list-group-item">
-                  Profile updated
-                </li>
+                <li className="list-group-item">New client added</li>
+                <li className="list-group-item">Compliance task updated</li>
+                <li className="list-group-item">Profile updated</li>
               </ul>
 
             </div>
@@ -80,17 +90,9 @@ export default function DashboardHome() {
               </h6>
 
               <div className="d-flex flex-wrap gap-2">
-                <button className="btn btn-primary btn-sm">
-                  Add Client
-                </button>
-
-                <button className="btn btn-outline-secondary btn-sm">
-                  View Reports
-                </button>
-
-                <button className="btn btn-outline-secondary btn-sm">
-                  Settings
-                </button>
+                <button className="btn btn-primary btn-sm">Add Client</button>
+                <button className="btn btn-outline-secondary btn-sm">View Reports</button>
+                <button className="btn btn-outline-secondary btn-sm">Settings</button>
               </div>
 
             </div>
