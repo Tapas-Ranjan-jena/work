@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { useAuth } from "../../context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 type Props = {
   open: boolean
@@ -6,9 +8,20 @@ type Props = {
 }
 
 export default function Topbar({ open, setOpen }: Props) {
+  const { logout, user } = useAuth()
+  const navigate = useNavigate()
 
   // ⭐ DROPDOWN STATE
   const [showMenu, setShowMenu] = useState(false)
+  const [showDesktopMenu, setShowDesktopMenu] = useState(false)
+
+  const handleLogout = async () => {
+    await logout()
+    navigate("/login")
+  }
+
+  const initials = user ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : "U"
+  const fullName = user ? `${user.firstName} ${user.lastName}` : "User"
 
   return (
     <div className="topbar">
@@ -70,7 +83,7 @@ export default function Topbar({ open, setOpen }: Props) {
           </button>
 
           {/* ⭐ AVATAR */}
-          <div className="avatar">JC</div>
+          <div className="avatar">{initials}</div>
 
           {/* ================= MOBILE DROPDOWN ================= */}
           {showMenu && (
@@ -117,15 +130,66 @@ export default function Topbar({ open, setOpen }: Props) {
                 Messages
               </div>
 
+              {/* LOGOUT */}
+              <div
+                className="d-flex align-items-center gap-2"
+                onClick={handleLogout}
+                style={{
+                  padding: "10px",
+                  color: "#ffcccc",
+                  borderRadius: 6,
+                  cursor: "pointer"
+                }}
+              >
+                <i className="bi bi-box-arrow-right"></i>
+                Logout
+              </div>
+
             </div>
           )}
 
         </div>
 
         {/* ================= DESKTOP PROFILE ================= */}
-        <div className="topbar-profile d-none d-lg-flex">
-          <div className="avatar">JC</div>
-          <span className="profile-name">Jessie Cosenza</span>
+        <div
+          className="topbar-profile d-none d-lg-flex"
+          onClick={() => setShowDesktopMenu(!showDesktopMenu)}
+          style={{ position: "relative", cursor: "pointer" }}
+        >
+          <div className="avatar">{initials}</div>
+          <span className="profile-name">{fullName}</span>
+
+          {showDesktopMenu && (
+            <div
+              className="shadow-sm border"
+              style={{
+                position: "absolute",
+                top: "45px",
+                right: 0,
+                background: "#fff",
+                borderRadius: 8,
+                padding: "8px",
+                minWidth: "150px",
+                zIndex: 5000
+              }}
+            >
+              <div
+                className="d-flex align-items-center gap-2 text-danger logout-item"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLogout();
+                }}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                }}
+              >
+                <i className="bi bi-box-arrow-right"></i>
+                <span style={{ fontSize: "0.9rem", fontWeight: 500 }}>Logout</span>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

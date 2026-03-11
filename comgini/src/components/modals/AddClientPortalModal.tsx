@@ -1,17 +1,64 @@
+import { useState } from "react"
 import { createPortal } from "react-dom"
+import clientService from "../../services/clients/client.service"
+import type { CreateClientPortalUserRequest } from "../../services/clients/types"
 
 type Props = {
   onClose: () => void
+  clientId: number
+  onSuccess?: () => void
 }
 
-export default function AddClientPortalModal({ onClose }: Props) {
+export default function AddClientPortalModal({ onClose, clientId, onSuccess }: Props) {
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState<CreateClientPortalUserRequest>({
+    clientId,
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    skype: "",
+    jobTitle: "",
+    gender: "male",
+    password: ""
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const generatePassword = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
+    let password = ""
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    setFormData(prev => ({ ...prev, password }))
+  }
+
+  const handleSubmit = async () => {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      alert("Please fill in all required fields (Name, Email, Password)")
+      return
+    }
+
+    try {
+      setLoading(true)
+      await clientService.createClientPortalUser(formData)
+      alert("Client portal user created successfully!")
+      if (onSuccess) onSuccess()
+      onClose()
+    } catch (error: any) {
+      alert(error.message || "Failed to create portal user")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return createPortal(
-
-    <div className="modal-overlay">
-
-      <div className="modal-box">
-
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         {/* ===== HEADER ===== */}
         <div
           className="d-flex justify-content-between align-items-center"
@@ -22,7 +69,6 @@ export default function AddClientPortalModal({ onClose }: Props) {
           }}
         >
           <h5 className="fw-bold mb-0">Add Client Portal</h5>
-
           <span
             style={{ cursor: "pointer", fontSize: 18 }}
             onClick={onClose}
@@ -32,47 +78,89 @@ export default function AddClientPortalModal({ onClose }: Props) {
         </div>
 
         {/* ===== FORM GRID ===== */}
-        <div className="container-fluid">
-
+        <div className="container-fluid" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">First Name</div>
             <div className="col-md-8">
-              <input className="form-control" placeholder="First Name" />
+              <input
+                name="firstName"
+                className="form-control"
+                placeholder="First Name"
+                value={formData.firstName}
+                onChange={handleChange}
+                disabled={loading}
+              />
             </div>
           </div>
 
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Last Name</div>
             <div className="col-md-8">
-              <input className="form-control" placeholder="Last Name" />
+              <input
+                name="lastName"
+                className="form-control"
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+                disabled={loading}
+              />
             </div>
           </div>
 
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Email</div>
             <div className="col-md-8">
-              <input className="form-control" placeholder="Email" />
+              <input
+                name="email"
+                type="email"
+                className="form-control"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={loading}
+              />
             </div>
           </div>
 
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Phone</div>
             <div className="col-md-8">
-              <input className="form-control" placeholder="Phone" />
+              <input
+                name="phone"
+                className="form-control"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleChange}
+                disabled={loading}
+              />
             </div>
           </div>
 
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Skype</div>
             <div className="col-md-8">
-              <input className="form-control" placeholder="Skype" />
+              <input
+                name="skype"
+                className="form-control"
+                placeholder="Skype"
+                value={formData.skype}
+                onChange={handleChange}
+                disabled={loading}
+              />
             </div>
           </div>
 
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Job Title</div>
             <div className="col-md-8">
-              <input className="form-control" placeholder="Job Title" />
+              <input
+                name="jobTitle"
+                className="form-control"
+                placeholder="Job Title"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                disabled={loading}
+              />
             </div>
           </div>
 
@@ -81,52 +169,49 @@ export default function AddClientPortalModal({ onClose }: Props) {
             <div className="col-md-4 small">Gender</div>
             <div className="col-md-8 d-flex gap-3">
               <label>
-                <input type="radio" name="gender" defaultChecked /> Male
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === "male"}
+                  onChange={handleChange}
+                  disabled={loading}
+                /> Male
               </label>
               <label>
-                <input type="radio" name="gender" /> Female
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === "female"}
+                  onChange={handleChange}
+                  disabled={loading}
+                /> Female
               </label>
-            </div>
-          </div>
-
-          {/* HIDDEN MENU */}
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">
-              Hide menus from client portal
-            </div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Hidden menus" />
             </div>
           </div>
 
           {/* PASSWORD */}
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Password</div>
-
             <div className="col-md-8 d-flex gap-2">
-              <input className="form-control" placeholder="Password" />
-
-              <button className="btn btn-outline-secondary">
+              <input
+                name="password"
+                className="form-control"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={loading}
+              />
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={generatePassword}
+                disabled={loading}
+              >
                 Generate
               </button>
             </div>
           </div>
-
-          {/* CHECKBOX */}
-          <div className="row mb-2">
-            <div className="col-md-4"></div>
-            <div className="col-md-8 small">
-              <label>
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="me-2"
-                />
-                Email login details to this user
-              </label>
-            </div>
-          </div>
-
         </div>
 
         {/* ===== FOOTER ===== */}
@@ -138,66 +223,26 @@ export default function AddClientPortalModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
-          {/* CLOSE BUTTON */}
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
             onClick={onClose}
+            disabled={loading}
           >
-            <span
-              style={{
-                width: 18,
-                height: 18,
-                borderRadius: "50%",
-                border: "1.5px solid #000",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18 6L6 18M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
             Close
           </button>
 
-
-          {/* SAVE BUTTON */}
-          <button className="btn btn-gradient d-flex align-items-center gap-2">
-            <span
-              style={{
-                width: 18,
-                height: 18,
-                borderRadius: "50%",
-                background: "#fff",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M20 6L9 17L4 12"
-                  stroke="#2b4cb3"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            Save
+          <button
+            className="btn btn-gradient d-flex align-items-center gap-2"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+            ) : "Save"}
           </button>
-
         </div>
-
       </div>
     </div>,
-
-    document.body   // ⭐ THIS FIXES YOUR ISSUE
+    document.body
   )
 }

@@ -1,14 +1,73 @@
+import { useState } from "react"
+import clientService from "../../services/clients/client.service"
+
 type Props = {
   onClose: () => void
+  onSuccess?: () => void
 }
 
-export default function AddClientPortalModal({ onClose }: Props) {
+export default function AddClientModal({ onClose, onSuccess }: Props) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company_name: "",
+    cin: "",
+    pan: "",
+    gstin: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+    client_group: "",
+    risk_score: "low"
+  })
+  const [loading, setLoading] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async () => {
+    const requiredFields = Object.keys(formData).filter(key => key !== 'risk_score' && key !== 'client_group')
+    const missingFields = requiredFields.filter(key => !formData[key as keyof typeof formData])
+
+    if (missingFields.length > 0) {
+      alert(`Please fill in all required fields: ${missingFields.join(", ")}`)
+      return
+    }
+
+    try {
+      setLoading(true)
+      await clientService.createClient(formData)
+      if (onSuccess) onSuccess()
+      onClose()
+      // navigate(`/clients/${response.id}`) // Removing navigation to focus on table visibility as per latest requirement
+    } catch (error: any) {
+      alert(error.message || "Failed to create client")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fields = [
+    { name: "name", label: "Client Name", placeholder: "Acme Corp" },
+    { name: "email", label: "Email", placeholder: "contact@acme.com", type: "email" },
+    { name: "phone", label: "Phone", placeholder: "9876543210" },
+    { name: "company_name", label: "Company Name", placeholder: "Acme Corporation Pvt Ltd" },
+    { name: "cin", label: "CIN", placeholder: "U12345MH2020PTC123456" },
+    { name: "pan", label: "PAN", placeholder: "AAACA1234A" },
+    { name: "gstin", label: "GSTIN", placeholder: "27AAACA1234A1Z5" },
+    { name: "address", label: "Address", placeholder: "123 Business Park, Mumbai" },
+    { name: "city", label: "City", placeholder: "Mumbai" },
+    { name: "state", label: "State", placeholder: "Maharashtra" },
+    { name: "pincode", label: "Pincode", placeholder: "400001" },
+  ]
 
   return (
-    <div className="modal-overlay">
-
-      <div className="modal-box">
-
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         {/* ===== HEADER ===== */}
         <div
           className="d-flex justify-content-between align-items-center"
@@ -18,8 +77,7 @@ export default function AddClientPortalModal({ onClose }: Props) {
             marginBottom: 18
           }}
         >
-          <h5 className="fw-bold mb-0">Add Client Portal</h5>
-
+          <h5 className="fw-bold mb-0">Add Client</h5>
           <span
             style={{ cursor: "pointer", fontSize: 18 }}
             onClick={onClose}
@@ -29,101 +87,57 @@ export default function AddClientPortalModal({ onClose }: Props) {
         </div>
 
         {/* ===== FORM GRID ===== */}
-        <div className="container-fluid">
-
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">First Name</div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="First Name" />
-            </div>
-          </div>
-
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Last Name</div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Last Name" />
-            </div>
-          </div>
-
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Email</div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Email" />
-            </div>
-          </div>
-
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Phone</div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Phone" />
-            </div>
-          </div>
-
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Skype</div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Skype" />
-            </div>
-          </div>
-
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Job Title</div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Job Title" />
-            </div>
-          </div>
-
-          {/* GENDER */}
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Gender</div>
-            <div className="col-md-8 d-flex gap-3">
-              <label>
-                <input type="radio" name="gender" defaultChecked /> Male
-              </label>
-              <label>
-                <input type="radio" name="gender" /> Female
-              </label>
-            </div>
-          </div>
-
-          {/* HIDDEN MENU */}
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">
-              Hide menus from client portal
-            </div>
-            <div className="col-md-8">
-              <input className="form-control" placeholder="Hidden menus" />
-            </div>
-          </div>
-
-          {/* PASSWORD */}
-          <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">Password</div>
-
-            <div className="col-md-8 d-flex gap-2">
-              <input className="form-control" placeholder="Password" />
-
-              <button className="btn btn-outline-secondary">
-                Generate
-              </button>
-            </div>
-          </div>
-
-          {/* CHECKBOX */}
-          <div className="row mb-2">
-            <div className="col-md-4"></div>
-            <div className="col-md-8 small">
-              <label>
+        <div className="container-fluid" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          {fields.map(field => (
+            <div className="row align-items-center mb-3" key={field.name}>
+              <div className="col-md-4 small">{field.label}</div>
+              <div className="col-md-8">
                 <input
-                  type="checkbox"
-                  defaultChecked
-                  className="me-2"
+                  name={field.name}
+                  type={field.type || "text"}
+                  className="form-control"
+                  placeholder={field.placeholder}
+                  value={formData[field.name as keyof typeof formData]}
+                  onChange={handleChange}
+                  disabled={loading}
                 />
-                Email login details to this user
-              </label>
+              </div>
+            </div>
+          ))}
+
+          <div className="row align-items-center mb-3">
+            <div className="col-md-4 small">Client Group</div>
+            <div className="col-md-8">
+              <select
+                name="client_group"
+                className="form-select"
+                value={formData.client_group}
+                onChange={handleChange}
+                disabled={loading}
+              >
+                <option value="">Select Group</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Individual">Individual</option>
+              </select>
             </div>
           </div>
 
+          <div className="row align-items-center mb-3">
+            <div className="col-md-4 small">Risk Score</div>
+            <div className="col-md-8">
+              <select
+                name="risk_score"
+                className="form-select"
+                value={formData.risk_score}
+                onChange={handleChange}
+                disabled={loading}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* ===== FOOTER ===== */}
@@ -135,62 +149,28 @@ export default function AddClientPortalModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
-          {/* CLOSE BUTTON */}
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
             onClick={onClose}
+            disabled={loading}
           >
-            <span
-              style={{
-                width:18,
-                height:18,
-                borderRadius:"50%",
-                border:"1.5px solid #000",
-                display:"inline-flex",
-                alignItems:"center",
-                justifyContent:"center"
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18 6L6 18M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
             Close
           </button>
 
-          {/* SAVE BUTTON */}
-          <button className="btn btn-gradient d-flex align-items-center gap-2">
-            <span
-              style={{
-                width:18,
-                height:18,
-                borderRadius:"50%",
-                background:"#fff",
-                display:"inline-flex",
-                alignItems:"center",
-                justifyContent:"center"
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M20 6L9 17L4 12"
-                  stroke="#2b4cb3"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            Save
+          <button
+            className="btn btn-gradient d-flex align-items-center gap-2"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+            ) : "Save"}
           </button>
         </div>
-
       </div>
     </div>
   )
 }
+
+
+

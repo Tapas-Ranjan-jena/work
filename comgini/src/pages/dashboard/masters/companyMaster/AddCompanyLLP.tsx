@@ -27,7 +27,7 @@ export default function AddCompanyLLP() {
             <button
               onClick={() => setOpenModal(true)}
               className="btn btn-sm"
-              style={{ background:"#2E388E",color:"white" }}
+              style={{ background: "#2E388E", color: "white" }}
             >
               <i className="bi bi-plus-circle me-1"></i>
               Add Manually
@@ -37,7 +37,7 @@ export default function AddCompanyLLP() {
             <button
               onClick={() => navigate("/masters/company-master")}
               className="btn btn-sm"
-              style={{ background:"#2E388E",color:"white" }}
+              style={{ background: "#2E388E", color: "white" }}
             >
               <i className="bi bi-arrow-left me-1"></i>
               Back
@@ -56,7 +56,7 @@ export default function AddCompanyLLP() {
 
           <button
             className="btn btn-sm"
-            style={{ background:"#2E388E",color:"white" }}
+            style={{ background: "#2E388E", color: "white" }}
           >
             Search CIN/LLPIN
           </button>
@@ -64,12 +64,12 @@ export default function AddCompanyLLP() {
           <input
             className="form-control mx-3"
             placeholder="CIN (Corporate Identity Number) / LLPIN"
-            style={{ maxWidth:"420px" }}
+            style={{ maxWidth: "420px" }}
           />
 
           <button
             className="btn btn-sm"
-            style={{ background:"#2E388E",color:"white" }}
+            style={{ background: "#2E388E", color: "white" }}
           >
             Submit
           </button>
@@ -82,6 +82,7 @@ export default function AddCompanyLLP() {
       <AddCompanyModal
         show={openModal}
         onClose={() => setOpenModal(false)}
+        onSuccess={() => navigate("/masters/company-master")}
       />
 
     </div>

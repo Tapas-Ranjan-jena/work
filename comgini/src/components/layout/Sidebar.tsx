@@ -21,6 +21,9 @@ export default function Sidebar({ open, setOpen }: Props) {
   const [checklistOpen, setChecklistOpen] = useState(false)
 
   const [openMenu, setOpenMenu] = useState(false)
+  const [financeOpen, setFinanceOpen] = useState(false)
+  /* ⭐ ASSIGNMENTS DROPDOWN STATE */
+const [assignmentsOpen, setAssignmentsOpen] = useState(false)
 
   /* ⭐ AUTO OPEN DROPDOWNS IF ROUTE ACTIVE */
   useEffect(() => {
@@ -39,6 +42,12 @@ export default function Sidebar({ open, setOpen }: Props) {
     if (location.pathname.startsWith("/business-manager")) {
       setOpenMenu(true)
     }
+    if (location.pathname.startsWith("/finance")) {
+  setFinanceOpen(true)
+}  
+if (location.pathname.startsWith("/assignments")) {
+  setAssignmentsOpen(true)
+}
   }, [location.pathname])
 
   /* ⭐ VERY IMPORTANT — close sidebar ONLY on mobile */
@@ -370,13 +379,66 @@ export default function Sidebar({ open, setOpen }: Props) {
             </div>
           )}
 
-          <div className="sidebar-item">
-            <span className="sidebar-left">
-              <i className="bi bi-kanban"></i>
-              Assignments
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </div>
+          {/* ================= ASSIGNMENTS ================= */}
+<div
+  className={`sidebar-item ${assignmentsOpen ? "active" : ""}`}
+  onClick={() => setAssignmentsOpen(!assignmentsOpen)}
+  style={{ cursor: "pointer" }}
+>
+  <span className="sidebar-left">
+    <i className="bi bi-kanban"></i>
+    Assignments
+  </span>
+
+  <i
+    className={`bi ${
+      assignmentsOpen ? "bi-chevron-down" : "bi-chevron-right"
+    } sidebar-arrow`}
+  ></i>
+</div>
+
+{assignmentsOpen && (
+  <div
+    style={{
+      paddingLeft: "36px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+    }}
+  >
+
+    <NavLink
+      to="/assignments/tasks"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      Tasks
+    </NavLink>
+
+    <NavLink
+      to="/assignments/call-logs"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      Call Logs
+    </NavLink>
+
+    <NavLink
+      to="/assignments/timesheets"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      Timesheets
+    </NavLink>
+
+  </div>
+)}
 
           <div className="sidebar-item">
             <span className="sidebar-left">
@@ -461,13 +523,92 @@ export default function Sidebar({ open, setOpen }: Props) {
             </div>
           )}
 
-          <div className="sidebar-item">
-            <span className="sidebar-left">
-              <i className="bi bi-cash-stack"></i>
-              Finance
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </div>
+         {/* ================= FINANCE ================= */}
+<div
+  className={`sidebar-item ${financeOpen ? "active" : ""}`}
+  onClick={() => setFinanceOpen(!financeOpen)}
+  style={{ cursor: "pointer" }}
+>
+  <span className="sidebar-left">
+    <i className="bi bi-cash-stack"></i>
+    Finance
+  </span>
+
+  <i
+    className={`bi ${
+      financeOpen ? "bi-chevron-down" : "bi-chevron-right"
+    } sidebar-arrow`}
+  ></i>
+</div>
+
+{financeOpen && (
+  <div
+    style={{
+      paddingLeft: "36px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+    }}
+  >
+
+    {/* ⭐ INVOICES */}
+    <NavLink
+      to="/finance/invoices/monthly"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      <span className="sidebar-left">
+        <i className="bi bi-receipt"></i>
+        Invoices
+      </span>
+    </NavLink>
+
+    {/* ⭐ PAYMENTS */}
+    <NavLink
+      to="/finance/payments/monthly"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      <span className="sidebar-left">
+        <i className="bi bi-credit-card"></i>
+        Payments
+      </span>
+    </NavLink>
+
+    {/* ⭐ EXPENSES */}
+    <NavLink
+      to="/finance/expenses"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      <span className="sidebar-left">
+        <i className="bi bi-wallet2"></i>
+        Expenses
+      </span>
+    </NavLink>
+
+    {/* ⭐ INCOME VS EXPENSE */}
+    <NavLink
+      to="/finance/income-expense"
+      onClick={handleNavClick}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
+      <span className="sidebar-left">
+        <i className="bi bi-bar-chart-line"></i>
+        Income vs Expenses
+      </span>
+    </NavLink>
+
+  </div>
+)}
 
           <div className="sidebar-item">
             <span className="sidebar-left">

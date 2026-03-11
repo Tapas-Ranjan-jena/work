@@ -1,9 +1,76 @@
-import { useState } from "react"
-import SelectMCAUserModal from "./SelectMCAUserModal"
+import { useState, useEffect, useCallback } from "react"
+import IncorporationModal from "./IncorporationModal"
+import incorporationService from "../../../../services/incorporation/incorporation.service"
+import type { Incorporation } from "../../../../services/incorporation/types"
+import type { Pagination } from "../../../../services/clients/types"
 
 export default function RunLLPList() {
 
+  const [incorporations, setIncorporations] = useState<Incorporation[]>([])
+  const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 10, total: 0 })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState("")
   const [openModal, setOpenModal] = useState(false)
+  const [selectedIncorporation, setSelectedIncorporation] = useState<Incorporation | null>(null)
+  const [successMessage, setSuccessMessage] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+
+  // ⭐ Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+      setPagination(prev => ({ ...prev, page: 1 })) // Reset to page 1 on search
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [searchQuery])
+
+  const fetchIncorporations = useCallback(async () => {
+    setIsLoading(true)
+    setError("")
+    try {
+      const response = await incorporationService.getIncorporations(pagination.page, pagination.limit, debouncedSearch)
+      setIncorporations(response.data)
+      setPagination(response.pagination)
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch data")
+    } finally {
+      setIsLoading(false)
+    }
+  }, [pagination.page, pagination.limit, debouncedSearch])
+
+  useEffect(() => {
+    fetchIncorporations()
+  }, [fetchIncorporations])
+
+  const handleCreate = () => {
+    setSelectedIncorporation(null)
+    setOpenModal(true)
+  }
+
+  const handleEdit = (inc: Incorporation) => {
+    setSelectedIncorporation(inc)
+    setOpenModal(true)
+  }
+
+  const handleSuccess = () => {
+    setSuccessMessage("Incorporation saved successfully")
+    fetchIncorporations()
+    setTimeout(() => setSuccessMessage(""), 3000)
+  }
+
+  const handleNext = () => {
+    if (pagination.page * pagination.limit < pagination.total) {
+      setPagination(prev => ({ ...prev, page: prev.page + 1 }))
+    }
+  }
+
+  const handlePrevious = () => {
+    if (pagination.page > 1) {
+      setPagination(prev => ({ ...prev, page: prev.page - 1 }))
+    }
+  }
 
   return (
     <div className="card border-0 p-3">
@@ -53,16 +120,29 @@ export default function RunLLPList() {
         </small>
       </div>
 
+      {successMessage && (
+        <div className="alert alert-success small py-2 d-flex align-items-center justify-content-between mb-3">
+          <span><i className="bi bi-check-circle-fill me-2"></i>{successMessage}</span>
+          <button className="btn-close" onClick={() => setSuccessMessage("")} style={{ fontSize: '0.7rem' }}></button>
+        </div>
+      )}
+
+      {error && (
+        <div className="alert alert-danger small py-2 mb-3">
+          {error}
+        </div>
+      )}
+
       {/* ⭐ HEADER (RESPONSIVE FIX) */}
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
         <h6 className="fw-semibold m-0">Particulars of RUN-LLP</h6>
 
         <button
-          onClick={() => setOpenModal(true)}
-          className="btn btn-sm text-white ms-auto ms-md-0"
+          onClick={handleCreate}
+          className="btn btn-sm text-white ms-auto ms-md-0 d-flex align-items-center gap-1"
           style={{ background: "#2E388E" }}
         >
-          Prepare RUN-LLP
+          <i className="bi bi-plus-lg"></i> Create Incorporation
         </button>
       </div>
 
@@ -72,6 +152,8 @@ export default function RunLLPList() {
           <input
             className="form-control form-control-sm ps-4"
             placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2"></i>
         </div>
@@ -79,49 +161,97 @@ export default function RunLLPList() {
 
       {/* ⭐ TABLE */}
       <div className="table-responsive">
-        <table className="table table-bordered align-middle mb-0">
-          <thead>
+        <table className="table table-bordered align-middle mb-0" style={{ fontSize: '0.85rem' }}>
+          <thead className="table-light">
             <tr>
-              <th>Sr. No.</th>
-              <th>Purpose</th>
-              <th>SRN of form</th>
+              <th>Proposed Name 1</th>
+              <th>Proposed Name 2</th>
               <th>MCA User</th>
-              <th>Last updated on CR</th>
-              <th>Last Submitted on MCA</th>
-              <th>Action</th>
-              <th>Auto Check on MCA</th>
-              <th>Create New Form</th>
+              <th>SRN</th>
+              <th>Status</th>
+              <th>Fee Paid</th>
+              <th>Created By</th>
+              <th>Created At</th>
+              <th className="text-center">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr>
-              <td colSpan={9} className="text-center">
-                No data available in table
-              </td>
-            </tr>
+            {isLoading ? (
+              <tr>
+                <td colSpan={9} className="text-center py-4">
+                  <div className="spinner-border spinner-border-sm text-primary me-2"></div>
+                  Loading incorporations...
+                </td>
+              </tr>
+            ) : incorporations.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="text-center py-4 text-muted">
+                  No records found.
+                </td>
+              </tr>
+            ) : (
+              incorporations.map((inc) => (
+                <tr key={inc.id}>
+                  <td>{inc.proposed_name_1}</td>
+                  <td>{inc.proposed_name_2}</td>
+                  <td>{inc.mca_user}</td>
+                  <td>{inc.srn || "-"}</td>
+                  <td>
+                    <span className={`badge ${inc.submission_status === 'approved' ? 'bg-success' :
+                      inc.submission_status === 'rejected' ? 'bg-danger' :
+                        inc.submission_status === 'submitted' ? 'bg-primary' : 'bg-secondary'
+                      }`}>
+                      {inc.submission_status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td>₹{inc.fee_paid}</td>
+                  <td>{inc.created_by_name}</td>
+                  <td>{new Date(inc.created_at).toLocaleDateString()}</td>
+                  <td className="text-center">
+                    <button
+                      className="btn btn-sm btn-outline-primary py-0 px-2"
+                      onClick={() => handleEdit(inc)}
+                    >
+                      <i className="bi bi-pencil-square"></i> Edit
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* ⭐ TABLE FOOTER */}
       <div className="d-flex flex-wrap justify-content-between align-items-center mt-2 gap-2">
-        <small>Showing 0 to 0 of 0 entries</small>
+        <small className="text-muted">
+          Showing {incorporations.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
+        </small>
 
         <div>
-          <button className="btn btn-sm btn-light border me-2">Previous</button>
-          <button className="btn btn-sm btn-light border">Next</button>
+          <button
+            className="btn btn-sm btn-light border me-2"
+            onClick={handlePrevious}
+            disabled={pagination.page === 1 || isLoading}
+          >
+            Previous
+          </button>
+          <button
+            className="btn btn-sm btn-light border"
+            onClick={handleNext}
+            disabled={pagination.page * pagination.limit >= pagination.total || isLoading}
+          >
+            Next
+          </button>
         </div>
       </div>
 
-      {/* ⭐ SCROLL BAR */}
-      <div className="mt-2" style={{ height: "6px", background: "#ddd" }}>
-        <div style={{ width: "60%", height: "100%", background: "#6c757d" }} />
-      </div>
-
-      <SelectMCAUserModal
+      <IncorporationModal
         show={openModal}
+        incorporation={selectedIncorporation}
         onClose={() => setOpenModal(false)}
+        onSuccess={handleSuccess}
       />
     </div>
   )

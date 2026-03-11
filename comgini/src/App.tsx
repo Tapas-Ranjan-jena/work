@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom"
+import ProtectedRoute from "./components/common/ProtectedRoute"
 
 /* ================= AUTH ================= */
 import Login from "./pages/auth/Login"
@@ -22,12 +23,12 @@ import BulkGmail from "./pages/dashboard/bulkSender/BulkGmail"
 
 /* ================= MASTERS ================= */
 import MastersLayout from "./pages/dashboard/masters/MastersLayout"
-import CompanyList from "./pages/dashboard/masters/companyMaster/CompanyList"
+// {deleted}
 import InactiveCompanies from "./pages/dashboard/masters/companyMaster/InactiveCompanies"
 import AddCompanyLLP from "./pages/dashboard/masters/companyMaster/AddCompanyLLP"
 
 /* ⭐ DIRECTOR/KMP */
-import DirectorsList from "./pages/dashboard/masters/directorKMP/DirectorsList"
+// {deleted}
 import CompanyWiseDirectors from "./pages/dashboard/masters/directorKMP/CompanyWiseDirectors"
 import DIR8MBP1 from "./pages/dashboard/masters/directorKMP/DIR8MBP1"
 import InactiveDirectors from "./pages/dashboard/masters/directorKMP/InactiveDirectors"
@@ -44,10 +45,10 @@ import DebentureHolderList from "./pages/dashboard/masters/debentureHolder/Deben
 import CompanyWiseDebentureHolder from "./pages/dashboard/masters/debentureHolder/CompanyWiseDebentureHolder"
 import AddDebentureHolder from "./pages/dashboard/masters/debentureHolder/AddDebentureHolder"
 
-import PCSCAFirmList from "./pages/dashboard/masters/pcsFirmMaster/PCSCAFirmList"
+// {deleted}
 import AddPCSCAFirm from "./pages/dashboard/masters/pcsFirmMaster/AddPCSCAFirm"
 
-import RTAMasterList from "./pages/dashboard/masters/rtaMaster/RTAMasterList"
+// {deleted}
 import CompanyWiseRTA from "./pages/dashboard/masters/rtaMaster/CompanyWiseRTA"
 import AddRTA from "./pages/dashboard/masters/rtaMaster/AddRTA"
 
@@ -56,6 +57,11 @@ import ClientGroups from "./pages/dashboard/masters/clientGroups/ClientGroups"
 import MISReportLayout from "./pages/dashboard/masters/misReport/MISReportLayout"
 import MISCompany from "./pages/dashboard/masters/misReport/MISCompany"
 import MISLLP from "./pages/dashboard/masters/misReport/MISLLP"
+/* ================= NEW MASTERS INTEGRATION ================= */
+import CompaniesPage from "./pages/masters/CompaniesPage"
+import DirectorsPage from "./pages/masters/DirectorsPage"
+import RTAPage from "./pages/masters/RTAPage"
+import PCSFirmsPage from "./pages/masters/PCSFirmsPage"
 
 /* ================= AUDITOR MASTER ================= */
 import AuditorLayout from "./pages/dashboard/masters/auditorMaster/AuditorLayout"
@@ -116,6 +122,46 @@ import RegistrationList from "./pages/dashboard/businessManager/registration/Reg
 import InsuranceList from "./pages/dashboard/businessManager/insurance/InsuranceList"
 import AgreementList from "./pages/dashboard/businessManager/agreement/AgreementList"
 
+/* ================= FINANCE ================= */
+
+/* ⭐ FINANCE ROOT */
+import FinanceLayout from "./pages/dashboard/finance/layout/FinanceLayout"
+
+/* ⭐ INVOICES */
+import InvoiceLayout from "./pages/dashboard/finance/invoices/layout/InvoiceLayout"
+import InvoiceMonthly from "./pages/dashboard/finance/invoices/monthly/InvoiceMonthly"
+import InvoiceYearly from "./pages/dashboard/finance/invoices/yearly/InvoiceYearly"
+import InvoiceCustom from "./pages/dashboard/finance/invoices/custom/InvoiceCustom"
+import InvoiceRecurring from "./pages/dashboard/finance/invoices/recurring/InvoiceRecurring"
+
+/* ⭐ PAYMENTS */
+import PaymentsLayout from "./pages/dashboard/finance/payments/layout/PaymentsLayout"
+import PaymentsMonthly from "./pages/dashboard/finance/payments/monthly/PaymentsMonthly"
+import PaymentsYearly from "./pages/dashboard/finance/payments/yearly/PaymentsYearly"
+import PaymentsCustom from "./pages/dashboard/finance/payments/custom/PaymentsCustom"
+
+/* ⭐ EXPENSES */
+import ExpensesList from "./pages/dashboard/finance/expenses/ExpensesList"
+
+/* ⭐ INCOME vs EXPENSES */
+import IncomeExpenseLayout from "./pages/dashboard/finance/incomeExpense/IncomeExpenseLayout"
+import IncomeExpenseChart from "./pages/dashboard/finance/incomeExpense/IncomeExpenseChart"
+import IncomeExpenseSummary from "./pages/dashboard/finance/incomeExpense/IncomeExpenseSummary"
+
+/* ================= ASSIGNMENTS ================= */
+import AssignmentLayout from "./pages/dashboard/assignments/layout/AssignmentLayout"
+import CallLogs from "./pages/dashboard/assignments/CallLogs"
+import TimesheetLayout from "./pages/dashboard/assignments/layout/TimesheetLayout"
+import TaskList from "./pages/dashboard/assignments/tabs/tasks/TaskList"
+import StarredTask from "./pages/dashboard/assignments/tabs/tasks/StarredTask"
+import CompletedTask from "./pages/dashboard/assignments/tabs/tasks/CompletedTask"
+import CancelledTask from "./pages/dashboard/assignments/tabs/tasks/CancelledTask"
+import Kanban from "./pages/dashboard/assignments/tabs/tasks/Kanban"
+import PieChart from "./pages/dashboard/assignments/tabs/tasks/PieChart"
+import TaskSummaryReport from "./pages/dashboard/assignments/tabs/tasks/TaskSummaryReport"
+import TimesheetDetails from "./pages/dashboard/assignments/tabs/timesheets/TimesheetDetails"
+import TimesheetSummary from "./pages/dashboard/assignments/tabs/timesheets/TimesheetSummary"
+
 /* ================= CLIENT DASHBOARD ================= */
 import ClientDashboardLayout from "./pages/dashboard/clients/clientDashboard/ClientDashboardLayout"
 
@@ -166,215 +212,277 @@ export default function App() {
       <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* ================= DASHBOARD ROOT ================= */}
-      <Route path="/" element={<DashboardLayout />}>
+      {/* ⭐ DASHBOARD ROOT (PROTECTED) */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<DashboardLayout />}>
 
-        <Route index element={<Navigate to="dashboard" replace />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
 
-        <Route path="dashboard" element={<DashboardHome />} />
-        <Route path="clients" element={<ClientsPage />} />
+          <Route path="dashboard" element={<DashboardHome />} />
+          <Route path="clients" element={<ClientsPage />} />
 
-        <Route path="requested-documents" element={<RequestedDocuments />} />
+          <Route path="requested-documents" element={<RequestedDocuments />} />
 
-        {/* ================= BULK SENDER ================= */}
-        <Route path="bulk-sender" element={<BulkSenderLayout />}>
-          <Route index element={<Navigate to="whatsapp" replace />} />
-          <Route path="whatsapp" element={<BulkWhatsApp />} />
-          <Route path="gmail" element={<BulkGmail />} />
+          {/* ================= BULK SENDER ================= */}
+          <Route path="bulk-sender" element={<BulkSenderLayout />}>
+            <Route index element={<Navigate to="whatsapp" replace />} />
+            <Route path="whatsapp" element={<BulkWhatsApp />} />
+            <Route path="gmail" element={<BulkGmail />} />
+          </Route>
+
+          {/* ================= MASTERS MODULE ================= */}
+          <Route path="masters" element={<MastersLayout />}>
+
+            <Route index element={<Navigate to="company-master" replace />} />
+
+            {/* COMPANY MASTER */}
+            <Route path="company-master" element={<CompaniesPage />} />
+            <Route path="inactive-companies" element={<InactiveCompanies />} />
+            <Route path="add-company" element={<AddCompanyLLP />} />
+
+            {/* DIRECTOR/KMP MASTER */}
+            <Route path="director-kmp" element={<DirectorsPage />} />
+            <Route path="directors/:companyId" element={<DirectorsPage />} />
+            <Route path="director-kmp/company-wise" element={<CompanyWiseDirectors />} />
+            <Route path="director-kmp/dir8-mbp1" element={<DIR8MBP1 />} />
+            <Route path="director-kmp/inactive" element={<InactiveDirectors />} />
+            <Route path="director-kmp/add-director" element={<AddDirector />} />
+            <Route path="director-kmp/add-kmp" element={<AddKMP />} />
+
+            {/* ⭐ SHAREHOLDER MASTER (NEW) */}
+            <Route path="shareholder" element={<ShareholderList />} />
+            <Route path="shareholder/company-wise" element={<CompanyWiseShareholder />} />
+            <Route path="shareholder/add" element={<AddShareholder />} />
+
+            <Route path="debenture-holder" element={<DebentureHolderList />} />
+            <Route path="debenture-holder/company-wise" element={<CompanyWiseDebentureHolder />} />
+            <Route path="debenture-holder/add" element={<AddDebentureHolder />} />
+
+            <Route path="auditors" element={<AuditorLayout />}>
+
+              {/* DEFAULT TAB */}
+              <Route index element={<Navigate to="statutory" replace />} />
+
+              {/* STATUTORY */}
+              <Route path="statutory" element={<StatutoryAuditors />} />
+              <Route path="statutory/add" element={<AddStatutoryAuditor />} />
+              <Route path="statutory/company-wise" element={<CompanyWiseStatutory />} />
+
+              {/* SECRETARIAL */}
+              <Route path="secretarial" element={<SecretarialAuditors />} />
+              <Route path="secretarial/add" element={<AddSecretarialAuditor />} />
+
+              {/* COST */}
+              <Route path="cost" element={<CostAuditors />} />
+              <Route path="cost/add" element={<AddCostAuditor />} />
+
+              {/* INTERNAL */}
+              <Route path="internal" element={<InternalAuditors />} />
+              <Route path="internal/add" element={<AddInternalAuditor />} />
+
+            </Route>
+
+            {/* PCS FIRM MASTER */}
+            <Route path="pcs-firm-master" element={<PCSFirmsPage />} />
+            <Route path="pcs-firm-master/add" element={<AddPCSCAFirm />} />
+
+            <Route path="rta-master" element={<RTAPage />} />
+            <Route path="rta-master/company-wise" element={<CompanyWiseRTA />} />
+            <Route path="rta-master/add" element={<AddRTA />} />
+
+            <Route path="client-groups" element={<ClientGroups />} />
+
+            {/* ================= MIS REPORT ================= */}
+            <Route path="mis" element={<MISReportLayout />}>
+              <Route index element={<Navigate to="company" replace />} />
+              <Route path="company" element={<MISCompany />} />
+              <Route path="llp" element={<MISLLP />} />
+            </Route>
+
+
+          </Route>
+
+          {/* ================= CLIENT DASHBOARD ================= */}
+          <Route path="clients/:clientId" element={<ClientDashboardLayout />}>
+
+            <Route index element={<Navigate to="info/details" replace />} />
+
+            <Route path="compliance" element={<ComplianceManager />} />
+
+            <Route path="info" element={<ClientInfoLayout />}>
+              <Route index element={<Navigate to="details" replace />} />
+              <Route path="details" element={<ClientDetailsTab />} />
+              <Route path="directors" element={<DirectorsKMP />} />
+              <Route path="past-directors" element={<PastDirectorsKMP />} />
+              <Route path="shareholders" element={<ShareholderDetails />} />
+              <Route path="charges" element={<IndexOfCharges />} />
+              <Route path="mca-transaction" element={<MCATransaction />} />
+            </Route>
+
+            <Route path="portal" element={<ClientPortal />} />
+            <Route path="primary-contact" element={<PrimaryContact />} />
+            <Route path="assignments" element={<Assignments />} />
+            <Route path="invoice" element={<InvoiceTab />} />
+            <Route path="payments" element={<PaymentsTab />} />
+            <Route path="notes" element={<NotesTab />} />
+            <Route path="files" element={<FilesTab />} />
+            <Route path="events" element={<EventsTab />} />
+
+            <Route path="business-manager" element={<BusinessManagerLayout />}>
+              <Route index element={<Navigate to="registration" replace />} />
+              <Route path="registration" element={<RegistrationLicense />} />
+              <Route path="insurance" element={<Insurance />} />
+              <Route path="contract-agreement" element={<ContractAgreement />} />
+            </Route>
+
+            <Route path="expiry-manager" element={<ExpiryManager />} />
+            <Route path="expenses" element={<Expenses />} />
+
+          </Route>
+          <Route path="incorporation" element={<IncorporationLayout />}>
+
+            <Route path="run-llp" element={<IncorporationTabsLayout title="RUN LLP" />}>
+              <Route index element={<RunLLPList />} />
+              <Route path="deleted" element={<RunLLPDeleted />} />
+            </Route>
+
+
+
+            <Route path="fillip" element={<FillipLayout />}>
+
+              {/* ⭐ DEFAULT TAB */}
+              <Route index element={<FillipInProgress />} />
+              <Route path="completed" element={<FillipCompleted />} />
+              <Route path="cancelled" element={<FillipCancelled />} />
+
+              {/* Deleted is FULL PAGE */}
+              <Route path="deleted" element={<FillipDeletedForms />} />
+            </Route>
+
+
+
+            <Route path="spice" element={<SpiceLayout />}>
+              <Route index element={<SpiceInProgress />} />
+              <Route path="completed" element={<SpiceCompleted />} />
+              <Route path="cancelled" element={<SpiceCancelled />} />
+              <Route path="deleted" element={<SpiceDeletedForms />} />
+            </Route>
+
+            <Route path="check-company" element={<CheckCompanyName />} />
+
+          </Route>
+
+          {/* ================= CHECKLIST ================= */}
+          <Route path="checklist" element={<ChecklistLayout />}>
+
+            {/* Standard Checklist */}
+            <Route index element={<StandardChecklist />} />
+
+            {/* Add Checklist */}
+            <Route path="add" element={<AddChecklist />} />
+
+            {/* Assign Checklist with Tabs */}
+            <Route path="assign" element={<AssignChecklistLayout />}>
+              <Route index element={<AssignPending />} />
+              <Route path="completed" element={<AssignCompleted />} />
+            </Route>
+
+
+
+          </Route>
+
+          <Route path="/business-manager" element={<BusinessLayout />}>
+
+            <Route
+              index
+              element={<Navigate to="registration" replace />}
+            />
+
+            <Route
+              path="registration"
+              element={<RegistrationList />}
+            />
+
+            <Route
+              path="insurance"
+              element={<InsuranceList />}
+            />
+
+            <Route
+              path="agreement"
+              element={<AgreementList />}
+            />
+
+            {/* ⭐ EXPIRY MODULE */}
+            <Route path="expiry" element={<ExpiryLayout />}>
+
+              <Route index element={<DueExpiryList />} />
+              <Route path="history" element={<ExpiryList />} />
+
+            </Route>
+
+
+          </Route>
+          {/* ================= FINANCE ================= */}
+          <Route path="finance" element={<FinanceLayout />}>
+
+            {/* ⭐ DEFAULT REDIRECT */}
+            <Route index element={<Navigate to="invoices" replace />} />
+
+            {/* ================= INVOICES ================= */}
+            <Route path="invoices" element={<InvoiceLayout />}>
+              <Route index element={<Navigate to="monthly" replace />} />
+              <Route path="monthly" element={<InvoiceMonthly />} />
+              <Route path="yearly" element={<InvoiceYearly />} />
+              <Route path="custom" element={<InvoiceCustom />} />
+              <Route path="recurring" element={<InvoiceRecurring />} />
+            </Route>
+
+            {/* ================= PAYMENTS ================= */}
+            <Route path="payments" element={<PaymentsLayout />}>
+              <Route index element={<Navigate to="monthly" replace />} />
+              <Route path="monthly" element={<PaymentsMonthly />} />
+              <Route path="yearly" element={<PaymentsYearly />} />
+              <Route path="custom" element={<PaymentsCustom />} />
+            </Route>
+
+            {/* ================= EXPENSES ================= */}
+            <Route path="expenses" element={<ExpensesList />} />
+
+            {/* ================= INCOME vs EXPENSES ================= */}
+            <Route path="income-expense" element={<IncomeExpenseLayout />}>
+              <Route index element={<IncomeExpenseChart />} />
+              <Route path="summary" element={<IncomeExpenseSummary />} />
+            </Route>
+
+          </Route>
+
+          {/* ================= ASSIGNMENTS ================= */}
+          <Route path="assignments">
+
+            {/* TASKS */}
+            <Route path="tasks" element={<AssignmentLayout />}>
+              <Route index element={<TaskList />} />
+              <Route path="starred-task" element={<StarredTask />} />
+              <Route path="completed-task" element={<CompletedTask />} />
+              <Route path="cancelled-task" element={<CancelledTask />} />
+              <Route path="kanban" element={<Kanban />} />
+              <Route path="pie-chart" element={<PieChart />} />
+              <Route path="task-summary-report" element={<TaskSummaryReport />} />
+            </Route>
+
+            {/* CALL LOGS */}
+            <Route path="call-logs" element={<CallLogs />} />
+
+            {/* TIMESHEETS */}
+            <Route path="timesheets" element={<TimesheetLayout />}>
+              <Route index element={<TimesheetDetails />} />
+              <Route path="summary" element={<TimesheetSummary />} />
+            </Route>
+
+          </Route>
+
         </Route>
-
-        {/* ================= MASTERS MODULE ================= */}
-        <Route path="masters" element={<MastersLayout />}>
-
-          <Route index element={<Navigate to="company-master" replace />} />
-
-          {/* COMPANY MASTER */}
-          <Route path="company-master" element={<CompanyList />} />
-          <Route path="inactive-companies" element={<InactiveCompanies />} />
-          <Route path="add-company" element={<AddCompanyLLP />} />
-
-          {/* DIRECTOR/KMP MASTER */}
-          <Route path="director-kmp" element={<DirectorsList />} />
-          <Route path="director-kmp/company-wise" element={<CompanyWiseDirectors />} />
-          <Route path="director-kmp/dir8-mbp1" element={<DIR8MBP1 />} />
-          <Route path="director-kmp/inactive" element={<InactiveDirectors />} />
-          <Route path="director-kmp/add-director" element={<AddDirector />} />
-          <Route path="director-kmp/add-kmp" element={<AddKMP />} />
-
-          {/* ⭐ SHAREHOLDER MASTER (NEW) */}
-          <Route path="shareholder" element={<ShareholderList />} />
-          <Route path="shareholder/company-wise" element={<CompanyWiseShareholder />} />
-          <Route path="shareholder/add" element={<AddShareholder />} />
-
-          <Route path="debenture-holder" element={<DebentureHolderList />} />
-          <Route path="debenture-holder/company-wise" element={<CompanyWiseDebentureHolder />} />
-          <Route path="debenture-holder/add" element={<AddDebentureHolder />} />
-
-          <Route path="auditors" element={<AuditorLayout />}>
-
-            {/* DEFAULT TAB */}
-            <Route index element={<Navigate to="statutory" replace />} />
-
-            {/* STATUTORY */}
-            <Route path="statutory" element={<StatutoryAuditors />} />
-            <Route path="statutory/add" element={<AddStatutoryAuditor />} />
-            <Route path="statutory/company-wise" element={<CompanyWiseStatutory />} />
-
-            {/* SECRETARIAL */}
-            <Route path="secretarial" element={<SecretarialAuditors />} />
-            <Route path="secretarial/add" element={<AddSecretarialAuditor />} />
-
-            {/* COST */}
-            <Route path="cost" element={<CostAuditors />} />
-            <Route path="cost/add" element={<AddCostAuditor />} />
-
-            {/* INTERNAL */}
-            <Route path="internal" element={<InternalAuditors />} />
-            <Route path="internal/add" element={<AddInternalAuditor />} />
-
-          </Route>
-
-          {/* PCS FIRM MASTER */}
-          <Route path="pcs-firm-master" element={<PCSCAFirmList />} />
-          <Route path="pcs-firm-master/add" element={<AddPCSCAFirm />} />
-
-          <Route path="rta-master" element={<RTAMasterList />} />
-          <Route path="rta-master/company-wise" element={<CompanyWiseRTA />} />
-          <Route path="rta-master/add" element={<AddRTA />} />
-
-          <Route path="client-groups" element={<ClientGroups />} />
-
-          {/* ================= MIS REPORT ================= */}
-          <Route path="mis" element={<MISReportLayout />}>
-            <Route index element={<Navigate to="company" replace />} />
-            <Route path="company" element={<MISCompany />} />
-            <Route path="llp" element={<MISLLP />} />
-          </Route>
-
-
-        </Route>
-
-        {/* ================= CLIENT DASHBOARD ================= */}
-        <Route path="clients/:clientId" element={<ClientDashboardLayout />}>
-
-          <Route index element={<Navigate to="info/details" replace />} />
-
-          <Route path="compliance" element={<ComplianceManager />} />
-
-          <Route path="info" element={<ClientInfoLayout />}>
-            <Route index element={<Navigate to="details" replace />} />
-            <Route path="details" element={<ClientDetailsTab />} />
-            <Route path="directors" element={<DirectorsKMP />} />
-            <Route path="past-directors" element={<PastDirectorsKMP />} />
-            <Route path="shareholders" element={<ShareholderDetails />} />
-            <Route path="charges" element={<IndexOfCharges />} />
-            <Route path="mca-transaction" element={<MCATransaction />} />
-          </Route>
-
-          <Route path="portal" element={<ClientPortal />} />
-          <Route path="primary-contact" element={<PrimaryContact />} />
-          <Route path="assignments" element={<Assignments />} />
-          <Route path="invoice" element={<InvoiceTab />} />
-          <Route path="payments" element={<PaymentsTab />} />
-          <Route path="notes" element={<NotesTab />} />
-          <Route path="files" element={<FilesTab />} />
-          <Route path="events" element={<EventsTab />} />
-
-          <Route path="business-manager" element={<BusinessManagerLayout />}>
-            <Route index element={<Navigate to="registration" replace />} />
-            <Route path="registration" element={<RegistrationLicense />} />
-            <Route path="insurance" element={<Insurance />} />
-            <Route path="contract-agreement" element={<ContractAgreement />} />
-          </Route>
-
-          <Route path="expiry-manager" element={<ExpiryManager />} />
-          <Route path="expenses" element={<Expenses />} />
-
-        </Route>
-        <Route path="incorporation" element={<IncorporationLayout />}>
-
-          <Route path="run-llp" element={<IncorporationTabsLayout title="RUN LLP" />}>
-            <Route index element={<RunLLPList />} />
-            <Route path="deleted" element={<RunLLPDeleted />} />
-          </Route>
-
-    
-
-  <Route path="fillip" element={<FillipLayout />}>
-
-  {/* ⭐ DEFAULT TAB */}
-  <Route index element={<FillipInProgress />} />
-  <Route path="completed" element={<FillipCompleted />} />
-  <Route path="cancelled" element={<FillipCancelled />} />
-
-  {/* Deleted is FULL PAGE */}
-  <Route path="deleted" element={<FillipDeletedForms />} />
-</Route>
-
-
-
-           <Route path="spice" element={<SpiceLayout />}>
-    <Route index element={<SpiceInProgress />} />
-    <Route path="completed" element={<SpiceCompleted />} />
-    <Route path="cancelled" element={<SpiceCancelled />} />
-    <Route path="deleted" element={<SpiceDeletedForms />} />
-  </Route>
-
-          <Route path="check-company" element={<CheckCompanyName />} />
-
-        </Route>
-
-        {/* ================= CHECKLIST ================= */}
-<Route path="checklist" element={<ChecklistLayout />}>
-
-  {/* Standard Checklist */}
-  <Route index element={<StandardChecklist />} />
-
-  {/* Add Checklist */}
-  <Route path="add" element={<AddChecklist />} />
-
-  {/* Assign Checklist with Tabs */}
-  <Route path="assign" element={<AssignChecklistLayout />}>
-    <Route index element={<AssignPending />} />
-    <Route path="completed" element={<AssignCompleted />} />
-  </Route>
-
-  
-
-</Route>
-
-<Route path="/business-manager" element={<BusinessLayout />}>
-
-  <Route
-    index
-    element={<Navigate to="registration" replace />}
-  />
-
-  <Route
-    path="registration"
-    element={<RegistrationList />}
-  />
-
-  <Route
-    path="insurance"
-    element={<InsuranceList />}
-  />
-
-  <Route
-    path="agreement"
-    element={<AgreementList />}
-  />
-
-  {/* ⭐ EXPIRY MODULE */}
-  <Route path="expiry" element={<ExpiryLayout />}>
-
-    <Route index element={<DueExpiryList />} />
-    <Route path="history" element={<ExpiryList />} />
-
-  </Route>
-
-</Route>
-
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />

@@ -1,44 +1,89 @@
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import clientService from "../../services/clients/client.service"
+import type { Client } from "../../services/clients/types"
 
 type Props = {
   onClose: () => void
+  client?: Client
+  onSuccess?: () => void
 }
 
-export default function AddCompanyModal({ onClose }: Props) {
+export default function AddCompanyModal({ onClose, client, onSuccess }: Props) {
+  const [loading, setLoading] = useState(false)
+  const isEditing = !!client
 
-  const navigate = useNavigate()
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    cin: "",
+    company_name: "",
+    pan: "",
+    gstin: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+    client_group: "Corporate",
+    risk_score: "low"
+  })
 
-  const [companyName, setCompanyName] = useState("")
-  const [cin, setCin] = useState("")
+  useEffect(() => {
+    if (client) {
+      setFormData({
+        name: client.name || "",
+        email: client.email || "",
+        phone: client.phone || "",
+        cin: client.cin || "",
+        company_name: client.name || "",
+        pan: "", // Not provided in Client type, keeping empty
+        gstin: "",
+        address: client.address || "",
+        city: "",
+        state: "",
+        pincode: "",
+        client_group: "Corporate",
+        risk_score: "low"
+      })
+    }
+  }, [client])
 
-  const handleSubmit = () => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
 
-    if (!companyName || !cin) {
-      alert("Please enter Company Name and CIN")
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.email || !formData.phone) {
+      alert("Please fill in basic details (Name, Email, Phone)")
       return
     }
 
-    const fakeClientId = Date.now()
-
-    onClose()
-
-    navigate(`/clients/${fakeClientId}`, {
-      state: {
-        companyName,
-        cin
+    try {
+      setLoading(true)
+      if (isEditing && client) {
+        await clientService.updateClient(client.id, formData)
+        alert(`Success: Company ${formData.name} updated!`)
+        if (onSuccess) onSuccess()
+      } else {
+        const response = await clientService.createClient(formData)
+        alert(`Success: Company ${response.name} created!`)
+        if (onSuccess) onSuccess()
+        onClose()
+        // navigate(`/clients/${response.id}`) // Removing navigation as per latest requirement
+        return
       }
-    })
+      onClose()
+    } catch (error: any) {
+      alert(error.message || `Failed to ${isEditing ? 'update' : 'create'} company`)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-
-      <div
-        className="modal-box"
-        onClick={(e) => e.stopPropagation()}
-      >
-
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         {/* ===== HEADER ===== */}
         <div
           className="d-flex justify-content-between align-items-center"
@@ -48,8 +93,7 @@ export default function AddCompanyModal({ onClose }: Props) {
             marginBottom: 18
           }}
         >
-          <h5 className="fw-bold mb-0">Add Company</h5>
-
+          <h5 className="fw-bold mb-0">{isEditing ? 'Edit' : 'Add'} Company</h5>
           <span
             style={{ cursor: "pointer", fontSize: 18 }}
             onClick={onClose}
@@ -58,38 +102,65 @@ export default function AddCompanyModal({ onClose }: Props) {
           </span>
         </div>
 
-
         {/* ===== FORM BODY ===== */}
         <div className="container-fluid">
-
           <div className="row align-items-center mb-3">
             <div className="col-md-4 small">Company Name</div>
-
             <div className="col-md-8">
               <input
+                name="name"
                 className="form-control"
-                placeholder="24 Moontimes News Private Limited"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Enter Company Name"
+                value={formData.name}
+                onChange={handleChange}
+                disabled={loading}
               />
             </div>
           </div>
 
           <div className="row align-items-center mb-3">
-            <div className="col-md-4 small">CIN / LLPIN</div>
-
+            <div className="col-md-4 small">Email</div>
             <div className="col-md-8">
               <input
+                name="email"
+                type="email"
                 className="form-control"
-                placeholder="U74999KA2024PTC123456"
-                value={cin}
-                onChange={(e) => setCin(e.target.value)}
+                placeholder="Enter Email"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={loading}
               />
             </div>
           </div>
 
-        </div>
+          <div className="row align-items-center mb-3">
+            <div className="col-md-4 small">Phone</div>
+            <div className="col-md-8">
+              <input
+                name="phone"
+                className="form-control"
+                placeholder="Enter Phone"
+                value={formData.phone}
+                onChange={handleChange}
+                disabled={loading}
+              />
+            </div>
+          </div>
 
+          <div className="row align-items-center mb-3">
+            <div className="col-md-4 small">CIN</div>
+            <div className="col-md-8">
+              <input
+                name="cin"
+                className="form-control"
+                placeholder="Enter CIN"
+                value={formData.cin}
+                onChange={handleChange}
+                disabled={loading}
+              />
+            </div>
+          </div>
+        </div>
 
         {/* ===== FOOTER ===== */}
         <div
@@ -100,64 +171,24 @@ export default function AddCompanyModal({ onClose }: Props) {
             marginTop: 18
           }}
         >
-          {/* CANCEL BUTTON */}
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
             onClick={onClose}
+            disabled={loading}
           >
-            <span
-              style={{
-                width:18,
-                height:18,
-                borderRadius:"50%",
-                border:"1.5px solid #000",
-                display:"inline-flex",
-                alignItems:"center",
-                justifyContent:"center"
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18 6L6 18M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
             Cancel
           </button>
 
-          {/* SAVE BUTTON */}
           <button
             className="btn btn-gradient d-flex align-items-center gap-2"
             onClick={handleSubmit}
+            disabled={loading}
           >
-            <span
-              style={{
-                width:18,
-                height:18,
-                borderRadius:"50%",
-                background:"#fff",
-                display:"inline-flex",
-                alignItems:"center",
-                justifyContent:"center"
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M20 6L9 17L4 12"
-                  stroke="#2b4cb3"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            Save
+            {loading ? (
+              <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+            ) : isEditing ? "Update Company" : "Save Company"}
           </button>
         </div>
-
       </div>
     </div>
   )

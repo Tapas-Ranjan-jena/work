@@ -1,17 +1,19 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useState } from "react"
 import type { ChangeEvent } from "react"
 import AuthLayout from "../../layouts/AuthLayout"
+import { useAuth } from "../../context/AuthContext"
+import axios from "axios"
 
 export default function ForgotPassword() {
-
-  const navigate = useNavigate()
+  const { forgotPassword } = useAuth()
 
   const [email, setEmail] = useState<string>("")
   const [error, setError] = useState<string>("")
+  const [success, setSuccess] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const handleSend = () => {
-
+  const handleSend = async () => {
     if (!email.trim()) {
       setError("Please enter your email")
       return
@@ -24,7 +26,26 @@ export default function ForgotPassword() {
     }
 
     setError("")
-    navigate("/verify-otp")
+    setSuccess("")
+    setIsLoading(true)
+
+    try {
+      const response = await forgotPassword(email)
+      if (response.success) {
+        setSuccess(response.message || "Password reset link sent to your email")
+        setEmail("")
+      } else {
+        setError(response.message || "Failed to send reset link")
+      }
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message || "An error occurred")
+      } else {
+        setError("An unexpected error occurred")
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -58,6 +79,13 @@ export default function ForgotPassword() {
             Please enter your registered email to request a password reset.
           </p>
 
+          {/* SUCCESS MESSAGE */}
+          {success && (
+            <div className="alert alert-success small py-2 text-center" role="alert">
+              {success}
+            </div>
+          )}
+
           {/* EMAIL FIELD */}
           <div className="mb-3">
             <label className="form-label small">Email</label>
@@ -70,6 +98,7 @@ export default function ForgotPassword() {
               }
               className="form-control"
               placeholder="Enter your email"
+              disabled={isLoading}
               style={{
                 minHeight: 46,
                 borderRadius: 8
@@ -85,6 +114,7 @@ export default function ForgotPassword() {
           <button
             type="button"
             className="btn btn-gradient w-100 py-2"
+            disabled={isLoading}
             style={{
               minHeight: 46,
               borderRadius: 8,
@@ -92,7 +122,14 @@ export default function ForgotPassword() {
             }}
             onClick={handleSend}
           >
-            Send
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Sending...
+              </>
+            ) : (
+              "Send"
+            )}
           </button>
 
           {/* LOGIN LINK */}

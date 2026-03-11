@@ -1,11 +1,15 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import type { ChangeEvent } from "react"
 import AuthLayout from "../../layouts/AuthLayout"
+import { useAuth } from "../../context/AuthContext"
+import axios from "axios"
 
 export default function ResetPassword() {
-
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get("token")
+  const { resetPassword } = useAuth()
 
   // 👁 Toggle states
   const [showNew, setShowNew] = useState<boolean>(false)
@@ -15,8 +19,20 @@ export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState<string>("")
   const [confirmPassword, setConfirmPassword] = useState<string>("")
   const [error, setError] = useState<string>("")
+  const [success, setSuccess] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (!token) {
+      setError("Reset token is missing. Please check your email link.")
+    }
+  }, [token])
+
+  const handleSave = async () => {
+    if (!token) {
+      setError("Cannot reset password without a token.")
+      return
+    }
 
     if (!newPassword || !confirmPassword) {
       setError("Please fill all fields")
@@ -34,7 +50,28 @@ export default function ResetPassword() {
     }
 
     setError("")
-    navigate("/login")
+    setSuccess("")
+    setIsLoading(true)
+
+    try {
+      const response = await resetPassword({ token, newPassword })
+      if (response.success) {
+        setSuccess(response.message || "Password reset successfully!")
+        setTimeout(() => {
+          navigate("/login")
+        }, 2000)
+      } else {
+        setError(response.message || "Failed to reset password")
+      }
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message || "An error occurred")
+      } else {
+        setError("An unexpected error occurred")
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -68,6 +105,13 @@ export default function ResetPassword() {
             Please enter your new passwords to secure your account.
           </p>
 
+          {/* SUCCESS MESSAGE */}
+          {success && (
+            <div className="alert alert-success small py-2 text-center" role="alert">
+              {success}
+            </div>
+          )}
+
           {/* NEW PASSWORD */}
           <div className="mb-3 position-relative">
             <label className="form-label small mb-1">New Password</label>
@@ -80,6 +124,7 @@ export default function ResetPassword() {
               }
               className="form-control"
               placeholder="Enter your password"
+              disabled={isLoading}
               style={{
                 minHeight: 46,
                 borderRadius: 8,
@@ -88,12 +133,12 @@ export default function ResetPassword() {
             />
 
             <span
-              onClick={() => setShowNew(!showNew)}
+              onClick={() => !isLoading && setShowNew(!showNew)}
               style={{
                 position: "absolute",
                 right: 12,
                 top: 38,
-                cursor: "pointer",
+                cursor: isLoading ? "default" : "pointer",
                 opacity: 0.6
               }}
             >
@@ -113,6 +158,7 @@ export default function ResetPassword() {
               }
               className="form-control"
               placeholder="Confirm new password"
+              disabled={isLoading}
               style={{
                 minHeight: 46,
                 borderRadius: 8,
@@ -121,12 +167,12 @@ export default function ResetPassword() {
             />
 
             <span
-              onClick={() => setShowConfirm(!showConfirm)}
+              onClick={() => !isLoading && setShowConfirm(!showConfirm)}
               style={{
                 position: "absolute",
                 right: 12,
                 top: 38,
-                cursor: "pointer",
+                cursor: isLoading ? "default" : "pointer",
                 opacity: 0.6
               }}
             >
@@ -136,13 +182,16 @@ export default function ResetPassword() {
 
           {/* ERROR */}
           {error && (
-            <small className="text-danger">{error}</small>
+            <div className="mb-2 text-center">
+              <small className="text-danger">{error}</small>
+            </div>
           )}
 
           {/* SAVE BUTTON */}
           <button
             type="button"
             className="btn btn-gradient w-100 py-2 mt-3"
+            disabled={isLoading || !token}
             style={{
               minHeight: 46,
               borderRadius: 8,
@@ -150,7 +199,14 @@ export default function ResetPassword() {
             }}
             onClick={handleSave}
           >
-            Save New Password
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving...
+              </>
+            ) : (
+              "Save New Password"
+            )}
           </button>
 
         </div>

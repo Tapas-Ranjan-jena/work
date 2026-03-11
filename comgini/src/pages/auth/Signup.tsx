@@ -1,9 +1,61 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import AuthLayout from "../../layouts/AuthLayout"
 import GoogleIcon from "../../assets/icons/google.svg"
 import AppleIcon from "../../assets/icons/apple.svg"
+import { useAuth } from "../../context/AuthContext"
 
 export default function Signup() {
+  const navigate = useNavigate()
+  const { register } = useAuth()
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    role: "employee" // Default to employee based on your postman
+  })
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.")
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const { confirmPassword, ...registerData } = formData
+      await register(registerData)
+      navigate("/login")
+    } catch (err: any) {
+      console.error("Signup error:", err.response?.data)
+      const message = err.response?.data?.message || "Registration failed. Please try again."
+      const errors = err.response?.data?.errors
+
+      if (errors && typeof errors === 'object') {
+        const errorDetails = Object.entries(errors)
+          .map(([key, val]) => `${key}: ${typeof val === 'object' ? JSON.stringify(val) : val}`)
+          .join(". ")
+        setError(`${message}: ${errorDetails}`)
+      } else {
+        setError(message)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return (
     <AuthLayout>
 
@@ -31,80 +83,127 @@ export default function Signup() {
           </h4>
 
           <p className="text-center text-muted small mb-4">
-            Create an account as a new client
+            Create an account as a new user
           </p>
 
-          {/* ================= NAME ================= */}
-          <div className="row g-3 mb-3">
-            <div className="col-12 col-sm-6">
-              <label className="form-label small">First name</label>
-              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
+          {error && (
+            <div className="alert alert-danger small py-2" role="alert">
+              {error}
             </div>
-            <div className="col-12 col-sm-6">
-              <label className="form-label small">Last name</label>
-              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-            </div>
-          </div>
+          )}
 
-          {/* ================= COMPANY ================= */}
-          <div className="row g-3 mb-3">
-            <div className="col-12 col-sm-6">
-              <label className="form-label small">Company / Firm Name</label>
-              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-            </div>
-            <div className="col-12 col-sm-6">
-              <label className="form-label small">GST No</label>
-              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-            </div>
-          </div>
+          <form onSubmit={handleSignup}>
 
-          {/* ================= EMAIL ================= */}
-          <div className="row g-3 mb-3">
-            <div className="col-12 col-sm-6">
-              <label className="form-label small">Email</label>
-              <input type="email" className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-            </div>
-            <div className="col-12 col-sm-6">
-              <label className="form-label small">Phone Number</label>
-              <input className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-            </div>
-          </div>
-
-          {/* ================= PASSWORD ================= */}
-          <div className="mb-3">
-            <label className="form-label small">Password</label>
-            <input type="password" className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label small">Re-type password</label>
-            <input type="password" className="form-control" style={{ minHeight: 46, borderRadius: 8 }} />
-          </div>
-
-          {/* ================= GENDER ================= */}
-          <div className="mb-4">
-            <label className="form-label small d-block">Gender</label>
-
-            <div className="d-flex gap-3">
-              <div className="form-check">
-                <input className="form-check-input" type="radio" name="gender" />
-                <label className="form-check-label small">Male</label>
+            {/* ================= NAME ================= */}
+            <div className="row g-3 mb-3">
+              <div className="col-12 col-sm-6">
+                <label className="form-label small">First name</label>
+                <input
+                  name="firstName"
+                  className="form-control"
+                  style={{ minHeight: 46, borderRadius: 8 }}
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-
-              <div className="form-check">
-                <input className="form-check-input" type="radio" name="gender" />
-                <label className="form-check-label small">Female</label>
+              <div className="col-12 col-sm-6">
+                <label className="form-label small">Last name</label>
+                <input
+                  name="lastName"
+                  className="form-control"
+                  style={{ minHeight: 46, borderRadius: 8 }}
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
-          </div>
 
-          {/* ================= SIGNUP BUTTON ================= */}
-          <button
-            className="btn btn-gradient w-100 py-2"
-            style={{ minHeight: 46, borderRadius: 8, fontWeight: 500 }}
-          >
-            Sign up
-          </button>
+            {/* ================= EMAIL / PHONE ================= */}
+            <div className="row g-3 mb-3">
+              <div className="col-12 col-sm-6">
+                <label className="form-label small">Email</label>
+                <input
+                  name="email"
+                  type="email"
+                  className="form-control"
+                  style={{ minHeight: 46, borderRadius: 8 }}
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-12 col-sm-6">
+                <label className="form-label small">Phone Number</label>
+                <input
+                  name="phone"
+                  className="form-control"
+                  style={{ minHeight: 46, borderRadius: 8 }}
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* ================= ROLE ================= */}
+            <div className="mb-3">
+              <label className="form-label small">Role</label>
+              <select
+                name="role"
+                className="form-select"
+                style={{ minHeight: 46, borderRadius: 8 }}
+                value={formData.role}
+                onChange={handleChange}
+                required
+              >
+                <option value="employee">Employee</option>
+                <option value="admin">Admin</option>
+                <option value="client">Client</option>
+              </select>
+            </div>
+
+            {/* ================= PASSWORD ================= */}
+            <div className="mb-3">
+              <label className="form-label small">Password</label>
+              <input
+                name="password"
+                type="password"
+                className="form-control"
+                style={{ minHeight: 46, borderRadius: 8 }}
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label small">Re-type password</label>
+              <input
+                name="confirmPassword"
+                type="password"
+                className="form-control"
+                style={{ minHeight: 46, borderRadius: 8 }}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* ================= SIGNUP BUTTON ================= */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn btn-gradient w-100 py-2"
+              style={{ minHeight: 46, borderRadius: 8, fontWeight: 500 }}
+            >
+              {isLoading ? (
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              ) : null}
+              {isLoading ? "Creating account..." : "Sign up"}
+            </button>
+          </form>
 
           {/* ================= LINKS ================= */}
           <div className="d-flex flex-column flex-sm-row justify-content-between mt-3 small text-center text-sm-start">
