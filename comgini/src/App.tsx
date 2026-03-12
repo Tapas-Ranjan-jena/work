@@ -21,6 +21,11 @@ import BulkSenderLayout from "./pages/dashboard/bulkSender/BulkSenderLayout"
 import BulkWhatsApp from "./pages/dashboard/bulkSender/BulkWhatsapp"
 import BulkGmail from "./pages/dashboard/bulkSender/BulkGmail"
 
+/* ================= LEADS ================= */
+import LeadsLayout from "./pages/dashboard/leads/LeadsLayout"
+import LeadsList from "./pages/dashboard/leads/LeadsList"
+import LeadsKanban from "./pages/dashboard/leads/LeadsKanban"
+
 /* ================= MASTERS ================= */
 import MastersLayout from "./pages/dashboard/masters/MastersLayout"
 // {deleted}
@@ -197,6 +202,12 @@ import MCATransaction from "./pages/dashboard/clients/clientDashboard/clientInfo
 /* ================= OTHER TABS ================= */
 import ExpiryManager from "./pages/dashboard/clients/clientDashboard/tabs/ExpiryManager"
 
+/* ================= HRMS ================= */
+import TeamMember from "./pages/dashboard/hrms/TeamMember"
+import TimeCards from "./pages/dashboard/hrms/TimeCards"
+import Leave from "./pages/dashboard/hrms/Leave"
+import Salary from "./pages/dashboard/hrms/Salary"
+
 
 /* ================= PLACEHOLDER ================= */
 const ComplianceManager = () => <div />
@@ -222,6 +233,12 @@ export default function App() {
           <Route path="clients" element={<ClientsPage />} />
 
           <Route path="requested-documents" element={<RequestedDocuments />} />
+
+          {/* ================= LEADS MODULE ================= */}
+          <Route path="leads" element={<LeadsLayout />}>
+            <Route index element={<LeadsList />} />
+            <Route path="kanban" element={<LeadsKanban />} />
+          </Route>
 
           {/* ================= BULK SENDER ================= */}
           <Route path="bulk-sender" element={<BulkSenderLayout />}>
@@ -480,6 +497,15 @@ export default function App() {
               <Route path="summary" element={<TimesheetSummary />} />
             </Route>
 
+          </Route>
+
+          {/* ================= HRMS MODULE ================= */}
+          <Route path="hrms">
+            <Route index element={<Navigate to="team-member" replace />} />
+            <Route path="team-member" element={<TeamMember />} />
+            <Route path="time-cards" element={<TimeCards />} />
+            <Route path="leave" element={<Leave />} />
+            <Route path="salary" element={<Salary />} />
           </Route>
 
         </Route>

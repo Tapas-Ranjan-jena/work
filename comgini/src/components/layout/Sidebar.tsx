@@ -25,6 +25,9 @@ export default function Sidebar({ open, setOpen }: Props) {
   /* ⭐ ASSIGNMENTS DROPDOWN STATE */
 const [assignmentsOpen, setAssignmentsOpen] = useState(false)
 
+  /* ⭐ HRMS DROPDOWN STATE */
+  const [hrmsOpen, setHrmsOpen] = useState(false)
+
   /* ⭐ AUTO OPEN DROPDOWNS IF ROUTE ACTIVE */
   useEffect(() => {
     if (location.pathname.includes("/bulk-sender")) {
@@ -44,10 +47,12 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
     }
     if (location.pathname.startsWith("/finance")) {
   setFinanceOpen(true)
-}  
-if (location.pathname.startsWith("/assignments")) {
-  setAssignmentsOpen(true)
-}
+}    if (location.pathname.startsWith("/assignments")) {
+      setAssignmentsOpen(true)
+    }
+    if (location.pathname.includes("/hrms")) {
+      setHrmsOpen(true)
+    }
   }, [location.pathname])
 
   /* ⭐ VERY IMPORTANT — close sidebar ONLY on mobile */
@@ -440,13 +445,51 @@ if (location.pathname.startsWith("/assignments")) {
   </div>
 )}
 
-          <div className="sidebar-item">
+          {/* ================= HRMS DROPDOWN ================= */}
+          <div
+            className={`sidebar-item ${hrmsOpen ? "active" : ""}`}
+            onClick={() => setHrmsOpen(!hrmsOpen)}
+            style={{ cursor: "pointer" }}
+          >
             <span className="sidebar-left">
               <i className="bi bi-people"></i>
               HRMS
             </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
+            <i className={`bi ${hrmsOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
           </div>
+
+          {hrmsOpen && (
+            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
+              <NavLink
+                to="/hrms/team-member"
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                Team member
+              </NavLink>
+              <NavLink
+                to="/hrms/time-cards"
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                Time cards
+              </NavLink>
+              <NavLink
+                to="/hrms/leave"
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                Leave
+              </NavLink>
+              <NavLink
+                to="/hrms/salary"
+                onClick={handleNavClick}
+                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+              >
+                Salary
+              </NavLink>
+            </div>
+          )}
 
           <div
             className={`sidebar-item ${openMenu ? "active" : ""}`}
@@ -626,13 +669,17 @@ if (location.pathname.startsWith("/assignments")) {
             <i className="bi bi-chevron-right sidebar-arrow"></i>
           </div>
 
-          <div className="sidebar-item">
+          <NavLink
+            to="/leads"
+            onClick={handleNavClick}
+            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+          >
             <span className="sidebar-left">
               <i className="bi bi-person-lines-fill"></i>
               Leads
             </span>
             <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </div>
+          </NavLink>
 
           <div className="sidebar-item">
             <span className="sidebar-left">
