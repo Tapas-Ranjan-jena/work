@@ -40,3 +40,30 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+/**
+ * A fetch-based API request utility for services that require it.
+ * Centralizes base URL and authorization headers.
+ */
+export async function apiRequest(endpoint: string, options: RequestInit = {}) {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://13.126.81.144:3000/api/v1';
+    const token = sessionStorage.getItem('accessToken');
+
+    const headers = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+    };
+
+    const response = await fetch(`${baseURL}${endpoint}`, {
+        ...options,
+        headers,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `API request failed with status ${response.status}`);
+    }
+
+    return response.json();
+}

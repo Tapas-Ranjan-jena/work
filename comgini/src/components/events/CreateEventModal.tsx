@@ -7,9 +7,10 @@ type Props = {
     open: boolean
     onClose: () => void
     onSuccess?: () => void
+    clientId?: number
 }
 
-export default function CreateEventModal({ open, onClose, onSuccess }: Props) {
+export default function CreateEventModal({ open, onClose, onSuccess, clientId }: Props) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -17,7 +18,7 @@ export default function CreateEventModal({ open, onClose, onSuccess }: Props) {
         start_datetime: '',
         end_datetime: '',
         location: '',
-        company_id: ''
+        company_id: clientId || ''
     })
 
     const [isLoading, setIsLoading] = useState(false)

@@ -1,0 +1,18 @@
+﻿src/components/modals/ApplyLeaveModal.tsx(1,1): error TS6133: 'useState' is declared but its value is never read.
+src/components/modals/AssignLeaveModal.tsx(1,1): error TS6133: 'useState' is declared but its value is never read.
+src/components/modals/OfficialHolidayModal.tsx(1,1): error TS6133: 'useState' is declared but its value is never read.
+src/context/AuthContext.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/context/AuthContext.tsx(4,52): error TS6196: 'ForgotPasswordRequest' is declared but never used.
+src/pages/dashboard/assignments/tabs/tasks/TaskDetailsView.tsx(35,32): error TS2339: Property 'starTask' does not exist on type '{ getAllTasks: (page?: number, limit?: number) => Promise<any>; getTaskById: (taskId: string | number) => Promise<any>; createTask: (payload: CreateTaskPayload) => Promise<...>; ... 6 more ...; getTimesheetsReport: () => Promise<...>; }'.
+src/pages/dashboard/assignments/tabs/tasks/TaskDetailsView.tsx(45,32): error TS2339: Property 'updateTaskStatus' does not exist on type '{ getAllTasks: (page?: number, limit?: number) => Promise<any>; getTaskById: (taskId: string | number) => Promise<any>; createTask: (payload: CreateTaskPayload) => Promise<...>; ... 6 more ...; getTimesheetsReport: () => Promise<...>; }'.
+src/pages/dashboard/assignments/tabs/tasks/TaskDetailsView.tsx(56,32): error TS2339: Property 'deleteTask' does not exist on type '{ getAllTasks: (page?: number, limit?: number) => Promise<any>; getTaskById: (taskId: string | number) => Promise<any>; createTask: (payload: CreateTaskPayload) => Promise<...>; ... 6 more ...; getTimesheetsReport: () => Promise<...>; }'.
+src/pages/dashboard/clients/clientDashboard/tabs/Charges.tsx(2,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/dashboard/clients/clientDashboard/tabs/DirectorsDetails.tsx(2,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/dashboard/clients/clientDashboard/tabs/MCATransaction.tsx(2,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/dashboard/clients/clientDashboard/tabs/PastDirectors.tsx(2,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/dashboard/clients/clientDashboard/tabs/Shareholders.tsx(2,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/dashboard/clients/ClientEvents.tsx(43,17): error TS2322: Type '{ open: boolean; onClose: () => void; onSuccess: () => void; clientId: number; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'clientId' does not exist on type 'IntrinsicAttributes & Props'.
+src/pages/dashboard/finance/incomeExpense/IncomeExpenseSummary.tsx(6,35): error TS6133: 'isLoading' is declared but its value is never read.
+src/services/auth/auth.service.ts(2,79): error TS6196: 'ForgotPasswordRequest' is declared but never used.
+src/services/hrmsService.ts(1,10): error TS2614: Module '"../api/api"' has no exported member 'apiRequest'. Did you mean to use 'import apiRequest from "../api/api"' instead?

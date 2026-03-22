@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 import tasksService from "../../../../../services/tasksService";
+import TaskCard from "./components/TaskCard";
+import TaskFilterBar from "./components/TaskFilterBar";
 
 export default function TaskList() {
     const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const fetchTasks = async () => {
         try {
             setLoading(true);
+            // Fetching a large batch to handle local pagination for now, 
+            // as the requirement doesn't specify server-side pagination details.
             const res = await tasksService.getAllTasks(1, 100);
-            console.log("Tasks response:", res);
             let parsedTasks = [];
             if (res.data && Array.isArray(res.data.data)) {
                 parsedTasks = res.data.data;
@@ -28,73 +33,81 @@ export default function TaskList() {
 
     useEffect(() => {
         fetchTasks();
-
         const handleChildCreatedTask = () => fetchTasks();
         window.addEventListener("taskCreated", handleChildCreatedTask);
-
         return () => window.removeEventListener("taskCreated", handleChildCreatedTask);
     }, []);
 
+    // Pagination Logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentTasks = tasks.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(tasks.length / itemsPerPage);
+
+    const handleNext = () => {
+        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    };
+
+    const handlePrev = () => {
+        if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    };
+
     return (
-        <div className="table-responsive border rounded">
-            <table className="table table-sm table-bordered align-middle mb-0">
-                <thead style={{ background: "#f4f5f7" }}>
-                    <tr>
-                        <th style={{ width: 40 }}>
-                            <input type="checkbox" />
-                        </th>
-                        <th>Task</th>
-                        <th>Assignee</th>
-                        <th>Client</th>
-                        <th>Priority</th>
-                        <th>Due Date</th>
-                        <th>Status</th>
-                        <th style={{ width: 40 }}>
-                            <i className="bi bi-list"></i>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {loading ? (
-                        <tr>
-                            <td colSpan={8} className="text-center py-4">Loading tasks...</td>
-                        </tr>
-                    ) : tasks.length === 0 ? (
-                        <tr>
-                            <td colSpan={8} className="text-center py-4 text-muted">No tasks found.</td>
-                        </tr>
-                    ) : (
-                        tasks.map((task) => (
-                            <tr key={task.id}>
-                                <td>
-                                    <input type="checkbox" />
-                                </td>
-                                <td>
-                                    <div className="fw-semibold text-primary">{task.title}</div>
-                                </td>
-                                <td>{task.assigned_to_name || "-"}</td>
-                                <td>{task.client_name || "-"}</td>
-                                <td>
-                                    <span className={`badge ${task.priority === "high" ? "bg-danger" : task.priority === "low" ? "bg-info" : "bg-warning"}`}>
-                                        {task.priority || "-"}
-                                    </span>
-                                </td>
-                                <td>{task.due_date ? new Date(task.due_date).toLocaleDateString() : "-"}</td>
-                                <td>
-                                    <span className={`badge ${task.status === "completed" ? "bg-success" : task.status === "todo" ? "bg-secondary" : "bg-primary"}`}>
-                                        {task.status || "-"}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button className="btn btn-sm btn-light border" title="Actions are currently unsupported">
-                                        <i className="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+        <div className="task-list-container">
+            {/* Filter Bar */}
+            <TaskFilterBar />
+
+            {/* Task Area with Grey Background */}
+            <div className="p-4 rounded-4" style={{ backgroundColor: "#f3f4f7", minHeight: "60vh" }}>
+                {loading ? (
+                    <div className="text-center py-5">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <p className="mt-2 text-muted">Loading tasks...</p>
+                    </div>
+                ) : tasks.length === 0 ? (
+                    <div className="text-center py-5 text-muted">
+                        <i className="bi bi-clipboard-x display-4"></i>
+                        <p className="mt-3">No tasks found.</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+                            {currentTasks.map((task, idx) => (
+                                <div className="col" key={task.id || idx}>
+                                    <TaskCard task={task} index={indexOfFirstItem + idx} />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Pagination Buttons */}
+                        {totalPages > 1 && (
+                            <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
+                                <button
+                                    className={`btn btn-white shadow-sm border rounded-circle d-flex align-items-center justify-content-center ${currentPage === 1 ? 'opacity-50' : ''}`}
+                                    style={{ width: 40, height: 40 }}
+                                    onClick={handlePrev}
+                                    disabled={currentPage === 1}
+                                >
+                                    <i className="bi bi-chevron-left"></i>
+                                </button>
+                                <span className="fw-semibold text-muted small">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button
+                                    className={`btn btn-white shadow-sm border rounded-circle d-flex align-items-center justify-content-center ${currentPage === totalPages ? 'opacity-50' : ''}`}
+                                    style={{ width: 40, height: 40 }}
+                                    onClick={handleNext}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    <i className="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
-    )
+    );
 }

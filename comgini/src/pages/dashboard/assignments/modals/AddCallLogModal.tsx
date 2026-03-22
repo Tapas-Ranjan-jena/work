@@ -2,6 +2,8 @@ import { createPortal } from "react-dom"
 import { useRef, useState } from "react"
 import toast from "react-hot-toast"
 import tasksService from "../../../../services/tasksService"
+import clientService from "../../../../services/clients/client.service"
+import { useEffect } from "react"
 
 type Props = {
     open: boolean
@@ -11,12 +13,30 @@ type Props = {
 export default function AddCallLogModal({ open, onClose }: Props) {
     const fileRef = useRef<HTMLInputElement>(null)
 
+    const [clientId, setClientId] = useState<number | string>("")
     const [contactPerson, setContactPerson] = useState("")
     const [mobileNumber, setMobileNumber] = useState("")
     const [startTime, setStartTime] = useState("")
     const [endTime, setEndTime] = useState("")
+    const [durationMinutes, setDurationMinutes] = useState<number | string>(0)
     const [notes, setNotes] = useState("")
     const [loading, setLoading] = useState(false)
+    const [clients, setClients] = useState<any[]>([])
+
+    useEffect(() => {
+        if (open) {
+            fetchClients()
+        }
+    }, [open])
+
+    const fetchClients = async () => {
+        try {
+            const res = await clientService.getClients(1, 100)
+            setClients(res.data || [])
+        } catch (error) {
+            console.error("Failed to fetch clients", error)
+        }
+    }
 
     if (!open) return null
 
@@ -27,18 +47,32 @@ export default function AddCallLogModal({ open, onClose }: Props) {
         }
         try {
             setLoading(true)
-            await tasksService.createCallLog({
-                client_id: null,
+
+            // Format time strings to match backend (Comment in tasksService.ts says "YYYY-MM-DD HH:mm:ss")
+            const formatTime = (t: string) => {
+                if (!t) return ""
+                // Browser datetime-local gives YYYY-MM-DDTHH:mm, we replace T and add :00
+                return t.replace("T", " ") + ":00"
+            }
+
+            const payload = {
+                client_id: clientId ? Number(clientId) : null,
+                company_id: clientId ? Number(clientId) : null, // Added company_id as well
                 contact_person: contactPerson,
                 mobile_number: mobileNumber,
-                start_time: startTime,
-                end_time: endTime,
-                duration_minutes: 0,
+                start_time: formatTime(startTime),
+                end_time: formatTime(endTime),
+                duration_minutes: Number(durationMinutes) || 0,
                 notes
-            })
+            }
+
+            console.log("Call Log Payload being sent:", payload)
+
+            await tasksService.createCallLog(payload)
             toast.success("Operation successful")
             onClose()
         } catch (error: any) {
+            console.error("Call log error:", error.response?.data || error)
             toast.error(error.response?.data?.message || "Failed to add call log")
         } finally {
             setLoading(false)
@@ -73,11 +107,17 @@ export default function AddCallLogModal({ open, onClose }: Props) {
                 {/* ================= BODY ================= */}
                 <div style={{ padding: "20px 24px" }}>
 
-                    {/* Company name */}
+                    {/* Client name */}
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                        <label style={{ minWidth: 140, fontSize: 13, color: "#333" }}>Company name</label>
-                        <select className="form-select form-select-sm" style={{ flex: 1 }}>
-                            <option>-</option>
+                        <label style={{ minWidth: 140, fontSize: 13, color: "#333" }}>Client name</label>
+                        <select
+                            className="form-select form-select-sm"
+                            style={{ flex: 1 }}
+                            value={clientId}
+                            onChange={(e) => setClientId(e.target.value)}
+                        >
+                            <option value="">- Select Client -</option>
+                            {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
 
@@ -109,18 +149,22 @@ export default function AddCallLogModal({ open, onClose }: Props) {
                         />
                     </div>
 
-                    {/* Start time + End time */}
+                    {/* Start time */}
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                         <label style={{ minWidth: 140, fontSize: 13, color: "#333" }}>Start time</label>
                         <input
                             type="datetime-local"
                             className="form-control form-control-sm"
                             placeholder="Start time"
-                            style={{ flex: 1, marginRight: 8 }}
+                            style={{ flex: 1 }}
                             value={startTime}
                             onChange={(e) => setStartTime(e.target.value)}
                         />
-                        <label style={{ minWidth: 70, fontSize: 13, color: "#333" }}>End time</label>
+                    </div>
+
+                    {/* End time */}
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                        <label style={{ minWidth: 140, fontSize: 13, color: "#333" }}>End time</label>
                         <input
                             type="datetime-local"
                             className="form-control form-control-sm"
@@ -128,6 +172,19 @@ export default function AddCallLogModal({ open, onClose }: Props) {
                             style={{ flex: 1 }}
                             value={endTime}
                             onChange={(e) => setEndTime(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Duration (minutes) */}
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                        <label style={{ minWidth: 140, fontSize: 13, color: "#333" }}>Duration (minutes)</label>
+                        <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            placeholder="Duration in minutes"
+                            style={{ flex: 1 }}
+                            value={durationMinutes}
+                            onChange={(e) => setDurationMinutes(e.target.value)}
                         />
                     </div>
 

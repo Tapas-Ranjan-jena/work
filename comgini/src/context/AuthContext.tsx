@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import authService from '../services/auth/auth.service';
-import type { User, LoginRequest, RegisterRequest, ForgotPasswordRequest, ResetPasswordRequest, ApiResponse } from '../services/auth/types';
+import type { User, LoginRequest, RegisterRequest, ResetPasswordRequest, ApiResponse } from '../services/auth/types';
 
 interface AuthContextType {
     user: User | null;

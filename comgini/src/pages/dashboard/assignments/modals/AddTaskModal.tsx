@@ -1,5 +1,6 @@
 import { createPortal } from "react-dom"
 import { useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import tasksService from "../../../../services/tasksService"
 
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export default function AddTaskModal({ open, onClose }: Props) {
+    const navigate = useNavigate()
     const fileRef = useRef<HTMLInputElement>(null)
 
     // Form state
@@ -17,6 +19,8 @@ export default function AddTaskModal({ open, onClose }: Props) {
     const [clientId, setClientId] = useState<number | "">("")
     const [companyId, setCompanyId] = useState<number | "">("")
     const [priority, setPriority] = useState("high")
+    const [status, setStatus] = useState("todo")
+    const [assignedTo, setAssignedTo] = useState<number | "">("")
     const [dueDate, setDueDate] = useState("")
     const [estimatedHours, setEstimatedHours] = useState<number | "">("")
     const [category, setCategory] = useState("")
@@ -30,22 +34,30 @@ export default function AddTaskModal({ open, onClose }: Props) {
             return
         }
 
+        if (!companyId) {
+            toast.error("Company ID is required")
+            return
+        }
+
         try {
             setLoading(true)
             const payload = {
-                title: title,
-                description: description,
-                client_id: Number(clientId),
+                title: title.trim(),
+                description: description.trim(),
+                client_id: clientId ? Number(clientId) : null,
                 company_id: Number(companyId),
+                assigned_to: assignedTo ? Number(assignedTo) : null,
                 priority: priority,
+                status: status,
                 due_date: dueDate,
-                estimated_hours: Number(estimatedHours),
-                category: category
+                estimated_hours: Number(estimatedHours) || 0,
+                category: category.trim()
             }
             await tasksService.createTask(payload)
             toast.success("Task created successfully")
             window.dispatchEvent(new Event("taskCreated"))
             onClose()
+            navigate("/assignments/tasks/completed-task")
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Failed to create task")
         } finally {
@@ -132,6 +144,37 @@ export default function AddTaskModal({ open, onClose }: Props) {
                                         <option value="high">High</option>
                                         <option value="medium">Medium</option>
                                         <option value="low">Low</option>
+                                    </select>
+                                </div>
+
+                                {/* Assigned To */}
+                                <div className="col-md-4">
+                                    <label className="small mb-0">Assigned To (Member ID)</label>
+                                </div>
+                                <div className="col-md-8">
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="Enter member ID"
+                                        value={assignedTo}
+                                        onChange={(e) => setAssignedTo(e.target.value ? Number(e.target.value) : "")}
+                                    />
+                                </div>
+
+                                {/* Status */}
+                                <div className="col-md-4">
+                                    <label className="small mb-0">Status</label>
+                                </div>
+                                <div className="col-md-8">
+                                    <select
+                                        className="form-select"
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                    >
+                                        <option value="todo">To Do</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="review">Review</option>
+                                        <option value="completed">Completed</option>
                                     </select>
                                 </div>
 

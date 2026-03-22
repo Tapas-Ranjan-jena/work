@@ -3,7 +3,7 @@ import type { MonthRow } from "./incomeExpenseData"
 
 export default function IncomeExpenseSummary() {
 
-  const { data, setData, summary, isLoading } = useOutletContext<{
+  const { data, setData, summary } = useOutletContext<{
     data: MonthRow[]
     setData: React.Dispatch<React.SetStateAction<MonthRow[]>>
     summary: { income: number, expenses: number, netProfit: number }

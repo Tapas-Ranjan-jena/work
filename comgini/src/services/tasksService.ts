@@ -6,7 +6,9 @@ export interface CreateTaskPayload {
     description: string;
     client_id: number | null;
     company_id: number;
+    assigned_to: number | null;
     priority: string;
+    status?: string;
     due_date: string;
     estimated_hours: number;
     category: string;
@@ -69,6 +71,36 @@ const tasksService = {
     updateTask: async (taskId: number | string, payload: UpdateTaskPayload) => {
         try {
             const response = await api.put(`/tasks/${taskId}`, payload);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /** STAR TASK */
+    starTask: async (taskId: number | string) => {
+        try {
+            const response = await api.post(`/tasks/${taskId}/star`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /** UPDATE TASK STATUS */
+    updateTaskStatus: async (taskId: number | string, status: string) => {
+        try {
+            const response = await api.put(`/tasks/${taskId}/status`, { status });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /** DELETE TASK */
+    deleteTask: async (taskId: number | string) => {
+        try {
+            const response = await api.delete(`/tasks/${taskId}`);
             return response.data;
         } catch (error) {
             throw error;
