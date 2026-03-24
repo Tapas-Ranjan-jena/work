@@ -12,18 +12,15 @@ export default function CompletedTask() {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const res = await tasksService.getAllTasks(1, 100);
-            let allTasks = [];
+            const res = await tasksService.getAllTasks(1, 100, "completed");
+            let completed = [];
             if (res.data && Array.isArray(res.data.data)) {
-                allTasks = res.data.data;
+                completed = res.data.data;
             } else if (Array.isArray(res.data)) {
-                allTasks = res.data;
+                completed = res.data;
             } else if (res.data && Array.isArray(res.data.tasks)) {
-                allTasks = res.data.tasks;
+                completed = res.data.tasks;
             }
-
-            // Filter for completed tasks only
-            const completed = allTasks.filter((t: any) => t.status === "completed");
             setTasks(completed);
         } catch (error) {
             console.error("Failed to fetch completed tasks", error);

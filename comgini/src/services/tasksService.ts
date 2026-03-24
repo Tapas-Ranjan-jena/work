@@ -37,10 +37,14 @@ export interface CallLogPayload {
 
 const tasksService = {
 
-    /** GET ALL TASKS */
-    getAllTasks: async (page: number = 1, limit: number = 20) => {
+    /** GET ALL TASKS with filters */
+    getAllTasks: async (page: number = 1, limit: number = 20, status?: string, is_starred?: boolean) => {
         try {
-            const response = await api.get(`/tasks?page=${page}&limit=${limit}`);
+            const params: any = { page, limit };
+            if (status) params.status = status;
+            if (is_starred !== undefined) params.is_starred = is_starred;
+
+            const response = await api.get("/tasks", { params });
             return response.data;
         } catch (error) {
             throw error;
@@ -77,10 +81,10 @@ const tasksService = {
         }
     },
 
-    /** STAR TASK */
+    /** STAR TASK (Toggle) */
     starTask: async (taskId: number | string) => {
         try {
-            const response = await api.post(`/tasks/${taskId}/star`);
+            const response = await api.patch(`/tasks/${taskId}/star`);
             return response.data;
         } catch (error) {
             throw error;

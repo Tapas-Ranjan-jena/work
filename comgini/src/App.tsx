@@ -11,7 +11,7 @@ import ResetPassword from "./pages/auth/ResetPassword"
 
 /* ================= DASHBOARD ================= */
 import DashboardLayout from "./layouts/DashboardLayout"
-import DashboardHome from "./pages/dashboard/DashboardHome"
+import Dashboard from "./pages/dashboard/index"
 import ClientsPage from "./pages/dashboard/clients/ClientsPage"
 
 /* ================= REQUESTED DOCUMENTS ================= */
@@ -215,7 +215,7 @@ export default function App() {
 
             <Route index element={<Navigate to="dashboard" replace />} />
 
-            <Route path="dashboard" element={<DashboardHome />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="clients" element={<ClientsPage />} />
 
             <Route path="requested-documents" element={<RequestedDocuments />} />

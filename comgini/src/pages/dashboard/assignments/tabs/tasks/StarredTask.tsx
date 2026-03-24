@@ -12,18 +12,15 @@ export default function StarredTask() {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const res = await tasksService.getAllTasks(1, 100);
-            let allTasks = [];
+            const res = await tasksService.getAllTasks(1, 100, undefined, true);
+            let starred = [];
             if (res.data && Array.isArray(res.data.data)) {
-                allTasks = res.data.data;
+                starred = res.data.data;
             } else if (Array.isArray(res.data)) {
-                allTasks = res.data;
+                starred = res.data;
             } else if (res.data && Array.isArray(res.data.tasks)) {
-                allTasks = res.data.tasks;
+                starred = res.data.tasks;
             }
-
-            // Filter for "todo" tasks as requested by user for Starred tab
-            const starred = allTasks.filter((t: any) => t.status === "todo");
             setTasks(starred);
         } catch (error) {
             console.error("Failed to fetch starred tasks", error);

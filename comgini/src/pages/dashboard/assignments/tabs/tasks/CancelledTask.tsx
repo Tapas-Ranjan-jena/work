@@ -12,18 +12,15 @@ export default function CancelledTask() {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const res = await tasksService.getAllTasks(1, 100);
-            let allTasks = [];
+            const res = await tasksService.getAllTasks(1, 100, "cancelled");
+            let cancelled = [];
             if (res.data && Array.isArray(res.data.data)) {
-                allTasks = res.data.data;
+                cancelled = res.data.data;
             } else if (Array.isArray(res.data)) {
-                allTasks = res.data;
+                cancelled = res.data;
             } else if (res.data && Array.isArray(res.data.tasks)) {
-                allTasks = res.data.tasks;
+                cancelled = res.data.tasks;
             }
-
-            // Filter for cancelled tasks
-            const cancelled = allTasks.filter((t: any) => t.status === "cancelled");
             setTasks(cancelled);
         } catch (error) {
             console.error("Failed to fetch cancelled tasks", error);
