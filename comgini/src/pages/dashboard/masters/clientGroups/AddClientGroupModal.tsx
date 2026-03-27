@@ -1,8 +1,35 @@
+import { useState } from "react"
+import mastersService from "../../../../services/mastersService"
+import toast from "react-hot-toast"
+
 type Props={
   onClose:()=>void
+  onSuccess?:()=>void
 }
 
-export default function AddClientGroupModal({onClose}:Props){
+export default function AddClientGroupModal({onClose, onSuccess}:Props){
+  const [formData, setFormData] = useState({
+    title: "",
+    contact_name: "",
+    contact_no: "",
+    email: ""
+  })
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!formData.title) return toast.error("Title is required")
+
+    setLoading(true)
+    try {
+      await mastersService.createClientGroup(formData)
+      toast.success("Client group added successfully")
+      if (onSuccess) onSuccess()
+    } catch (error: any) {
+      toast.error(error.message || "Failed to add client group")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return(
     <div
@@ -37,23 +64,43 @@ export default function AddClientGroupModal({onClose}:Props){
           <div className="row g-3">
 
             <div className="col-12">
-              <label>Title</label>
-              <input className="form-control" placeholder="Title"/>
+              <label className="form-label small fw-bold text-muted mb-1">Title <span className="text-danger">*</span></label>
+              <input 
+                className="form-control" 
+                placeholder="Title"
+                value={formData.title}
+                onChange={e => setFormData({...formData, title: e.target.value})}
+              />
             </div>
 
             <div className="col-12">
-              <label>Contact Name</label>
-              <input className="form-control" placeholder="Contact Name"/>
+              <label className="form-label small fw-bold text-muted mb-1">Contact Name</label>
+              <input 
+                className="form-control" 
+                placeholder="Contact Name"
+                value={formData.contact_name}
+                onChange={e => setFormData({...formData, contact_name: e.target.value})}
+              />
             </div>
 
             <div className="col-12">
-              <label>Contact No</label>
-              <input className="form-control" placeholder="Contact No"/>
+              <label className="form-label small fw-bold text-muted mb-1">Contact No</label>
+              <input 
+                className="form-control" 
+                placeholder="Contact No"
+                value={formData.contact_no}
+                onChange={e => setFormData({...formData, contact_no: e.target.value})}
+              />
             </div>
 
             <div className="col-12">
-              <label>Email ID</label>
-              <input className="form-control" placeholder="Email ID"/>
+              <label className="form-label small fw-bold text-muted mb-1">Email ID</label>
+              <input 
+                className="form-control" 
+                placeholder="Email ID"
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+              />
             </div>
 
           </div>
@@ -63,18 +110,22 @@ export default function AddClientGroupModal({onClose}:Props){
         {/* FOOTER */}
         <div className="border-top p-3 d-flex justify-content-end gap-2">
           <button
-            className="btn btn-light btn-sm"
+            className="btn btn-light btn-sm px-4"
             onClick={onClose}
+            disabled={loading}
           >
-            <i className="bi bi-x-circle me-1"></i>
-            Close
+            Cancel
           </button>
 
           <button
-            className="btn btn-sm"
+            className="btn btn-sm px-4"
             style={{background:"#2E388E",color:"#fff"}}
+            onClick={handleSubmit}
+            disabled={loading}
           >
-            <i className="bi bi-check-circle me-1"></i>
+            {loading ? (
+              <span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />
+            ) : null}
             Save
           </button>
         </div>

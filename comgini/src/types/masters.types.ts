@@ -32,6 +32,55 @@ export interface Company {
     paid_up_capital: string;
 }
 
+export interface ClientGroup {
+    id: number;
+    title: string;
+    contact_name: string;
+    contact_no: string;
+    email: string;
+    created_at: string;
+}
+
+export interface CreateClientGroupRequest {
+    title: string;
+    contact_name: string;
+    contact_no: string;
+    email: string;
+}
+
+
+export interface GenerateMISRequest {
+    company_id: number;
+    date: string;
+    type: "company" | "llp";
+}
+
+export interface MISReport {
+    id: number;
+    company_id: number;
+    mis_date: string;
+    type: string;
+    generated_by: string;
+    origin: string;
+    export_link: string;
+    generated_on: string;
+    created_at: string;
+    generated_for: string;
+}
+
+export interface PrimaryContact {
+    id: number;
+    client_id: number;
+    name: string;
+    designation: string;
+    email: string;
+    phone: string;
+    is_primary: boolean;
+    created_at: string;
+    client_name: string;
+    company_name: string;
+}
+
 export interface CreateCompanyRequest {
     name: string;
     cin: string;
@@ -124,4 +173,50 @@ export interface CreatePCSFirmRequest {
     phone: string;
     email: string;
     firm_type: "pcs";
+}
+
+// --- Auditor Types ---
+
+export interface Auditor {
+    id: number;
+    company_id: number;
+    category: string;
+    firm_registration_number: string;
+    firm_name: string;
+    pan: string;
+    firm_email: string;
+    address: string;
+    country: string;
+    state: string;
+    city: string;
+    membership_number: string;
+    auditor_name: string;
+    mobile: string;
+    email: string;
+    designation: string;
+    certificate_of_practice?: string;
+    letterhead_type?: "standard" | "custom";
+    created_by?: number;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface CreateAuditorRequest {
+    company_id: number;
+    category: string;
+    firm_registration_number: string;
+    firm_name: string;
+    pan: string;
+    firm_email: string;
+    address: string;
+    country: string;
+    state: string;
+    city: string;
+    membership_number: string;
+    auditor_name: string;
+    mobile: string;
+    email: string;
+    designation: string;
+    certificate_of_practice?: string;
+    letterhead_type?: "standard" | "custom";
 }

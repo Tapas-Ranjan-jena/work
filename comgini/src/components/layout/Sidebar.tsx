@@ -27,6 +27,7 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
 
   /* ⭐ HRMS DROPDOWN STATE */
   const [hrmsOpen, setHrmsOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
 
   /* ⭐ AUTO OPEN DROPDOWNS IF ROUTE ACTIVE */
   useEffect(() => {
@@ -52,6 +53,9 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
     }
     if (location.pathname.includes("/hrms")) {
       setHrmsOpen(true)
+    }
+    if (location.pathname.startsWith("/help-support")) {
+      setHelpOpen(true)
     }
   }, [location.pathname])
 
@@ -653,21 +657,47 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
   </div>
 )}
 
-          <div className="sidebar-item">
+          {/* ================= HELP & SUPPORT DROPDOWN ================= */}
+          <div
+            className={`sidebar-item ${location.pathname.startsWith("/help-support") ? "active" : ""}`}
+            onClick={() => setHelpOpen(!helpOpen)}
+            style={{ cursor: "pointer" }}
+          >
             <span className="sidebar-left">
               <i className="bi bi-question-circle"></i>
-              Help & Support
+              Help &amp; Support
             </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
+            <i className={`bi ${helpOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
           </div>
 
-          <div className="sidebar-item">
+          {helpOpen && (
+            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
+              <NavLink to="/help-support/updates" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Updates
+              </NavLink>
+              <NavLink to="/help-support/user-manual" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                User Manual
+              </NavLink>
+              <NavLink to="/help-support/help-videos" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Help Videos
+              </NavLink>
+              <NavLink to="/help-support/help-center" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Help Center
+              </NavLink>
+            </div>
+          )}
+
+          <NavLink
+            to="/announcements"
+            onClick={handleNavClick}
+            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+          >
             <span className="sidebar-left">
               <i className="bi bi-megaphone"></i>
               Announcements
             </span>
             <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </div>
+          </NavLink>
 
           <NavLink
             to="/leads"

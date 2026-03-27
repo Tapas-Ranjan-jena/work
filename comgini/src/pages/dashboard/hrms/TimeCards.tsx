@@ -1,9 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddTimeModal from "../../../components/modals/AddTimeModal";
+import hrmsService from "../../../services/hrms/hrms.service";
+import type { AttendanceRecord } from "../../../services/hrms/types";
 
 export default function TimeCards() {
     const [activeTab, setActiveTab] = useState("Daily");
     const [showAddModal, setShowAddModal] = useState(false);
+    const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+    const [isLoadingAttendance, setIsLoadingAttendance] = useState(false);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+    const fetchAttendance = async () => {
+        setIsLoadingAttendance(true);
+        try {
+            const data = await hrmsService.getAttendance(selectedMonth, selectedYear);
+            setAttendance(data);
+        } catch {
+            // Silently fail
+        } finally {
+            setIsLoadingAttendance(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === "Daily") {
+            fetchAttendance();
+        }
+    }, [activeTab, selectedMonth, selectedYear]);
 
     const tabs = [
         "Daily",
@@ -57,15 +81,36 @@ export default function TimeCards() {
                         )}
 
                         {activeTab === "Daily" || activeTab === "Members Logged" ? (
-                            <div className="btn-group btn-group-sm ms-1">
-                                <button className="btn btn-light border bg-white px-2">
-                                    <i className="bi bi-chevron-left"></i>
-                                </button>
-                                <button className="btn btn-light border bg-white px-3" style={{ fontSize: "12px" }}>Today</button>
-                                <button className="btn btn-light border bg-white px-2">
-                                    <i className="bi bi-chevron-right"></i>
-                                </button>
-                            </div>
+                            activeTab === "Daily" ? (
+                                <div className="d-flex gap-1 ms-1 align-items-center">
+                                    <select
+                                        className="form-select form-select-sm"
+                                        style={{ width: "110px", fontSize: "12px" }}
+                                        value={selectedMonth}
+                                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                                    >
+                                        {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
+                                            <option key={i+1} value={i+1}>{m}</option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        style={{ width: "85px", fontSize: "12px" }}
+                                        value={selectedYear}
+                                        onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                    >
+                                        {[2023, 2024, 2025, 2026].map((y) => (
+                                            <option key={y} value={y}>{y}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            ) : (
+                                <div className="btn-group btn-group-sm ms-1">
+                                    <button className="btn btn-light border bg-white px-2"><i className="bi bi-chevron-left"></i></button>
+                                    <button className="btn btn-light border bg-white px-3" style={{ fontSize: "12px" }}>Today</button>
+                                    <button className="btn btn-light border bg-white px-2"><i className="bi bi-chevron-right"></i></button>
+                                </div>
+                            )
                         ) : activeTab === "Logged in-out" ? null : (
                             <div className="d-flex gap-0 ms-1">
                                 <input type="text" className="form-control form-control-sm text-center" defaultValue="23rd February 2026" style={{ width: "140px", fontSize: "12px", borderRight: 0, borderRadius: "4px 0 0 4px" }} />
@@ -198,6 +243,48 @@ export default function TimeCards() {
             );
         }
 
+        if (activeTab === "Daily") {
+            if (isLoadingAttendance) {
+                return (
+                    <tr>
+                        <td colSpan={8} className="text-center py-4">
+                            <div className="spinner-border spinner-border-sm text-primary me-2"></div>
+                            Loading attendance...
+                        </td>
+                    </tr>
+                );
+            }
+            if (attendance.length === 0) {
+                return (
+                    <tr>
+                        <td colSpan={8} className="text-center py-4 text-muted" style={{ fontSize: "13px" }}>
+                            No attendance records for this period.
+                        </td>
+                    </tr>
+                );
+            }
+            return (
+                <>
+                    {attendance.map((record) => (
+                        <tr key={record.id}>
+                            <td style={{ fontSize: "13px" }}>{record.first_name} {record.last_name}</td>
+                            <td style={{ fontSize: "13px" }}>{record.date ? new Date(record.date).toLocaleDateString() : "-"}</td>
+                            <td style={{ fontSize: "13px" }}>{record.in_time ? new Date(record.in_time).toLocaleTimeString() : "-"}</td>
+                            <td style={{ fontSize: "13px" }}>{record.date ? new Date(record.date).toLocaleDateString() : "-"}</td>
+                            <td style={{ fontSize: "13px" }}>{record.out_time ? new Date(record.out_time).toLocaleTimeString() : "-"}</td>
+                            <td className="text-center" style={{ fontSize: "13px" }}>{record.working_hours || "-"}</td>
+                            <td className="text-center" style={{ fontSize: "13px" }}>
+                                <span className={`badge ${record.status === 'present' ? 'bg-success' : record.status === 'absent' ? 'bg-danger' : 'bg-warning text-dark'}`}>
+                                    {record.status?.toUpperCase()}
+                                </span>
+                            </td>
+                            <td className="text-center"></td>
+                        </tr>
+                    ))}
+                </>
+            );
+        }
+
         return (
             <tr>
                 <td colSpan={15} className="text-center py-4 text-muted" style={{ fontSize: "13px" }}>
@@ -206,6 +293,7 @@ export default function TimeCards() {
             </tr>
         );
     }
+
 
     return (
         <div className="time-cards-page p-1">

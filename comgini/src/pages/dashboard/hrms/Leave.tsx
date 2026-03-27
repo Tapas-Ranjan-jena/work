@@ -1,13 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ApplyLeaveModal from "../../../components/modals/ApplyLeaveModal";
 import AssignLeaveModal from "../../../components/modals/AssignLeaveModal";
 import OfficialHolidayModal from "../../../components/modals/OfficialHolidayModal";
+import hrmsService from "../../../services/hrms/hrms.service";
+import type { LeaveRequest } from "../../../services/hrms/types";
 
 export default function Leave() {
     const [activeTab, setActiveTab] = useState("Official Leave");
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [showHolidayModal, setShowHolidayModal] = useState(false);
+    const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchLeaves = async () => {
+        setIsLoading(true);
+        try {
+            const data = await hrmsService.getLeaves();
+            setLeaves(data);
+        } catch {
+            // Silently fail if endpoint not available
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === "Pending approval" || activeTab === "All applications") {
+            fetchLeaves();
+        }
+    }, [activeTab]);
+
+    const handleApproveReject = async (id: number, status: 'approved' | 'rejected') => {
+        try {
+            await hrmsService.approveRejectLeave(id, status);
+            fetchLeaves();
+        } catch (err) {
+            console.error("Failed to update leave:", err);
+        }
+    };
+
+    const filteredLeaves = activeTab === "Pending approval"
+        ? leaves.filter((l) => l.status === "pending")
+        : leaves;
 
     const tabs = [
         "Official Leave",
@@ -190,18 +225,61 @@ export default function Leave() {
                             {renderTableHeader()}
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colSpan={10} className="text-center py-4 text-muted" style={{ fontSize: "13px" }}>
-                                    No record found.
-                                </td>
-                            </tr>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={10} className="text-center py-4">
+                                        <div className="spinner-border spinner-border-sm text-primary me-2"></div>
+                                        Loading...
+                                    </td>
+                                </tr>
+                            ) : (activeTab === "Pending approval" || activeTab === "All applications") && filteredLeaves.length > 0 ? (
+                                filteredLeaves.map((leave) => (
+                                    <tr key={leave.id}>
+                                        <td style={{ fontSize: "13px" }}>Employee #{leave.employee_id}</td>
+                                        <td style={{ fontSize: "13px" }}>{leave.leave_type}</td>
+                                        <td style={{ fontSize: "13px" }}>{new Date(leave.start_date).toLocaleDateString()} – {new Date(leave.end_date).toLocaleDateString()}</td>
+                                        <td style={{ fontSize: "13px" }}>{leave.total_days} day(s)</td>
+                                        <td>
+                                            <span className={`badge ${leave.status === 'approved' ? 'bg-success' : leave.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark'}`}>
+                                                {leave.status.toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td className="text-center">
+                                            {leave.status === "pending" && (
+                                                <div className="d-flex gap-1 justify-content-center">
+                                                    <button
+                                                        className="btn btn-sm btn-success py-0 px-2"
+                                                        onClick={() => handleApproveReject(leave.id, "approved")}
+                                                    >
+                                                        ✓
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-outline-danger py-0 px-2"
+                                                        onClick={() => handleApproveReject(leave.id, "rejected")}
+                                                    >
+                                                        ✗
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={10} className="text-center py-4 text-muted" style={{ fontSize: "13px" }}>
+                                        No record found.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
 
                 {/* ⭐ PAGINATION */}
                 <div className="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2 px-3">
-                    <span className="text-muted" style={{ fontSize: "12px" }}>0-0 / 0</span>
+                    <span className="text-muted" style={{ fontSize: "12px" }}>
+                        {filteredLeaves.length > 0 ? `1-${filteredLeaves.length} / ${filteredLeaves.length}` : "0-0 / 0"}
+                    </span>
                     <nav>
                         <ul className="pagination pagination-sm mb-0">
                             <li className="page-item disabled">
@@ -216,7 +294,7 @@ export default function Leave() {
             </div>
 
             {/* ⭐ MODALS */}
-            {showApplyModal && <ApplyLeaveModal onClose={() => setShowApplyModal(false)} />}
+            {showApplyModal && <ApplyLeaveModal onClose={() => setShowApplyModal(false)} onSuccess={fetchLeaves} />}
             {showAssignModal && <AssignLeaveModal onClose={() => setShowAssignModal(false)} />}
             {showHolidayModal && <OfficialHolidayModal onClose={() => setShowHolidayModal(false)} />}
 

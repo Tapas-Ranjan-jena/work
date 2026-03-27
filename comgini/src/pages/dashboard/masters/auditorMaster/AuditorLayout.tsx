@@ -26,8 +26,11 @@ export default function AuditorLayout() {
                         <h6 className="m-0">Auditors List</h6>
 
                         <button
-                            onClick={() => navigate("statutory/company-wise")}
-                            className="btn btn-sm"
+                            onClick={() => {
+                                const activeTab = location.pathname.split("/").pop() || "statutory"
+                                navigate(`${activeTab}/company-wise`)
+                            }}
+                            className="btn btn-sm shadow-sm px-3"
                             style={{ background: "#2E388E", color: "#fff" }}
                         >
                             Company wise Auditor's List

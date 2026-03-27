@@ -129,21 +129,28 @@ function ClientPageContent() {
       )}
 
       {/* TABS */}
-      <div className="tabs mb-3">
-        <button
-          className={tab === "clients" ? "fw-bold" : ""}
-          onClick={() => setTab("clients")}
-        >
-          Clients
-        </button>
-
-        <button
-          className={tab === "contacts" ? "fw-bold" : ""}
-          onClick={() => setTab("contacts")}
-        >
-          Primary Contacts
-        </button>
-      </div>
+      <ul className="nav nav-pills mb-4 p-1 bg-light rounded-pill d-inline-flex shadow-sm border border-light">
+        <li className="nav-item">
+          <button
+            className={`nav-link rounded-pill px-4 py-2 ${tab === "clients" ? "active shadow" : "text-muted"}`}
+            onClick={() => setTab("clients")}
+            style={{ fontWeight: tab === "clients" ? "600" : "500", transition: "all 0.2s" }}
+          >
+            <i className="bi bi-buildings-fill me-2"></i>
+            Clients
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link rounded-pill px-4 py-2 ${tab === "contacts" ? "active shadow" : "text-muted"}`}
+            onClick={() => setTab("contacts")}
+            style={{ fontWeight: tab === "contacts" ? "600" : "500", transition: "all 0.2s" }}
+          >
+            <i className="bi bi-person-lines-fill me-2"></i>
+            Primary Contacts
+          </button>
+        </li>
+      </ul>
 
       {/* CONTENT */}
       {tab === "clients" ? (

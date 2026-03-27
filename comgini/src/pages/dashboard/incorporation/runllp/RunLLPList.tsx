@@ -164,14 +164,12 @@ export default function RunLLPList() {
         <table className="table table-bordered align-middle mb-0" style={{ fontSize: '0.85rem' }}>
           <thead className="table-light">
             <tr>
-              <th>Proposed Name 1</th>
-              <th>Proposed Name 2</th>
+              <th>LLP Name</th>
+              <th>Purpose</th>
               <th>MCA User</th>
               <th>SRN</th>
               <th>Status</th>
-              <th>Fee Paid</th>
-              <th>Created By</th>
-              <th>Created At</th>
+              <th>Last Submitted</th>
               <th className="text-center">Actions</th>
             </tr>
           </thead>
@@ -179,35 +177,33 @@ export default function RunLLPList() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={9} className="text-center py-4">
+                <td colSpan={7} className="text-center py-4">
                   <div className="spinner-border spinner-border-sm text-primary me-2"></div>
                   Loading incorporations...
                 </td>
               </tr>
             ) : incorporations.length === 0 ? (
               <tr>
-                <td colSpan={9} className="text-center py-4 text-muted">
+                <td colSpan={7} className="text-center py-4 text-muted">
                   No records found.
                 </td>
               </tr>
             ) : (
-              incorporations.map((inc) => (
+              incorporations.map((inc: any) => (
                 <tr key={inc.id}>
-                  <td>{inc.proposed_name_1}</td>
-                  <td>{inc.proposed_name_2}</td>
-                  <td>{inc.mca_user}</td>
+                  <td>{inc.llpName || inc.proposed_name_1 || "-"}</td>
+                  <td>{inc.purpose || inc.proposed_name_2 || "-"}</td>
+                  <td>{inc.mcaUser || inc.mca_user || "-"}</td>
                   <td>{inc.srn || "-"}</td>
                   <td>
-                    <span className={`badge ${inc.submission_status === 'approved' ? 'bg-success' :
-                      inc.submission_status === 'rejected' ? 'bg-danger' :
-                        inc.submission_status === 'submitted' ? 'bg-primary' : 'bg-secondary'
+                    <span className={`badge ${inc.status?.toLowerCase() === 'approved' || inc.submission_status?.toLowerCase() === 'approved' ? 'bg-success' :
+                      inc.status?.toLowerCase() === 'rejected' || inc.submission_status?.toLowerCase() === 'rejected' ? 'bg-danger' :
+                        inc.status?.toLowerCase() === 'submitted' || inc.submission_status?.toLowerCase() === 'submitted' ? 'bg-primary' : 'bg-secondary'
                       }`}>
-                      {inc.submission_status.toUpperCase()}
+                      {inc.status ? inc.status.toUpperCase() : inc.submission_status ? inc.submission_status.toUpperCase() : "PENDING"}
                     </span>
                   </td>
-                  <td>₹{inc.fee_paid}</td>
-                  <td>{inc.created_by_name}</td>
-                  <td>{new Date(inc.created_at).toLocaleDateString()}</td>
+                  <td>{inc.lastSubmitted ? new Date(inc.lastSubmitted).toLocaleDateString() : inc.created_at ? new Date(inc.created_at).toLocaleDateString() : "-"}</td>
                   <td className="text-center">
                     <button
                       className="btn btn-sm btn-outline-primary py-0 px-2"

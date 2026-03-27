@@ -12,6 +12,12 @@ import ResetPassword from "./pages/auth/ResetPassword"
 /* ================= DASHBOARD ================= */
 import DashboardLayout from "./layouts/DashboardLayout"
 import Dashboard from "./pages/dashboard/index"
+import AnnouncementsList from "./pages/dashboard/announcements/AnnouncementsList"
+import AddAnnouncement from "./pages/dashboard/announcements/AddAnnouncement"
+import HelpUpdates from "./pages/dashboard/helpSupport/Updates"
+import UserManual from "./pages/dashboard/helpSupport/UserManual"
+import HelpVideos from "./pages/dashboard/helpSupport/HelpVideos"
+import HelpCenter from "./pages/dashboard/helpSupport/HelpCenter"
 import ClientsPage from "./pages/dashboard/clients/ClientsPage"
 
 /* ================= REQUESTED DOCUMENTS ================= */
@@ -70,7 +76,7 @@ import AuditorLayout from "./pages/dashboard/masters/auditorMaster/AuditorLayout
 /* STATUTORY */
 import StatutoryAuditors from "./pages/dashboard/masters/auditorMaster/statutory/StatutoryAuditors"
 import AddStatutoryAuditor from "./pages/dashboard/masters/auditorMaster/statutory/AddStatutoryAuditor"
-import CompanyWiseStatutory from "./pages/dashboard/masters/auditorMaster/statutory/CompanyWiseStatutory"
+import CompanyWiseAuditors from "./pages/dashboard/masters/auditorMaster/CompanyWiseAuditors"
 
 /* SECRETARIAL */
 import SecretarialAuditors from "./pages/dashboard/masters/auditorMaster/secretarial/SecretarialAuditors"
@@ -269,19 +275,22 @@ export default function App() {
                 {/* STATUTORY */}
                 <Route path="statutory" element={<StatutoryAuditors />} />
                 <Route path="statutory/add" element={<AddStatutoryAuditor />} />
-                <Route path="statutory/company-wise" element={<CompanyWiseStatutory />} />
+                <Route path="statutory/company-wise" element={<CompanyWiseAuditors />} />
 
                 {/* SECRETARIAL */}
                 <Route path="secretarial" element={<SecretarialAuditors />} />
                 <Route path="secretarial/add" element={<AddSecretarialAuditor />} />
+                <Route path="secretarial/company-wise" element={<CompanyWiseAuditors />} />
 
                 {/* COST */}
                 <Route path="cost" element={<CostAuditors />} />
                 <Route path="cost/add" element={<AddCostAuditor />} />
+                <Route path="cost/company-wise" element={<CompanyWiseAuditors />} />
 
                 {/* INTERNAL */}
                 <Route path="internal" element={<InternalAuditors />} />
                 <Route path="internal/add" element={<AddInternalAuditor />} />
+                <Route path="internal/company-wise" element={<CompanyWiseAuditors />} />
 
               </Route>
 
@@ -464,6 +473,21 @@ export default function App() {
               <Route path="time-cards" element={<TimeCards />} />
               <Route path="leave" element={<Leave />} />
               <Route path="salary" element={<Salary />} />
+            </Route>
+
+            {/* ================= ANNOUNCEMENTS ================= */}
+            <Route path="announcements">
+              <Route index element={<AnnouncementsList />} />
+              <Route path="add" element={<AddAnnouncement />} />
+            </Route>
+
+            {/* ================= HELP & SUPPORT ================= */}
+            <Route path="help-support">
+              <Route index element={<Navigate to="updates" replace />} />
+              <Route path="updates" element={<HelpUpdates />} />
+              <Route path="user-manual" element={<UserManual />} />
+              <Route path="help-videos" element={<HelpVideos />} />
+              <Route path="help-center" element={<HelpCenter />} />
             </Route>
 
           </Route>

@@ -1,6 +1,8 @@
-import { NavLink, Outlet } from "react-router-dom"
+import { useState } from "react"
+import MISReportForm from "./MISReportForm"
 
-export default function MISReportLayout() {
+export default function ReportLayout() {
+  const [activeTab, setActiveTab] = useState("company")
 
   return (
     <div className="container-fluid">
@@ -26,31 +28,27 @@ export default function MISReportLayout() {
           style={{ borderBottom:"1px solid #e5e7eb" }}
         >
 
-          <NavLink
-            to="company"
-            className={({isActive}) =>
-              isActive ? "text-primary pb-2" : "text-muted pb-2"
-            }
-            style={{textDecoration:"none",borderBottom:"2px solid"}}
+          <div
+            onClick={() => setActiveTab("company")}
+            className={`pb-2 ${activeTab === "company" ? "text-primary border-bottom border-primary border-2" : "text-muted"}`}
+            style={{ cursor: "pointer" }}
           >
             Company
-          </NavLink>
+          </div>
 
-          {/* ⭐ FIXED HERE — missing } */}
-          <NavLink
-            to="llp"
-            className={({isActive}) =>
-              isActive ? "text-primary pb-2" : "text-muted pb-2"
-            }
-            style={{textDecoration:"none",borderBottom:"2px solid"}}
+          <div
+            onClick={() => setActiveTab("llp")}
+            className={`pb-2 ${activeTab === "llp" ? "text-primary border-bottom border-primary border-2" : "text-muted"}`}
+            style={{ cursor: "pointer" }}
           >
             LLP
-          </NavLink>
+          </div>
 
         </div>
 
         {/* ===== CHILD PAGE ===== */}
-        <Outlet />
+        {activeTab === "company" && <MISReportForm type="company" />}
+        {activeTab === "llp" && <MISReportForm type="llp" />}
 
       </div>
 

@@ -30,6 +30,7 @@ export default function PieChart() {
     const starredCount = tasks.filter(t => t.is_starred).length;
 
     const data = [
+        { name: "Starred", value: tasks.filter(t => t.is_starred).length, color: "#ffc107" },
         { name: "To Do", value: getCount(["todo", "pending", "pending_approval", "pending_review", "pending_signature"]), color: "#6c757d" },
         { name: "In Progress", value: getCount(["inprogress", "in_progress", "in_request", "further_processing"]), color: "#0d6efd" },
         { name: "Completed", value: getCount(["completed", "executed"]), color: "#198754" },

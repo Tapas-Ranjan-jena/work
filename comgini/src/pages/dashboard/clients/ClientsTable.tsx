@@ -38,16 +38,16 @@ export default function ClientsTable({ clients, loading, onEdit, onDelete }: Cli
     <div className="card shadow-sm">
       <div className="table-responsive">
 
-        <table className="table table-hover align-middle mb-0">
+        <table className="table align-middle mb-0" style={{ borderCollapse: "separate", borderSpacing: "0 0.5rem" }}>
 
-          <thead className="table-light">
+          <thead className="bg-light text-muted" style={{ letterSpacing: "0.5px", fontSize: "0.75rem", textTransform: "uppercase" }}>
             <tr>
-              <th>Company Name</th>
-              <th>CIN/LLPIN</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Status</th>
-              <th style={{ width: 100 }}>Actions</th>
+              <th className="border-0 rounded-start font-weight-bold p-3">Company Name</th>
+              <th className="border-0 font-weight-bold p-3">CIN/LLPIN</th>
+              <th className="border-0 font-weight-bold p-3">Email</th>
+              <th className="border-0 font-weight-bold p-3">Phone</th>
+              <th className="border-0 font-weight-bold p-3">Status</th>
+              <th className="border-0 rounded-end font-weight-bold p-3" style={{ width: 100 }}>Actions</th>
             </tr>
           </thead>
 
@@ -56,18 +56,21 @@ export default function ClientsTable({ clients, loading, onEdit, onDelete }: Cli
               <tr
                 key={item.id}
                 onClick={() => handleRowClick(item.id)}
-                style={{ cursor: 'pointer' }}
+                className="bg-white shadow-sm rounded transition-all hover-shadow"
+                style={{ cursor: "pointer", transition: "all 0.2s ease-in-out" }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px)") || (e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)") || (e.currentTarget.style.boxShadow = "0 1px 2px 0 rgba(0, 0, 0, 0.05)")}
               >
-                <td>{item.name}</td>
-                <td>{item.cin || '-'}</td>
-                <td>{item.email}</td>
-                <td>{item.phone}</td>
-                <td>
-                  <span className={`badge bg-${item.status === 'active' ? 'success' : 'secondary'}`}>
-                    {item.status}
+                <td className="p-3 border-0 rounded-start text-dark fw-semibold">{item.name}</td>
+                <td className="p-3 border-0 text-muted">{item.cin || '-'}</td>
+                <td className="p-3 border-0 text-muted">{item.email}</td>
+                <td className="p-3 border-0 text-muted">{item.phone}</td>
+                <td className="p-3 border-0">
+                  <span className={`badge rounded-pill px-3 py-2 bg-${item.status === 'active' ? 'success' : 'secondary'} bg-opacity-10 text-${item.status === 'active' ? 'success' : 'secondary'}`}>
+                    {(item.status || 'inactive').toUpperCase()}
                   </span>
                 </td>
-                <td>
+                <td className="p-3 border-0 rounded-end">
                   <div className="d-flex gap-2">
                     <button
                       className="btn btn-sm btn-link p-0"
