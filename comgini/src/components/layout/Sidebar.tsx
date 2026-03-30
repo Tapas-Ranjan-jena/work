@@ -28,6 +28,8 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
   /* ⭐ HRMS DROPDOWN STATE */
   const [hrmsOpen, setHrmsOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+  const [spOpen, setSpOpen] = useState(false)
+  const [resolutionsOpen, setResolutionsOpen] = useState(false)
 
   /* ⭐ AUTO OPEN DROPDOWNS IF ROUTE ACTIVE */
   useEffect(() => {
@@ -56,6 +58,12 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
     }
     if (location.pathname.startsWith("/help-support")) {
       setHelpOpen(true)
+    }
+    if (location.pathname.startsWith("/secretarial-practice")) {
+      setSpOpen(true)
+    }
+    if (location.pathname.startsWith("/resolutions-master")) {
+      setResolutionsOpen(true)
     }
   }, [location.pathname])
 
@@ -332,13 +340,100 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
             </div>
           )}
 
-          <div className="sidebar-item">
+          {/* ================= SECRETARIAL PRACTICE DROPDOWN ================= */}
+          <div
+            className={`sidebar-item ${spOpen ? "active" : ""}`}
+            onClick={() => setSpOpen(!spOpen)}
+            style={{ cursor: "pointer" }}
+          >
             <span className="sidebar-left">
               <i className="bi bi-briefcase"></i>
               Secretarial Practice
             </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
+            <i className={`bi ${spOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
           </div>
+
+          {spOpen && (
+            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
+              <NavLink to="/secretarial-practice/check-annual-filing" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Check Annual Filing Status From MCA
+              </NavLink>
+              <NavLink to="/secretarial-practice/tenure-tracker" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Tenure Tracker
+              </NavLink>
+              <NavLink to="/secretarial-practice/e-form-filing" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                E-form Filing Mgmt.
+              </NavLink>
+              <NavLink to="/secretarial-practice/upcoming-compliances" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Upcoming Compliances
+              </NavLink>
+              <NavLink to="/secretarial-practice/dsc-management" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                DSC Management
+              </NavLink>
+              <NavLink to="/secretarial-practice/dir3-kyc" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                DIR-3-KYC
+              </NavLink>
+              <NavLink to="/secretarial-practice/mca-v2-v3-user" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                MCA V2 & V3 User
+              </NavLink>
+              <NavLink to="/secretarial-practice/mca-transaction" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                MCA Transaction
+              </NavLink>
+              <NavLink to="/secretarial-practice/mca-v3-ac-creation" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                MCA V3 A/C Creation
+              </NavLink>
+              <NavLink to="/secretarial-practice/llp-mca-credentials" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                LLP MCA Credentials
+              </NavLink>
+              <NavLink to="/secretarial-practice/company-mca-credentials" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Company MCA Credentials
+              </NavLink>
+              <NavLink to="/secretarial-practice/director-mca-credentials" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Director MCA Credentials
+              </NavLink>
+              <NavLink to="/secretarial-practice/din-information" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                DIN Information
+              </NavLink>
+              <NavLink to="/secretarial-practice/particulars-of-forms" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Particulars of forms
+              </NavLink>
+              <NavLink to="/secretarial-practice/prepare-dir2" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Prepare DIR-2
+              </NavLink>
+              <NavLink to="/secretarial-practice/search-report" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Search Report
+              </NavLink>
+              <NavLink to="/secretarial-practice/bankers-pan-database" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Banker's PAN Database
+              </NavLink>
+              <NavLink to="/secretarial-practice/csr-calculation" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                CSR Calculation
+              </NavLink>
+            </div>
+          )}
+          {/* ================= RESOLUTIONS MASTER DROPDOWN ================= */}
+          <div
+            className={`sidebar-item ${resolutionsOpen ? "active" : ""}`}
+            onClick={() => setResolutionsOpen(!resolutionsOpen)}
+            style={{ cursor: "pointer" }}
+          >
+            <span className="sidebar-left">
+              <i className="bi bi-journal-check"></i>
+              Resolutions Master
+            </span>
+            <i className={`bi ${resolutionsOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
+          </div>
+
+          {resolutionsOpen && (
+            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
+              <NavLink to="/resolutions-master/board-resolutions" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                Board Resolutions
+              </NavLink>
+              <NavLink to="/resolutions-master/general-meeting-resolutions" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
+                General Meeting Resolutions
+              </NavLink>
+            </div>
+          )}
 
           {/* ================= CHECKLIST DROPDOWN ================= */}
           <div
@@ -711,13 +806,17 @@ const [assignmentsOpen, setAssignmentsOpen] = useState(false)
             <i className="bi bi-chevron-right sidebar-arrow"></i>
           </NavLink>
 
-          <div className="sidebar-item">
+          <NavLink
+            to="/settings"
+            onClick={handleNavClick}
+            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+          >
             <span className="sidebar-left">
               <i className="bi bi-gear"></i>
               Settings
             </span>
             <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </div>
+          </NavLink>
 
         </div>
       </div>

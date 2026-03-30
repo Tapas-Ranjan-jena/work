@@ -199,6 +199,48 @@ import Salary from "./pages/dashboard/hrms/Salary"
 
 import TaskDetailsView from "./pages/dashboard/assignments/tabs/tasks/TaskDetailsView"
 
+import SettingsLayout from "./pages/dashboard/settings/SettingsLayout"
+import GeneralSettings from "./pages/dashboard/settings/GeneralSettings"
+import EmailSettings from "./pages/dashboard/settings/EmailSettings"
+import NotificationSettings from "./pages/dashboard/settings/NotificationSettings"
+import DocumentSettings from "./pages/dashboard/settings/DocumentSettings"
+import DateFormatSettings from "./pages/dashboard/settings/DateFormatSettings"
+import ClientPermissions from "./pages/dashboard/settings/ClientPermissions"
+import SetupTasks from "./pages/dashboard/settings/SetupTasks"
+import SetupLeaveTypes from "./pages/dashboard/settings/SetupLeaveTypes"
+import SetupExpenseCategories from "./pages/dashboard/settings/SetupExpenseCategories"
+import SetupInvoices from "./pages/dashboard/settings/SetupInvoices"
+import SetupPaymentMethods from "./pages/dashboard/settings/SetupPaymentMethods"
+import SetupTaxes from "./pages/dashboard/settings/SetupTaxes"
+import SetupLeads from "./pages/dashboard/settings/SetupLeads"
+import SetupLoginAuthentication from "./pages/dashboard/settings/SetupLoginAuthentication"
+import SetupProjectAssignment from "./pages/dashboard/settings/SetupProjectAssignment"
+import SetupRoles from "./pages/dashboard/settings/SetupRoles"
+import { 
+  SetupCompanyFirm 
+} from "./pages/dashboard/settings/SetupOtherPages"
+
+/* ================= SECRETARIAL PRACTICE ================= */
+import CheckAnnualFiling from "./pages/dashboard/secretarialPractice/CheckAnnualFiling"
+import TenureTracker from "./pages/dashboard/secretarialPractice/TenureTracker"
+import MCAV2V3User from "./pages/dashboard/secretarialPractice/MCAV2V3User"
+import MCATransactionPage from "./pages/dashboard/secretarialPractice/MCATransaction"
+import LLPMCACredentials from "./pages/dashboard/secretarialPractice/LLPMCACredentials"
+import CompanyMCACredentials from "./pages/dashboard/secretarialPractice/CompanyMCACredentials"
+import DirectorMCACredentials from "./pages/dashboard/secretarialPractice/DirectorMCACredentials"
+import MCAV3ACCreation from "./pages/dashboard/secretarialPractice/MCAV3ACCreation"
+import DINInformation from "./pages/dashboard/secretarialPractice/DINInformation"
+import ParticularsOfForms from "./pages/dashboard/secretarialPractice/ParticularsOfForms"
+import PrepareDIR2 from "./pages/dashboard/secretarialPractice/PrepareDIR2"
+import SearchReport from "./pages/dashboard/secretarialPractice/SearchReport"
+import BankersPANDatabase from "./pages/dashboard/secretarialPractice/BankersPANDatabase"
+import CSRCalculation from "./pages/dashboard/secretarialPractice/CSRCalculation"
+import { PlaceholderPage } from "./pages/dashboard/secretarialPractice/SecretarialPracticeOtherPages"
+import EformFiling from "./pages/dashboard/secretarialPractice/EformFiling"
+import UpcomingCompliances from "./pages/dashboard/secretarialPractice/UpcomingCompliances"
+import DSCManagement from "./pages/dashboard/secretarialPractice/DSCManagement"
+import DIR3KYC from "./pages/dashboard/secretarialPractice/DIR3KYC"
+
 /* ================= PLACEHOLDER ================= */
 const ComplianceManager = () => <div />
 
@@ -466,6 +508,29 @@ export default function App() {
               </Route>
             </Route>
 
+            {/* ================= SECRETARIAL PRACTICE ================= */}
+            <Route path="secretarial-practice">
+              <Route index element={<Navigate to="check-annual-filing" replace />} />
+              <Route path="check-annual-filing" element={<CheckAnnualFiling />} />
+              <Route path="tenure-tracker" element={<TenureTracker />} />
+              <Route path="e-form-filing" element={<EformFiling />} />
+              <Route path="upcoming-compliances" element={<UpcomingCompliances />} />
+              <Route path="dsc-management" element={<DSCManagement />} />
+              <Route path="dir3-kyc" element={<DIR3KYC />} />
+              <Route path="mca-v2-v3-user" element={<MCAV2V3User />} />
+              <Route path="mca-transaction" element={<MCATransactionPage />} />
+              <Route path="mca-v3-ac-creation" element={<MCAV3ACCreation />} />
+              <Route path="llp-mca-credentials" element={<LLPMCACredentials />} />
+              <Route path="company-mca-credentials" element={<CompanyMCACredentials />} />
+              <Route path="director-mca-credentials" element={<DirectorMCACredentials />} />
+              <Route path="din-information" element={<DINInformation />} />
+              <Route path="particulars-of-forms" element={<ParticularsOfForms />} />
+              <Route path="prepare-dir2" element={<PrepareDIR2 />} />
+              <Route path="search-report" element={<SearchReport />} />
+              <Route path="bankers-pan-database" element={<BankersPANDatabase />} />
+              <Route path="csr-calculation" element={<CSRCalculation />} />
+            </Route>
+
             {/* ================= HRMS MODULE ================= */}
             <Route path="hrms">
               <Route index element={<Navigate to="team-member" replace />} />
@@ -488,6 +553,30 @@ export default function App() {
               <Route path="user-manual" element={<UserManual />} />
               <Route path="help-videos" element={<HelpVideos />} />
               <Route path="help-center" element={<HelpCenter />} />
+            </Route>
+
+            {/* ================= SETTINGS ================= */}
+            <Route path="settings" element={<SettingsLayout />}>
+              <Route index element={<Navigate to="general" replace />} />
+              <Route path="general" element={<GeneralSettings />} />
+              <Route path="email" element={<EmailSettings />} />
+              <Route path="notifications" element={<NotificationSettings />} />
+              <Route path="document" element={<DocumentSettings />} />
+              <Route path="date-format" element={<DateFormatSettings />} />
+              
+              {/* ⭐ NEW SETTINGS ROUTES */}
+              <Route path="client-permissions" element={<ClientPermissions />} />
+              <Route path="setup-tasks" element={<SetupTasks />} />
+              <Route path="setup-leave-types" element={<SetupLeaveTypes />} />
+              <Route path="setup-expense-categories" element={<SetupExpenseCategories />} />
+              <Route path="setup-invoices" element={<SetupInvoices />} />
+              <Route path="setup-payment-methods" element={<SetupPaymentMethods />} />
+              <Route path="setup-company-firm" element={<SetupCompanyFirm />} />
+              <Route path="setup-taxes" element={<SetupTaxes />} />
+              <Route path="setup-leads" element={<SetupLeads />} />
+              <Route path="setup-login-authentication" element={<SetupLoginAuthentication />} />
+              <Route path="setup-project-assignment" element={<SetupProjectAssignment />} />
+              <Route path="roles" element={<SetupRoles />} />
             </Route>
 
           </Route>

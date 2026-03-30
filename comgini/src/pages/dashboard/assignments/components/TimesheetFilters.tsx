@@ -1,4 +1,42 @@
-export default function TimesheetFilters() {
+import { useState, useEffect } from "react"
+import assignmentService from "../../../../services/assignmentService"
+import type { UserLookup, CompanyLookup } from "../../../../services/assignmentTypes"
+
+type Props = {
+    filters: {
+        fromDate: string
+        toDate: string
+        memberId: string
+        clientId: string
+        assignmentId: string
+        search: string
+    }
+    setFilters: (filters: any) => void
+}
+
+export default function TimesheetFilters({ filters, setFilters }: Props) {
+    const [members, setMembers] = useState<UserLookup[]>([])
+    const [clients, setClients] = useState<CompanyLookup[]>([])
+    const [assignments, setAssignments] = useState<{ id: number; title: string }[]>([])
+
+    useEffect(() => {
+        const fetchLookups = async () => {
+            try {
+                const [memRes, clientRes, assignRes] = await Promise.all([
+                    assignmentService.lookupUsers('maker'),
+                    assignmentService.lookupCompanies(),
+                    assignmentService.lookupAssignments()
+                ])
+                if (memRes.success) setMembers(memRes.data)
+                if (clientRes.success) setClients(clientRes.data)
+                if (assignRes.success) setAssignments(assignRes.data)
+            } catch (err) {
+                console.error("Failed to fetch filters data", err)
+            }
+        }
+        fetchLookups()
+    }, [])
+
     return (
         <div className="d-flex align-items-center flex-wrap gap-2">
 
@@ -9,51 +47,73 @@ export default function TimesheetFilters() {
                 <option>25</option>
             </select>
 
-            {/* Column toggle icon */}
-            <button className="btn btn-light btn-sm border" title="Column settings">
-                <i className="bi bi-layout-three-columns"></i>
-            </button>
-
             {/* Client filter */}
-            <select className="form-select form-select-sm" style={{ width: 120 }}>
-                <option>- Client -</option>
+            <select 
+                className="form-select form-select-sm" 
+                style={{ width: 140 }}
+                value={filters.clientId}
+                onChange={(e) => setFilters({ ...filters, clientId: e.target.value })}
+            >
+                <option value="">- Client -</option>
+                {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
 
             {/* Assignment filter */}
-            <select className="form-select form-select-sm" style={{ width: 135 }}>
-                <option>- Assignment -</option>
+            <select 
+                className="form-select form-select-sm" 
+                style={{ width: 150 }}
+                value={filters.assignmentId}
+                onChange={(e) => setFilters({ ...filters, assignmentId: e.target.value })}
+            >
+                <option value="">- Assignment -</option>
+                {assignments.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
             </select>
 
             {/* Member filter */}
-            <select className="form-select form-select-sm" style={{ width: 120 }}>
-                <option>- Member -</option>
+            <select 
+                className="form-select form-select-sm" 
+                style={{ width: 140 }}
+                value={filters.memberId}
+                onChange={(e) => setFilters({ ...filters, memberId: e.target.value })}
+            >
+                <option value="">- Member -</option>
+                {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
 
             {/* Date range — start */}
-            <input
-                type="text"
-                className="form-control form-control-sm"
-                defaultValue="8th February 2026"
-                style={{ width: 140 }}
-            />
+            <div className="d-flex align-items-center gap-1">
+                <span className="small text-muted">From:</span>
+                <input
+                    type="date"
+                    className="form-control form-control-sm"
+                    value={filters.fromDate}
+                    onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+                    style={{ width: 135 }}
+                />
+            </div>
 
             {/* Date range — end */}
-            <input
-                type="text"
-                className="form-control form-control-sm"
-                defaultValue="23rd February 2026"
-                style={{ width: 140 }}
-            />
-
-            {/* Export */}
-            <button className="btn btn-light btn-sm border">Excel</button>
-            <button className="btn btn-light btn-sm border">Print</button>
+            <div className="d-flex align-items-center gap-1">
+                <span className="small text-muted">To:</span>
+                <input
+                    type="date"
+                    className="form-control form-control-sm"
+                    value={filters.toDate}
+                    onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+                    style={{ width: 135 }}
+                />
+            </div>
 
             {/* Search */}
-            <div className="input-group input-group-sm" style={{ width: 180 }}>
-                <input className="form-control" placeholder="Search" />
-                <span className="input-group-text bg-white">
-                    <i className="bi bi-search"></i>
+            <div className="input-group input-group-sm ms-auto" style={{ width: 220 }}>
+                <input 
+                    className="form-control" 
+                    placeholder="Search task or note..." 
+                    value={filters.search}
+                    onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                />
+                <span className="input-group-text bg-white border-start-0">
+                    <i className="bi bi-search text-muted"></i>
                 </span>
             </div>
 

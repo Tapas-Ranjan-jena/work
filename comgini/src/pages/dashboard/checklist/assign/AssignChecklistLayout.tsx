@@ -8,6 +8,11 @@ export default function AssignChecklistLayout() {
 
   const [openAssign, setOpenAssign] = useState(false)
   const [openImport, setOpenImport] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleSuccess = () => {
+    setRefreshKey(prev => prev + 1)
+  }
 
   return (
     <div className="card border-0 p-3">
@@ -45,17 +50,19 @@ export default function AssignChecklistLayout() {
         </div>
       </div>
 
-      <Outlet />
+      <Outlet context={{ refreshKey }} />
 
       {/* ⭐ MODALS */}
       <AssignChecklistModal
         show={openAssign}
         onClose={() => setOpenAssign(false)}
+        onSuccess={handleSuccess}
       />
 
       <ImportExcelModal
         show={openImport}
         onClose={() => setOpenImport(false)}
+        onSuccess={handleSuccess}
       />
 
     </div>
