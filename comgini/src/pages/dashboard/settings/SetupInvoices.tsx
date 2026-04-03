@@ -1,216 +1,75 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 
 export default function SetupInvoices() {
-  const [activeView, setActiveView] = useState<"list" | "form">("list");
-  
-  const handleAddNew = () => {
-    setActiveView("form");
-  };
+    const [activeTab, setActiveTab] = useState("Prefix & Suffix");
 
-  const handleSave = () => {
-    toast.success("Invoice settings saved successfully");
-    setActiveView("list");
-  };
+    const tabs = [
+        "Prefix & Suffix",
+        "Invoice sequence",
+        "Tax settings",
+        "Bank accounts",
+    ];
 
-  return (
-    <div className="setup-invoices">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h5 className="fw-bold mb-0">{activeView === "list" ? "Invoice Setting" : "Invoice Settings"}</h5>
-        {activeView === "list" && (
-          <button className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2" onClick={handleAddNew}>
-            <i className="bi bi-plus-circle"></i> Add Invoice Setting
-          </button>
-        )}
-      </div>
+    return (
+        <div className="setup-invoices-page text-start">
+            <h5 className="fw-bold mb-4">Invoices Setup</h5>
 
-      {activeView === "list" ? (
-        <div className="card shadow-sm border-0 mb-4 overflow-hidden">
-          <div className="p-3 border-bottom d-flex justify-content-between gap-3 bg-light">
-            <div className="d-flex gap-2">
-              <select className="form-select form-select-sm border-0" style={{ width: "80px" }}>
-                <option>100</option>
-              </select>
-              <button className="btn btn-light btn-sm border">
-                 <i className="bi bi-eye"></i>
-              </button>
+            {/* ⭐ TABS - Scrollable on mobile */}
+            <div className="d-flex gap-4 mb-4 border-bottom overflow-auto pb-1 flex-nowrap scrollbar-hidden" style={{ WebkitOverflowScrolling: "touch" }}>
+                {tabs.map((tab) => (
+                    <div
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className="flex-shrink-0"
+                        style={{
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            paddingBottom: "12px",
+                            borderBottom: activeTab === tab ? "3px solid #3346a8" : "3px solid transparent",
+                            color: activeTab === tab ? "#3346a8" : "#64748b",
+                            fontWeight: activeTab === tab ? "600" : "500",
+                            whiteSpace: "nowrap",
+                            userSelect: "none"
+                        }}
+                    >
+                        {tab}
+                    </div>
+                ))}
             </div>
-            <div className="d-flex gap-2 flex-grow-1">
-               <div className="input-group input-group-sm ms-auto" style={{ maxWidth: "250px" }}>
-                  <span className="input-group-text bg-white border-end-0"><i className="bi bi-search text-muted"></i></span>
-                  <input type="text" className="form-control border-start-0" placeholder="Search" />
-               </div>
-            </div>
-          </div>
 
-          <div className="table-responsive">
-            <table className="table table-hover mb-0" style={{ fontSize: "14px" }}>
-              <thead className="bg-light">
-                <tr>
-                  <th className="px-4 py-3 border-bottom-0">Sr No <i className="bi bi-caret-up-fill small"></i></th>
-                  <th className="px-4 py-3 border-bottom-0 text-center">Start Invoice Date</th>
-                  <th className="px-4 py-3 border-bottom-0 text-center">Tax Invoice Prefix</th>
-                  <th className="px-4 py-3 border-bottom-0 text-center">Tax Invoice Initial Number</th>
-                  <th className="px-4 py-3 border-bottom-0 text-center">Firm Name</th>
-                  <th className="px-4 py-3 border-bottom-0 text-end pe-4"><i className="bi bi-list"></i></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan={6} className="text-center py-4 text-muted">No record found.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="p-3 border-top d-flex justify-content-between align-items-center bg-light">
-            <div className="text-muted small">0-0 / 0</div>
-            <div className="d-flex gap-1">
-               <button className="btn btn-light btn-sm border"><i className="bi bi-chevron-double-left"></i></button>
-               <button className="btn btn-light btn-sm border"><i className="bi bi-chevron-double-right"></i></button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="card shadow-sm border-0 p-4">
-          <div className="row mb-4">
-            <div className="col-md-3">
-              <label className="fw-semibold small">Invoice Logo</label>
-            </div>
-            <div className="col-md-9">
-              <div className="d-flex align-items-center gap-2">
-                <div className="border rounded bg-light d-flex align-items-center justify-content-center" style={{ width: "40px", height: "40px" }}>
-                  <i className="bi bi-image text-muted"></i>
+            <div className="card shadow-sm border-0 border-radius-12 overflow-hidden">
+                <div className="card-body p-4 p-md-5">
+                    {activeTab === "Prefix & Suffix" ? (
+                        <div className="row g-4 max-width-600">
+                             <div className="col-12">
+                                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: "14px" }}>Invoice Prefix</label>
+                                <input type="text" className="form-control py-2 px-3 bg-light border-0" defaultValue="INV-" style={{ borderRadius: "8px", fontSize: "14px" }} />
+                             </div>
+                             <div className="col-12">
+                                <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: "14px" }}>Invoice Suffix</label>
+                                <input type="text" className="form-control py-2 px-3 bg-light border-0" placeholder="e.g. /2026" style={{ borderRadius: "8px", fontSize: "14px" }} />
+                             </div>
+                             <div className="col-12 mt-4">
+                                <button className="btn btn-primary d-flex align-items-center justify-content-center gap-2 px-5 py-3 shadow-sm border-0 w-100 w-sm-auto" style={{ borderRadius: "10px", background: "#3b82f6", fontWeight: "600" }}>
+                                    <i className="bi bi-save fs-5"></i>
+                                    Save Prefix Details
+                                </button>
+                             </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-5 text-muted">
+                            {activeTab} configuration coming soon.
+                        </div>
+                    )}
                 </div>
-                <button className="btn btn-light btn-sm border">...</button>
-              </div>
             </div>
-          </div>
 
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Proforma invoice prefix</div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" placeholder="INVOICE #" />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Initial number of the proforma invoice</div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Tax invoice prefix</div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" placeholder="INVOICE #" />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Initial number of the tax invoice</div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Start date</div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" placeholder="Start date" />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Firm Name</div>
-            <div className="col-md-9">
-              <select className="form-select bg-light border-0 py-2 shadow-none">
-                <option>Select Firm Name</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Default due date after billing date</div>
-            <div className="col-md-9">
-              <div className="input-group">
-                <input type="text" className="form-control bg-light border-0 py-2 shadow-none" />
-                <span className="input-group-text bg-transparent border-0 text-dark small fw-medium">Days</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">When sending invoice to client, send BCC to</div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" placeholder="Email" />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Send invoice overdue reminder after <i className="bi bi-question-circle text-muted ms-1"></i></div>
-            <div className="col-md-9">
-              <select className="form-select bg-light border-0 py-2 shadow-none">
-                <option>-</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Send recurring invoice reminder before creation <i className="bi bi-question-circle text-muted ms-1"></i></div>
-            <div className="col-md-9">
-              <select className="form-select bg-light border-0 py-2 shadow-none">
-                <option>-</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Client can pay invoices without login <i className="bi bi-question-circle text-muted ms-1"></i></div>
-            <div className="col-md-9">
-              <select className="form-select bg-light border-0 py-2 shadow-none">
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Please select the content that you want to be displayed on the invoice. <i className="bi bi-question-circle text-muted ms-1"></i></div>
-            <div className="col-md-9">
-              <input type="text" className="form-control bg-light border-0 py-2 shadow-none" placeholder="Please select the content that you want to be displayed on the invoice." />
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3">
-              <label className="fw-semibold small">Sign Image</label>
-            </div>
-            <div className="col-md-9">
-              <div className="d-flex align-items-center gap-2">
-                <div className="border rounded bg-light d-flex align-items-center justify-content-center" style={{ width: "40px", height: "40px" }}>
-                  <i className="bi bi-image text-muted"></i>
-                </div>
-                <button className="btn btn-light btn-sm border">...</button>
-              </div>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-md-3 text-dark small fw-medium">Terms & Condition</div>
-            <div className="col-md-9">
-              <textarea className="form-control bg-light border-0 py-2 shadow-none" rows={3} placeholder="Terms & Condition"></textarea>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-top">
-            <button className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2" onClick={handleSave} style={{ background: "#3b82f6", borderColor: "#3b82f6" }}>
-              <i className="bi bi-check-circle"></i> Save
-            </button>
-          </div>
+            <style>{`
+                .max-width-600 { max-width: 600px; }
+                .border-radius-12 { border-radius: 12px; }
+                .scrollbar-hidden::-webkit-scrollbar { display: none; }
+                .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
         </div>
-      )}
-    </div>
-  );
+    );
 }

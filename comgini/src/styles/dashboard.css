@@ -15,7 +15,7 @@
 /* ===================================================== */
 
 .topbar{
-  height:70px;
+  height:90px;
   background:linear-gradient(90deg,#3346a8 0%,#2f64c6 45%,#2fa0dc 100%);
   display:flex;
   align-items:center;
@@ -40,7 +40,7 @@
 }
 
 .topbar-logo img{
-  height:28px;
+  height:80px;
   object-fit:contain;
 }
 
@@ -148,7 +148,7 @@
   flex:1;
   display:flex;
   overflow:hidden;
-  margin-top:70px;
+  margin-top:90px;
 }
 
 /* ===================================================== */
@@ -193,22 +193,60 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:12px 14px;
+  padding:12px 16px;
   font-size:14px;
-  color:#d6d6d6;
+  color:rgba(255,255,255,0.7);
   text-decoration:none;
-  border-radius:10px;
+  border-radius:12px;
   cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin:4px 0;
 }
 
 .sidebar-item:hover{
-  background:#151515;
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+  transform:translateX(4px);
 }
 
-.sidebar-item.active{
-  background:#fff;
-  color:#000;
-  font-weight:500;
+.sidebar-item.active, .sidebar-item.parent-active{
+  background:linear-gradient(90deg, rgba(59,130,246,0.15) 0%, rgba(59,130,246,0.05) 100%);
+  color:#fff;
+  font-weight:600;
+  border-left:4px solid #3b82f6;
+  border-radius:0 12px 12px 0;
+}
+
+.sidebar-sub-menu {
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  margin: 6px 0 10px 0;
+  border-left: 1.5px solid rgba(255,255,255,0.1);
+  margin-left: 28px;
+}
+
+.sub-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.sub-item:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.05);
+}
+
+.sub-item.active {
+  background:rgba(59,130,246,0.2);
+  color: #3b82f6;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .sidebar-left{
@@ -219,12 +257,7 @@
 
 .sidebar-left i{
   font-size:16px;
-  color:#e6e6e6;
-}
-
-.sidebar-arrow{
-  font-size:12px;
-  opacity:.7;
+  color: inherit;
 }
 
 
@@ -461,9 +494,9 @@
   .sidebar{
     position:fixed;
     left:-100%;
-    top:70px;
+    top:90px;
     width:100%;
-    height:calc(100vh - 70px);
+    height:calc(100vh - 90px);
     background:#0b0b0b;
     z-index:2000;
     padding-top:10px;

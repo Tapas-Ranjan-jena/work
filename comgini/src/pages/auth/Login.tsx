@@ -21,23 +21,10 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      console.log("Attempting login for:", email)
       await login({ email, password })
-      console.log("Login successful, navigating to dashboard...")
       navigate("/dashboard")
     } catch (err: any) {
-      console.error("Login error:", err.response?.data)
-      const message = err.response?.data?.message || "Login failed. Please check your credentials."
-      const errors = err.response?.data?.errors
-
-      if (errors && typeof errors === 'object') {
-        const errorDetails = Object.entries(errors)
-          .map(([key, val]) => `${key}: ${typeof val === 'object' ? JSON.stringify(val) : val}`)
-          .join(". ")
-        setError(`${message}: ${errorDetails}`)
-      } else {
-        setError(message)
-      }
+      setError(err.response?.data?.message || "Login failed. Please check your credentials.")
     } finally {
       setIsLoading(false)
     }
@@ -45,139 +32,109 @@ export default function Login() {
 
   return (
     <AuthLayout>
-
-      {/* ⭐ CENTERED WRAPPER INSIDE AUTHLAYOUT */}
-      <div className="w-100 d-flex justify-content-center align-items-center">
-
-        <div
-          className="
-            card
-            shadow-sm
-            w-100
-            mx-auto
-            px-3 px-sm-4 px-md-5
-            py-4
-          "
-          style={{
-            maxWidth: 460,
-            borderRadius: 12
-          }}
-        >
-
-          {/* TITLE */}
-          <h4 className="fw-bold text-center mb-1 auth-title">
-            Welcome back!
-          </h4>
-
-          <p className="text-center text-muted small mb-4">
-            Please login to your account
-          </p>
-
-          {error && (
-            <div className="alert alert-danger small py-2" role="alert">
-              {error}
-            </div>
-          )}
-
-          {/* ================= SOCIAL LOGIN ================= */}
-
-          <div className="d-flex flex-column flex-sm-row gap-2 mb-3">
-
-            <button className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src={GoogleIcon} alt="Google" width={18} />
-              <span className="small">Continue with Google</span>
-            </button>
-
-            <button className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src={AppleIcon} alt="Apple" width={18} />
-              <span className="small">Continue with Apple</span>
-            </button>
-
-          </div>
-
-          <div className="text-center text-muted small my-3">OR</div>
-
-          <form onSubmit={handleLogin}>
-            {/* ================= EMAIL ================= */}
-            <div className="mb-3">
-              <label className="form-label small">Email Address</label>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Enter your registered email"
-                style={{ minHeight: 46, borderRadius: 8 }}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            {/* ================= PASSWORD ================= */}
-            <div className="mb-3">
-              <label className="form-label small">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter your password"
-                style={{ minHeight: 46, borderRadius: 8 }}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            {/* ================= SIGN IN BUTTON ================= */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn btn-gradient w-100 py-2"
-              style={{ minHeight: 46, borderRadius: 8, fontWeight: 500 }}
-            >
-              {isLoading ? (
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              ) : null}
-              {isLoading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-
-          {/* ================= LINKS ================= */}
-
-          <div className="d-flex flex-column flex-sm-row justify-content-between mt-3 small text-center text-sm-start">
-            <span>
-              Don’t have an account? <Link to="/signup">Sign up</Link>
-            </span>
-            <Link to="/forgot-password">Forgot password?</Link>
-          </div>
-
-          <div className="text-center text-muted small my-3">OR</div>
-
-          {/* ================= FINGERPRINT LOGIN ================= */}
-
-          <div className="d-flex flex-column align-items-center justify-content-center gap-2">
-
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 8,
-                backgroundColor: "#2b4cb3",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <img src={FingerprintIcon} alt="Fingerprint" width={20} />
-            </div>
-
-            <span style={{ fontSize: 14 }}>
-              Login with Fingerprint
-            </span>
-
-          </div>
-
+      <div className="w-100 py-5" style={{ maxWidth: 420 }}>
+        
+        {/* ⭐ LOGO / WELCOME */}
+        <div className="text-center mb-5">
+            <h2 className="fw-bold text-dark mb-2">Welcome Back</h2>
+            <p className="text-muted small">Please enter your details to sign in</p>
         </div>
-      </div>
 
+        {error && (
+            <div className="alert alert-danger border-0 small py-2 mb-4" style={{ borderRadius: "10px", backgroundColor: "#fff5f5", color: "#c53030" }}>
+                <i className="bi bi-exclamation-circle-fill me-2"></i>
+                {error}
+            </div>
+        )}
+
+        <form onSubmit={handleLogin}>
+            <div className="mb-4">
+                <label className="form-label small fw-semibold text-secondary mb-1">Email Address</label>
+                <div className="position-relative">
+                    <input
+                        type="email"
+                        className="form-control border-0 bg-light px-3"
+                        placeholder="name@company.com"
+                        style={{ height: 48, borderRadius: "10px" }}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+            </div>
+
+            <div className="mb-4">
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                    <label className="form-label small fw-semibold text-secondary mb-0">Password</label>
+                    <Link to="/forgot-password" style={{ fontSize: "12px", textDecoration: "none", color: "#2b4cb3" }}>Forgot password?</Link>
+                </div>
+                <input
+                    type="password"
+                    className="form-control border-0 bg-light px-3"
+                    placeholder="••••••••"
+                    style={{ height: 48, borderRadius: "10px" }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                disabled={isLoading}
+                className="btn btn-primary w-100 border-0 shadow-sm py-2 mb-4"
+                style={{ 
+                    height: 48, 
+                    borderRadius: "10px", 
+                    fontWeight: 600,
+                    background: "linear-gradient(135deg, #2b4cb3 0%, #3f51b5 100%)"
+                }}
+            >
+                {isLoading ? (
+                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                ) : "Sign In"}
+            </button>
+        </form>
+
+        <div className="text-center position-relative mb-4">
+            <hr className="bg-light border-0" style={{ height: "1px", opacity: 0.1 }} />
+            <span 
+                className="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted"
+                style={{ fontSize: "12px" }}
+            >
+                OR CONTINUE WITH
+            </span>
+        </div>
+
+        <div className="row g-3 mb-5">
+            <div className="col-6">
+                <button className="btn btn-light w-100 d-flex align-items-center justify-content-center gap-2 border-0" style={{ height: 44, borderRadius: "10px", backgroundColor: "#f8f9fa", fontSize: "14px" }}>
+                    <img src={GoogleIcon} alt="Google" width={18} />
+                    Google
+                </button>
+            </div>
+            <div className="col-6">
+                <button className="btn btn-light w-100 d-flex align-items-center justify-content-center gap-2 border-0" style={{ height: 44, borderRadius: "10px", backgroundColor: "#f8f9fa", fontSize: "14px" }}>
+                    <img src={AppleIcon} alt="Apple" width={18} />
+                    Apple
+                </button>
+            </div>
+        </div>
+
+        <div className="text-center mt-5">
+            <p className="small text-muted mb-4">
+                Don’t have an account? <Link to="/signup" className="fw-bold d-block mt-1" style={{ color: "#2b4cb3", textDecoration: "none", fontSize: "14px" }}>Create one now</Link>
+            </p>
+            
+            <div className="d-flex flex-column align-items-center gap-2 opacity-75">
+                <div className="p-2 border border-2 rounded-3 text-primary" style={{ cursor: "pointer" }}>
+                    <img src={FingerprintIcon} alt="Biometric" width={24} style={{ filter: "invert(30%) sepia(80%) saturate(1000%) hue-rotate(210deg)" }} />
+                </div>
+                <span className="text-muted" style={{ fontSize: "11px" }}>Biometric Login</span>
+            </div>
+        </div>
+
+      </div>
     </AuthLayout>
   )
 }

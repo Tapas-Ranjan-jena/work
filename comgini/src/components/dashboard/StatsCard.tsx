@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
 interface Stats {
-    pending_approval: number;
-    pending_review: number;
-    in_request: number;
-    executed: number;
-    pending_signature: number;
-    further_processing: number;
+    total?: number;
+    completed?: number;
+    pending?: number;
+    overdue?: number;
+    // Fallback for existing mock data if needed
+    [key: string]: any;
 }
 
 interface StatsCardProps {
@@ -18,13 +18,12 @@ const StatsCard: React.FC<StatsCardProps> = ({ stats }) => {
 
     const tabs = ["My request", "Pending with me", "Overall request"];
 
+    // Map API fields (total, completed, pending, overdue)
     const statItems = [
-        { label: "Pending Approval", value: stats.pending_approval, color: "#f44336" },
-        { label: "Pending Review", value: stats.pending_review, color: "#ff9800" },
-        { label: "In Request", value: stats.in_request, color: "#2196f3" },
-        { label: "Executed", value: stats.executed, color: "#4caf50" },
-        { label: "Pending Signature", value: stats.pending_signature, color: "#795548" },
-        { label: "Further Processing", value: stats.further_processing, color: "#00bcd4" },
+        { label: "Total Tasks", value: stats.total || 0, color: "#2196f3" },
+        { label: "Completed", value: stats.completed || 0, color: "#4caf50" },
+        { label: "Pending", value: stats.pending || 0, color: "#ff9800" },
+        { label: "Overdue", value: stats.overdue || 0, color: "#f44336" },
     ];
 
     return (
@@ -43,14 +42,14 @@ const StatsCard: React.FC<StatsCardProps> = ({ stats }) => {
                 ))}
             </ul>
 
-            <div className="row g-4">
+            <div className="row g-4 justify-content-between text-center">
                 {statItems.map((item, idx) => (
-                    <div className="col-6 col-md-3" key={idx}>
-                        <div className="d-flex flex-column">
-                            <h3 className="fw-bold mb-1">{item.value}</h3>
+                    <div className="col-6 col-sm-3" key={idx}>
+                        <div className="d-flex flex-column align-items-center">
+                            <h2 className="fw-bold mb-1" style={{ fontSize: "2.8rem", letterSpacing: "-1.5px" }}>{item.value}</h2>
                             <div className="d-flex align-items-center gap-2">
-                                <span className="rounded-circle" style={{ width: "8px", height: "8px", backgroundColor: item.color }}></span>
-                                <span className="small text-muted fw-medium">{item.label}</span>
+                                <span className="rounded-circle shadow-sm" style={{ width: "10px", height: "10px", backgroundColor: item.color }}></span>
+                                <span className="small text-muted fw-bold" style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{item.label}</span>
                             </div>
                         </div>
                     </div>

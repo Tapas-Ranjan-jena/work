@@ -235,11 +235,13 @@ import PrepareDIR2 from "./pages/dashboard/secretarialPractice/PrepareDIR2"
 import SearchReport from "./pages/dashboard/secretarialPractice/SearchReport"
 import BankersPANDatabase from "./pages/dashboard/secretarialPractice/BankersPANDatabase"
 import CSRCalculation from "./pages/dashboard/secretarialPractice/CSRCalculation"
-import { PlaceholderPage } from "./pages/dashboard/secretarialPractice/SecretarialPracticeOtherPages"
 import EformFiling from "./pages/dashboard/secretarialPractice/EformFiling"
 import UpcomingCompliances from "./pages/dashboard/secretarialPractice/UpcomingCompliances"
 import DSCManagement from "./pages/dashboard/secretarialPractice/DSCManagement"
 import DIR3KYC from "./pages/dashboard/secretarialPractice/DIR3KYC"
+/* ================= RTA SERVICES ================= */
+import ISINList from "./pages/dashboard/rtaServices/ISINList"
+import AddISIN from "./pages/dashboard/rtaServices/AddISIN"
 
 /* ================= PLACEHOLDER ================= */
 const ComplianceManager = () => <div />
@@ -529,6 +531,13 @@ export default function App() {
               <Route path="search-report" element={<SearchReport />} />
               <Route path="bankers-pan-database" element={<BankersPANDatabase />} />
               <Route path="csr-calculation" element={<CSRCalculation />} />
+            </Route>
+
+            {/* ================= RTA SERVICES ================= */}
+            <Route path="rta-services">
+              <Route index element={<Navigate to="isin-creation" replace />} />
+              <Route path="isin-creation" element={<ISINList />} />
+              <Route path="isin-creation/add" element={<AddISIN />} />
             </Route>
 
             {/* ================= HRMS MODULE ================= */}

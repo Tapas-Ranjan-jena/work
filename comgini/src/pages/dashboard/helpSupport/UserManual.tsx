@@ -1,6 +1,6 @@
 export default function UserManual() {
     // The PDF URL - can be changed to a real hosted URL or loaded from API
-    const pdfUrl = "https://www.complyrelax.com/user-manual.pdf";
+    const pdfUrl = "https://www.comgini.com/user-manual.pdf";
 
     return (
         <div className="user-manual-page p-1" style={{ height: "calc(100vh - 80px)" }}>

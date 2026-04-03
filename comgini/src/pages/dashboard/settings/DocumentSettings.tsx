@@ -1,86 +1,133 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 
 export default function DocumentSettings() {
-  const [formData, setFormData] = useState({
-    fontStyle: "Arial",
-    fontSize: "11pt",
-    defaultSalutation: "Mr./Mrs./Ms.",
-    dateFormat: "D/M/YY (30/03/2026)"
-  });
+  const [fontStyle, setFontStyle] = useState("Arial");
+  const [fontSize, setFontSize] = useState("11pt");
+  const [salutation, setSalutation] = useState("Mr./Mrs./Ms.");
+  const [dateFormat, setDateFormat] = useState("D/M/YY (01/04/2026)");
 
   const handleSave = () => {
-    toast.success("Document settings saved successfully!");
+    // Save logic
+    console.log("Settings saved");
   };
 
   return (
-    <div className="document-settings">
+    <div className="document-settings text-start max-width-700">
       <h5 className="fw-bold mb-4">Document Settings</h5>
-      
-      <div className="settings-form" style={{ maxWidth: "800px" }}>
-        {/* Font Style & Size */}
-        <div className="row mb-4 align-items-center">
-          <div className="col-md-3">
-            <label className="fw-semibold small text-dark">Font Style</label>
-          </div>
-          <div className="col-md-3">
-            <select className="form-select form-select-sm" value={formData.fontStyle} onChange={(e) => setFormData({...formData, fontStyle: e.target.value})}>
-              <option value="Arial">Arial</option>
-              <option value="Times New Roman">Times New Roman</option>
-            </select>
-          </div>
-          <div className="col-md-3 text-end">
-            <label className="fw-semibold small text-dark">Font Size</label>
-          </div>
-          <div className="col-md-3">
-            <div className="input-group input-group-sm">
-                <input type="text" className="form-control" value={formData.fontSize} readOnly />
+
+      <div className="card shadow-sm border-0 border-radius-12 overflow-hidden">
+        <div className="card-body p-4 p-md-5">
+          <div className="row g-4">
+            {/* Font Style */}
+            <div className="col-12 col-md-6">
+              <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: "14px" }}>Font Style</label>
+              <select 
+                className="form-select py-2 px-3 shadow-none bg-light border-0" 
+                value={fontStyle}
+                onChange={(e) => setFontStyle(e.target.value)}
+                style={{ borderRadius: "8px", fontSize: "14px" }}
+              >
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Helvetica">Helvetica</option>
+              </select>
+            </div>
+
+            {/* Font Size */}
+            <div className="col-12 col-md-6 text-md-end">
+              <label className="form-label fw-semibold text-dark mb-2 w-100 text-md-start" style={{ fontSize: "14px" }}>Font Size</label>
+              <input 
+                type="text" 
+                className="form-control py-2 px-3 shadow-none bg-light border-0" 
+                value={fontSize}
+                onChange={(e) => setFontSize(e.target.value)}
+                style={{ borderRadius: "8px", fontSize: "14px" }}
+              />
+            </div>
+
+            {/* Salutation */}
+            <div className="col-12 mt-4">
+              <label className="form-label fw-semibold text-dark mb-3 d-block" style={{ fontSize: "14px" }}>
+                Default Salutation For Director/Shareholder/Debentureholder
+              </label>
+              <div className="d-flex flex-column flex-sm-row gap-4 flex-wrap">
+                <div className="form-check d-flex align-items-center gap-2 mb-0">
+                  <input 
+                    className="form-check-input mt-0" 
+                    type="radio" 
+                    name="salutation" 
+                    id="salt1" 
+                    checked={salutation === "Mr./Mrs./Ms."}
+                    onChange={() => setSalutation("Mr./Mrs./Ms.")}
+                    style={{ width: '18px', height: '18px' }}
+                  />
+                  <label className="form-check-label text-secondary mb-0" htmlFor="salt1" style={{ fontSize: "14px", cursor: 'pointer' }}>Mr./Mrs./Ms.</label>
+                </div>
+                <div className="form-check d-flex align-items-center gap-2 mb-0">
+                  <input 
+                    className="form-check-input mt-0" 
+                    type="radio" 
+                    name="salutation" 
+                    id="salt2" 
+                    checked={salutation === "Shri/Smt./Sushri"}
+                    onChange={() => setSalutation("Shri/Smt./Sushri")}
+                    style={{ width: '18px', height: '18px' }}
+                  />
+                  <label className="form-check-label text-secondary mb-0" htmlFor="salt2" style={{ fontSize: "14px", cursor: 'pointer' }}>Shri/Smt./Sushri</label>
+                </div>
+                <div className="form-check d-flex align-items-center gap-2 mb-0">
+                  <input 
+                    className="form-check-input mt-0" 
+                    type="radio" 
+                    name="salutation" 
+                    id="salt3" 
+                    checked={salutation === "Shri/Smt./"}
+                    onChange={() => setSalutation("Shri/Smt./")}
+                    style={{ width: '18px', height: '18px' }}
+                  />
+                  <label className="form-check-label text-secondary mb-0" htmlFor="salt3" style={{ fontSize: "14px", cursor: 'pointer' }}>Shri/Smt./</label>
+                </div>
+              </div>
+            </div>
+
+            {/* Date Format */}
+            <div className="col-12 mt-4 pt-1">
+              <label className="form-label fw-semibold text-dark mb-2" style={{ fontSize: "14px" }}>Date Format For Secretarial Tool</label>
+              <select 
+                className="form-select py-2 px-3 shadow-none bg-light border-0" 
+                value={dateFormat}
+                onChange={(e) => setDateFormat(e.target.value)}
+                style={{ borderRadius: "8px", fontSize: "14px" }}
+              >
+                <option value="D/M/YY (01/04/2026)">D/M/YY (01/04/2026)</option>
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              </select>
+            </div>
+
+            {/* Actions */}
+            <div className="col-12 mt-5">
+              <button 
+                className="btn btn-primary d-flex align-items-center justify-content-center gap-2 px-5 py-3 shadow-sm border-0 w-100 w-sm-auto"
+                onClick={handleSave}
+                style={{ borderRadius: "10px", background: "#3b82f6", fontWeight: "600" }}
+              >
+                <i className="bi bi-check2-circle fs-5"></i>
+                Save
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Default Salutation */}
-        <div className="row mb-4 align-items-center">
-          <div className="col-md-5">
-            <label className="fw-semibold small text-dark">Default Salutation For Director/Shareholder/Debentureholder</label>
-          </div>
-          <div className="col-md-7 d-flex gap-3">
-            <div className="form-check">
-              <input className="form-check-input" type="radio" name="salutation" checked={formData.defaultSalutation === "Mr./Mrs./Ms."} onChange={() => setFormData({...formData, defaultSalutation: "Mr./Mrs./Ms."})} />
-              <label className="form-check-label small">Mr./Mrs./Ms.</label>
-            </div>
-            <div className="form-check">
-              <input className="form-check-input" type="radio" name="salutation" checked={formData.defaultSalutation === "Shri/Smt./Sushri"} onChange={() => setFormData({...formData, defaultSalutation: "Shri/Smt./Sushri"})} />
-              <label className="form-check-label small">Shri/Smt./Sushri</label>
-            </div>
-            <div className="form-check">
-              <input className="form-check-input" type="radio" name="salutation" checked={formData.defaultSalutation === "Shri/Smt./Ms."} onChange={() => setFormData({...formData, defaultSalutation: "Shri/Smt./Ms."})} />
-              <label className="form-check-label small">Shri/Smt./Ms.</label>
-            </div>
-          </div>
-        </div>
-
-        {/* Date Format For Secretarial Tool */}
-        <div className="row mb-4 align-items-center">
-          <div className="col-md-5">
-            <label className="fw-semibold small text-dark">Date Format For Secretarial Tool</label>
-          </div>
-          <div className="col-md-7">
-            <select className="form-select form-select-sm" value={formData.dateFormat} onChange={(e) => setFormData({...formData, dateFormat: e.target.value})}>
-              <option value="D/M/YY (30/03/2026)">D/M/YY ({new Date().toLocaleDateString('en-GB')})</option>
-              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-            </select>
-          </div>
-        </div>
-
-        <button 
-          className="btn btn-primary btn-sm px-4 py-2 mt-3 d-flex align-items-center gap-2"
-          onClick={handleSave}
-          style={{ background: "#4e73df", borderColor: "#4e73df" }}
-        >
-          <i className="bi bi-check-circle"></i> Save
-        </button>
       </div>
+
+      <style>{`
+        .max-width-700 { max-width: 700px; margin: 0 auto; }
+        .form-select, .form-control { transition: all 0.2s ease; }
+        .form-select:focus, .form-control:focus { background-color: #f8fafc !important; box-shadow: none !important; }
+        .form-check-input:checked { background-color: #3b82f6; border-color: #3b82f6; }
+        .border-radius-12 { border-radius: 12px; }
+      `}</style>
     </div>
   );
 }

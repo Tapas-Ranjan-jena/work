@@ -54,7 +54,7 @@ export default function Leave() {
     const renderToolbar = () => {
         return (
             <div className="card shadow-sm border-0 mb-3 overflow-visible">
-                <div className="card-body p-2 d-flex flex-wrap align-items-center justify-content-between gap-2 bg-white rounded">
+                <div className="card-body p-2 d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-between gap-3 bg-white rounded">
                     <div className="d-flex align-items-center gap-2">
                         <select className="form-select form-select-sm" style={{ width: "80px", color: "#666" }}>
                             <option value="100">100</option>
@@ -66,43 +66,43 @@ export default function Leave() {
                         </button>
                     </div>
 
-                    <div className="d-flex align-items-center gap-2">
+                    <div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2 flex-grow-1 justify-content-lg-end">
                         {activeTab === "Summary" && (
-                            <>
-                                <select className="form-select form-select-sm" style={{ width: "150px", fontSize: "12px", color: "#666" }}>
+                            <div className="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
+                                <select className="form-select form-select-sm flex-fill py-2 py-md-1" style={{ minWidth: "150px", fontSize: "12px", color: "#666" }}>
                                     <option>- Team member -</option>
                                 </select>
-                                <select className="form-select form-select-sm" style={{ width: "130px", fontSize: "12px", color: "#666" }}>
+                                <select className="form-select form-select-sm flex-fill py-2 py-md-1" style={{ minWidth: "130px", fontSize: "12px", color: "#666" }}>
                                     <option>- Leave type -</option>
                                 </select>
-                            </>
+                            </div>
                         )}
 
                         {(activeTab !== "Pending approval") && (
-                            <div className="btn-group btn-group-sm ms-1">
-                                <button className="btn btn-light border bg-white px-2">
+                            <div className="btn-group btn-group-sm w-100 w-md-auto">
+                                <button className="btn btn-light border bg-white px-2 py-2 py-md-1">
                                     <i className="bi bi-chevron-left"></i>
                                 </button>
-                                <button className="btn btn-light border bg-white px-3" style={{ fontSize: "12px" }}>
+                                <button className="btn btn-light border bg-white px-4 fw-medium py-2 py-md-1" style={{ fontSize: "12px" }}>
                                     {activeTab === "All applications" ? "February 2026" : "2026"}
                                 </button>
-                                <button className="btn btn-light border bg-white px-2">
+                                <button className="btn btn-light border bg-white px-2 py-2 py-md-1">
                                     <i className="bi bi-chevron-right"></i>
                                 </button>
                             </div>
                         )}
 
-                        <div className="d-flex align-items-center gap-1 ms-1">
-                            <button className="btn btn-sm btn-light border bg-white px-3" style={{ fontSize: "12px", color: "#666" }}>Excel</button>
-                            <button className="btn btn-sm btn-light border bg-white px-3" style={{ fontSize: "12px", color: "#666" }}>Print</button>
+                        <div className="d-flex align-items-center gap-2 w-100 w-md-auto mt-2 mt-md-0">
+                            <button className="btn btn-sm btn-light border bg-white px-3 flex-fill py-2 py-md-1" style={{ fontSize: "12px", color: "#666" }}>Excel</button>
+                            <button className="btn btn-sm btn-light border bg-white px-3 flex-fill py-2 py-md-1" style={{ fontSize: "12px", color: "#666" }}>Print</button>
                         </div>
 
-                        <div className="position-relative ms-1">
+                        <div className="position-relative w-100 w-md-auto mt-2 mt-md-0">
                             <input
                                 type="text"
-                                className="form-control form-control-sm ps-3 pe-4"
+                                className="form-control form-control-sm ps-3 pe-4 py-2"
                                 placeholder="Search"
-                                style={{ width: "160px", background: "#fff" }}
+                                style={{ background: "#fff", width: "100%", minWidth: "180px" }}
                             />
                             <i className="bi bi-search position-absolute end-0 top-50 translate-middle-y me-2 text-muted" style={{ fontSize: "12px" }}></i>
                         </div>
@@ -116,26 +116,26 @@ export default function Leave() {
         switch (activeTab) {
             case "Summary":
                 return (
-                    <tr style={{ borderBottom: "1px solid #eee" }}>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>
+                    <tr style={{ borderBottom: "1px solid #eee" }} className="text-nowrap">
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "200px" }}>
                             Applicant <i className="bi bi-chevron-up ms-1 text-muted" style={{ fontSize: "10px" }}></i>
                         </th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Leave type</th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px" }}>Total leave (Yearly)</th>
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "150px" }}>Leave type</th>
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "150px" }}>Total leave (Yearly)</th>
                     </tr>
                 );
             case "Pending approval":
             case "All applications":
                 return (
-                    <tr style={{ borderBottom: "1px solid #eee" }}>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>
+                    <tr style={{ borderBottom: "1px solid #eee" }} className="text-nowrap">
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "200px" }}>
                             Applicant <i className="bi bi-chevron-up ms-1 text-muted" style={{ fontSize: "10px" }}></i>
                         </th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Leave type</th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Date</th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Duration</th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Status</th>
-                        <th style={{ width: "40px" }} className="text-center">
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "150px" }}>Leave type</th>
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "200px" }}>Date Range</th>
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "100px" }}>Duration</th>
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "100px" }}>Status</th>
+                        <th style={{ width: "60px", minWidth: "60px" }} className="text-center px-3">
                             <i className="bi bi-list"></i>
                         </th>
                     </tr>
@@ -143,13 +143,13 @@ export default function Leave() {
             case "Official Leave":
             default:
                 return (
-                    <tr style={{ borderBottom: "1px solid #eee" }}>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Event</th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>
+                    <tr style={{ borderBottom: "1px solid #eee" }} className="text-nowrap">
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "300px" }}>Event</th>
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "150px" }}>
                             Date <i className="bi bi-chevron-up ms-1 text-muted" style={{ fontSize: "10px" }}></i>
                         </th>
-                        <th className="fw-semibold text-dark" style={{ fontSize: "13px", borderRight: '1px solid #eee' }}>Type</th>
-                        <th style={{ width: "40px" }} className="text-center">
+                        <th className="fw-semibold text-dark px-3" style={{ fontSize: "13px", minWidth: "150px" }}>Type</th>
+                        <th style={{ width: "60px", minWidth: "60px" }} className="text-center px-3">
                             <i className="bi bi-list"></i>
                         </th>
                     </tr>
@@ -158,42 +158,44 @@ export default function Leave() {
     };
 
     return (
-        <div className="leave-page p-1">
+        <div className="leave-page p-2 p-md-4 text-start">
             {/* ⭐ HEADER & TOP BUTTONS */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h4 className="mb-0 fw-bold">Leave</h4>
-                <div className="d-flex gap-2">
+            <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 w-100">
+                <h4 className="mb-0 fw-bold text-nowrap">Leave</h4>
+                <div className="d-flex align-items-center gap-2 ms-auto">
                     <button
-                        className="btn btn-light border d-flex align-items-center px-3 shadow-sm bg-white"
-                        style={{ borderRadius: "8px", fontSize: "13px" }}
+                        className="btn btn-light border d-flex align-items-center justify-content-center px-3 py-1 shadow-sm bg-white text-nowrap"
+                        style={{ borderRadius: "6px", fontSize: "12px", height: "34px", width: "fit-content" }}
                         onClick={() => setShowApplyModal(true)}
                     >
-                        <i className="bi bi-plus-circle me-2"></i> Apply Leave
+                        Apply Leave <i className="bi bi-plus-circle ms-2"></i>
                     </button>
                     <button
-                        className="btn btn-light border d-flex align-items-center px-3 shadow-sm bg-white"
-                        style={{ borderRadius: "8px", fontSize: "13px" }}
+                        className="btn btn-light border d-flex align-items-center justify-content-center px-3 py-1 shadow-sm bg-white text-nowrap"
+                        style={{ borderRadius: "6px", fontSize: "12px", height: "34px", width: "fit-content" }}
                         onClick={() => setShowAssignModal(true)}
                     >
-                        <i className="bi bi-plus-circle me-2"></i> Assign Leave
+                        Assign Leave <i className="bi bi-plus-circle ms-2"></i>
                     </button>
                 </div>
             </div>
 
-            {/* ⭐ TABS */}
-            <div className="d-flex gap-4 mb-3 border-bottom overflow-auto pb-1" style={{ scrollbarWidth: "none" }}>
+            {/* ⭐ TABS - Scrollable on mobile */}
+            <div className="d-flex gap-4 mb-3 border-bottom overflow-auto pb-1 flex-nowrap" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
                 {tabs.map((tab) => (
                     <div
                         key={tab}
                         onClick={() => setActiveTab(tab)}
+                        className="flex-shrink-0"
                         style={{
                             cursor: "pointer",
-                            fontSize: "13px",
-                            paddingBottom: "8px",
-                            borderBottom: activeTab === tab ? "2px solid #3346a8" : "2px solid transparent",
+                            fontSize: "13.5px",
+                            paddingBottom: "10px",
+                            borderBottom: activeTab === tab ? "3px solid #3346a8" : "3px solid transparent",
                             color: activeTab === tab ? "#3346a8" : "#666",
-                            fontWeight: activeTab === tab ? "500" : "400",
-                            whiteSpace: "nowrap"
+                            fontWeight: activeTab === tab ? "600" : "400",
+                            whiteSpace: "nowrap",
+                            userSelect: "none"
                         }}
                     >
                         {tab}
@@ -201,15 +203,15 @@ export default function Leave() {
                 ))}
             </div>
 
-            {/* ⭐ SUB-TOOLBAR */}
+            {/* ⭐ SUB-TOOLBAR - Modernized stacking */}
             {activeTab === "Official Leave" && (
                 <div className="d-flex justify-content-end mb-3">
                     <button
-                        className="btn btn-light border d-flex align-items-center px-3 shadow-sm bg-white"
-                        style={{ borderRadius: "8px", fontSize: "13px" }}
+                        className="btn btn-light border d-flex align-items-center justify-content-center px-3 py-1 shadow-sm bg-white text-nowrap"
+                        style={{ borderRadius: "6px", fontSize: "12px", height: "34px", width: "fit-content", fontWeight: "500" }}
                         onClick={() => setShowHolidayModal(true)}
                     >
-                        <i className="bi bi-plus-circle me-2"></i> Official holiday
+                        Official holiday <i className="bi bi-plus-circle ms-2 text-primary"></i>
                     </button>
                 </div>
             )}
@@ -218,8 +220,8 @@ export default function Leave() {
             {renderToolbar()}
 
             {/* ⭐ TABLE */}
-            <div className="card shadow-sm border-0 rounded-0">
-                <div className="table-responsive">
+            <div className="card shadow-sm border-0 rounded overflow-hidden mb-4">
+                <div className="table-responsive overflow-auto">
                     <table className="table table-bordered align-middle mb-0">
                         <thead className="table-light">
                             {renderTableHeader()}
@@ -227,47 +229,49 @@ export default function Leave() {
                         <tbody>
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={10} className="text-center py-4">
+                                    <td colSpan={10} className="text-center py-5">
                                         <div className="spinner-border spinner-border-sm text-primary me-2"></div>
-                                        Loading...
+                                        Fetching leave information...
                                     </td>
                                 </tr>
                             ) : (activeTab === "Pending approval" || activeTab === "All applications") && filteredLeaves.length > 0 ? (
                                 filteredLeaves.map((leave) => (
-                                    <tr key={leave.id}>
-                                        <td style={{ fontSize: "13px" }}>Employee #{leave.employee_id}</td>
-                                        <td style={{ fontSize: "13px" }}>{leave.leave_type}</td>
-                                        <td style={{ fontSize: "13px" }}>{new Date(leave.start_date).toLocaleDateString()} – {new Date(leave.end_date).toLocaleDateString()}</td>
-                                        <td style={{ fontSize: "13px" }}>{leave.total_days} day(s)</td>
-                                        <td>
-                                            <span className={`badge ${leave.status === 'approved' ? 'bg-success' : leave.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark'}`}>
+                                    <tr key={leave.id} className="text-nowrap">
+                                        <td className="px-3" style={{ fontSize: "13.5px" }}>Employee #{leave.employee_id}</td>
+                                        <td className="px-3" style={{ fontSize: "13.5px" }}>{leave.leave_type}</td>
+                                        <td className="px-3" style={{ fontSize: "13.5px" }}>{new Date(leave.start_date).toLocaleDateString()} – {new Date(leave.end_date).toLocaleDateString()}</td>
+                                        <td className="px-3" style={{ fontSize: "13.5px" }}>{leave.total_days} day(s)</td>
+                                        <td className="px-3">
+                                            <span className={`badge ${leave.status === 'approved' ? 'bg-success' : leave.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark'}`} style={{ fontSize: "11px" }}>
                                                 {leave.status.toUpperCase()}
                                             </span>
                                         </td>
-                                        <td className="text-center">
-                                            {leave.status === "pending" && (
-                                                <div className="d-flex gap-1 justify-content-center">
+                                        <td className="text-center px-3">
+                                            {leave.status === "pending" ? (
+                                                <div className="d-flex gap-2 justify-content-center">
                                                     <button
-                                                        className="btn btn-sm btn-success py-0 px-2"
+                                                        className="btn btn-sm btn-success px-3 py-1 fw-bold shadow-sm"
                                                         onClick={() => handleApproveReject(leave.id, "approved")}
                                                     >
                                                         ✓
                                                     </button>
                                                     <button
-                                                        className="btn btn-sm btn-outline-danger py-0 px-2"
+                                                        className="btn btn-sm btn-outline-danger px-3 py-1 fw-bold shadow-sm"
                                                         onClick={() => handleApproveReject(leave.id, "rejected")}
                                                     >
                                                         ✗
                                                     </button>
                                                 </div>
+                                            ) : (
+                                                <button className="btn btn-sm text-secondary border-0"><i className="bi bi-three-dots-vertical"></i></button>
                                             )}
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={10} className="text-center py-4 text-muted" style={{ fontSize: "13px" }}>
-                                        No record found.
+                                    <td colSpan={10} className="text-center py-5 text-muted" style={{ fontSize: "13.5px" }}>
+                                        No leave records found for this category.
                                     </td>
                                 </tr>
                             )}
@@ -276,17 +280,17 @@ export default function Leave() {
                 </div>
 
                 {/* ⭐ PAGINATION */}
-                <div className="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2 px-3">
+                <div className="card-footer bg-white border-top d-flex flex-column flex-sm-row justify-content-between align-items-center py-3 px-3 gap-3">
                     <span className="text-muted" style={{ fontSize: "12px" }}>
-                        {filteredLeaves.length > 0 ? `1-${filteredLeaves.length} / ${filteredLeaves.length}` : "0-0 / 0"}
+                        {filteredLeaves.length > 0 ? `Showing 1 to ${filteredLeaves.length} of ${filteredLeaves.length}` : "0-0 / 0 entries"}
                     </span>
                     <nav>
                         <ul className="pagination pagination-sm mb-0">
                             <li className="page-item disabled">
-                                <a className="page-link border bg-light text-muted" href="#" style={{ borderRadius: '4px 0 0 4px' }}>«</a>
+                                <a className="page-link border bg-light text-muted px-3" href="#">« Previous</a>
                             </li>
                             <li className="page-item disabled">
-                                <a className="page-link border bg-light text-muted" href="#" style={{ borderRadius: '0 4px 4px 0' }}>»</a>
+                                <a className="page-link border bg-light text-muted px-3" href="#">Next »</a>
                             </li>
                         </ul>
                     </nav>
@@ -300,26 +304,10 @@ export default function Leave() {
 
             <style>{`
                 .table-bordered th, .table-bordered td { border: 1px solid #eee !important; }
-                .table-light { background-color: #fcfcfc; }
-                .modal-overlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.5);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 9999;
-                }
-                .modal-box {
-                    background: white;
-                    border-radius: 12px;
-                    width: 100%;
-                    max-width: 600px;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-                }
+                .leave-page .table-light { background-color: #f7f9fc; }
+                ::-webkit-scrollbar { height: 6px; }
+                ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+                .badge { font-weight: 500; }
             `}</style>
         </div>
     );

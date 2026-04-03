@@ -1,825 +1,244 @@
-import { NavLink, useLocation } from "react-router-dom"
-import { useState, useEffect } from "react"
+import { NavLink, useLocation } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+
+type NavItem = {
+  label: string;
+  path?: string;
+  icon: string;
+  children?: { label: string; path: string; icon?: string }[];
+};
 
 type Props = {
-  open: boolean
-  setOpen: (val: boolean) => void
-}
+  open: boolean;
+  setOpen: (val: boolean) => void;
+};
+
+const navItems: NavItem[] = [
+  { label: "Dashboard", path: "/dashboard", icon: "bi-speedometer2" },
+  {
+    label: "Bulk Sender",
+    icon: "bi-send",
+    children: [
+      { label: "Bulk WhatsApp", path: "/bulk-sender/whatsapp", icon: "bi-whatsapp" },
+      { label: "Bulk Gmail", path: "/bulk-sender/gmail", icon: "bi-google" },
+    ],
+  },
+  { label: "Clients", path: "/clients", icon: "bi-folder2-open" },
+  { label: "Requested Documents", path: "/requested-documents", icon: "bi-file-earmark-text" },
+  {
+    label: "Masters",
+    icon: "bi-diagram-3",
+    children: [
+      { label: "Company Master", path: "/masters/company-master", icon: "bi-building-fill" },
+      { label: "Director/KMP Master", path: "/masters/director-kmp", icon: "bi-person-badge" },
+      { label: "Shareholder Master", path: "/masters/shareholder", icon: "bi-people" },
+      { label: "Debenture holder Master", path: "/masters/debenture-holder", icon: "bi-journal-text" },
+      { label: "Auditor Master", path: "/masters/auditors", icon: "bi-person-check" },
+      { label: "PCS Firm Master", path: "/masters/pcs-firm-master", icon: "bi-building" },
+      { label: "RTA Master", path: "/masters/rta-master", icon: "bi-building" },
+      { label: "Client groups", path: "/masters/client-groups", icon: "bi-building" },
+      { label: "MIS Report", path: "/masters/mis", icon: "bi-graph-up" },
+    ],
+  },
+  {
+    label: "Incorporation",
+    icon: "bi-folder2-open",
+    children: [
+      { label: "RUN LLP", path: "/incorporation/run-llp" },
+      { label: "FILLIP", path: "/incorporation/fillip" },
+      { label: "SPICE", path: "/incorporation/spice" },
+      { label: "Check Company Name", path: "/incorporation/check-company" },
+    ],
+  },
+  {
+    label: "Secretarial Practice",
+    icon: "bi-briefcase",
+    children: [
+      { label: "Check Annual Filing Status", path: "/secretarial-practice/check-annual-filing" },
+      { label: "Tenure Tracker", path: "/secretarial-practice/tenure-tracker" },
+      { label: "E-form Filing Mgmt.", path: "/secretarial-practice/e-form-filing" },
+      { label: "Upcoming Compliances", path: "/secretarial-practice/upcoming-compliances" },
+      { label: "DSC Management", path: "/secretarial-practice/dsc-management" },
+      { label: "DIR-3-KYC", path: "/secretarial-practice/dir3-kyc" },
+      { label: "MCA V2 & V3 User", path: "/secretarial-practice/mca-v2-v3-user" },
+      { label: "MCA Transaction", path: "/secretarial-practice/mca-transaction" },
+      { label: "MCA V3 A/C Creation", path: "/secretarial-practice/mca-v3-ac-creation" },
+      { label: "LLP MCA Credentials", path: "/secretarial-practice/llp-mca-credentials" },
+      { label: "Company MCA Credentials", path: "/secretarial-practice/company-mca-credentials" },
+      { label: "Director MCA Credentials", path: "/secretarial-practice/director-mca-credentials" },
+      { label: "DIN Information", path: "/secretarial-practice/din-information" },
+      { label: "Particulars of forms", path: "/secretarial-practice/particulars-of-forms" },
+      { label: "Prepare DIR-2", path: "/secretarial-practice/prepare-dir2" },
+      { label: "Search Report", path: "/secretarial-practice/search-report" },
+      { label: "Banker's PAN Database", path: "/secretarial-practice/bankers-pan-database" },
+      { label: "CSR Calculation", path: "/secretarial-practice/csr-calculation" },
+    ],
+  },
+  {
+    label: "Resolutions Master",
+    icon: "bi-journal-check",
+    children: [
+      { label: "Board Resolutions", path: "/resolutions-master/board-resolutions" },
+      { label: "General Meeting Resolutions", path: "/resolutions-master/general-meeting-resolutions" },
+    ],
+  },
+  {
+    label: "Checklist",
+    icon: "bi-check2-square",
+    children: [
+      { label: "Standard Checklist", path: "/checklist" },
+      { label: "Assign Checklist", path: "/checklist/assign" },
+    ],
+  },
+  {
+    label: "Assignments",
+    icon: "bi-kanban",
+    children: [
+      { label: "Tasks", path: "/assignments/tasks" },
+      { label: "Call Logs", path: "/assignments/call-logs" },
+      { label: "Timesheets", path: "/assignments/timesheets" },
+    ],
+  },
+  {
+    label: "HRMS",
+    icon: "bi-people",
+    children: [
+      { label: "Team member", path: "/hrms/team-member" },
+      { label: "Time cards", path: "/hrms/time-cards" },
+      { label: "Leave", path: "/hrms/leave" },
+      { label: "Salary", path: "/hrms/salary" },
+    ],
+  },
+  {
+    label: "Business Manager",
+    icon: "bi-person-badge",
+    children: [
+      { label: "Registration/Licence", path: "/business-manager/registration" },
+      { label: "Insurance", path: "/business-manager/insurance" },
+      { label: "Contract/Agreement", path: "/business-manager/agreement" },
+      { label: "Expiry Manager", path: "/business-manager/expiry" },
+    ],
+  },
+  {
+    label: "Finance",
+    icon: "bi-cash-stack",
+    children: [
+      { label: "Invoices", path: "/finance/invoices/monthly", icon: "bi-receipt" },
+      { label: "Payments", path: "/finance/payments/monthly", icon: "bi-credit-card" },
+      { label: "Expenses", path: "/finance/expenses", icon: "bi-wallet2" },
+      { label: "Income vs Expenses", path: "/finance/income-expense", icon: "bi-bar-chart-line" },
+    ],
+  },
+  {
+    label: "Help & Support",
+    icon: "bi-question-circle",
+    children: [
+      { label: "Updates", path: "/help-support/updates" },
+      { label: "User Manual", path: "/help-support/user-manual" },
+      { label: "Help Videos", path: "/help-support/help-videos" },
+      { label: "Help Center", path: "/help-support/help-center" },
+    ],
+  },
+  { label: "Announcements", path: "/announcements", icon: "bi-megaphone" },
+  { label: "Leads", path: "/leads", icon: "bi-person-lines-fill" },
+  { label: "Settings", path: "/settings", icon: "bi-gear" },
+];
 
 export default function Sidebar({ open, setOpen }: Props) {
+  const location = useLocation();
+  const [openMenus, setOpenMenus] = useState<string[]>([]);
 
-  const location = useLocation()
+  // Memoize the active menu search to prevent recalculation on every render
+  const activeParentLabel = useMemo(() => {
+    const parent = navItems.find((item) =>
+      item.children?.some((child) => 
+        location.pathname === child.path || 
+        location.pathname.startsWith(child.path + "/")
+      )
+    );
+    return parent?.label || null;
+  }, [location.pathname]);
 
-  /* ⭐ BULK SENDER DROPDOWN STATE */
-  const [bulkOpen, setBulkOpen] = useState(false)
-
-  /* ⭐ MASTERS DROPDOWN STATE */
-  const [mastersOpen, setMastersOpen] = useState(false)
-
-  const [incOpen, setIncOpen] = useState(false)
-
-  const [checklistOpen, setChecklistOpen] = useState(false)
-
-  const [openMenu, setOpenMenu] = useState(false)
-  const [financeOpen, setFinanceOpen] = useState(false)
-  /* ⭐ ASSIGNMENTS DROPDOWN STATE */
-const [assignmentsOpen, setAssignmentsOpen] = useState(false)
-
-  /* ⭐ HRMS DROPDOWN STATE */
-  const [hrmsOpen, setHrmsOpen] = useState(false)
-  const [helpOpen, setHelpOpen] = useState(false)
-  const [spOpen, setSpOpen] = useState(false)
-  const [resolutionsOpen, setResolutionsOpen] = useState(false)
-
-  /* ⭐ AUTO OPEN DROPDOWNS IF ROUTE ACTIVE */
   useEffect(() => {
-    if (location.pathname.includes("/bulk-sender")) {
-      setBulkOpen(true)
+    if (activeParentLabel && !openMenus.includes(activeParentLabel)) {
+      setOpenMenus((prev) => [...prev, activeParentLabel]);
     }
-    if (location.pathname.includes("/masters")) {
-      setMastersOpen(true)
-    }
-    if (location.pathname.includes("/incorporation")) {
-      setIncOpen(true)
-    }
-    if (location.pathname.includes("/checklist")) {
-      setChecklistOpen(true)
-    }
-    if (location.pathname.startsWith("/business-manager")) {
-      setOpenMenu(true)
-    }
-    if (location.pathname.startsWith("/finance")) {
-  setFinanceOpen(true)
-}    if (location.pathname.startsWith("/assignments")) {
-      setAssignmentsOpen(true)
-    }
-    if (location.pathname.includes("/hrms")) {
-      setHrmsOpen(true)
-    }
-    if (location.pathname.startsWith("/help-support")) {
-      setHelpOpen(true)
-    }
-    if (location.pathname.startsWith("/secretarial-practice")) {
-      setSpOpen(true)
-    }
-    if (location.pathname.startsWith("/resolutions-master")) {
-      setResolutionsOpen(true)
-    }
-  }, [location.pathname])
+  }, [activeParentLabel]);
 
-  /* ⭐ VERY IMPORTANT — close sidebar ONLY on mobile */
+  const toggleMenu = (label: string) => {
+    setOpenMenus((prev) =>
+      prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]
+    );
+  };
+
   const handleNavClick = () => {
     if (window.innerWidth < 992) {
-      setOpen(false)
+      setOpen(false);
     }
-  }
+  };
 
   return (
     <>
-      {/* ⭐ BACKDROP FOR MOBILE */}
-      {open && (
-        <div
-          className="sidebar-backdrop d-lg-none"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      {open && <div className="sidebar-backdrop d-lg-none" onClick={() => setOpen(false)} />}
 
       <div className={`sidebar ${open ? "open" : ""}`}>
         <div className="sidebar-menu">
+          {navItems.map((item) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isMenuOpen = openMenus.includes(item.label);
+            const isParentActive = hasChildren && item.children?.some(c => location.pathname === c.path);
 
-          {/* ================= DASHBOARD ================= */}
-          <NavLink
-            to="/dashboard"
-            onClick={handleNavClick}
-            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-speedometer2"></i>
-              Dashboard
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </NavLink>
+            return (
+              <div key={item.label} className="nav-group">
+                {hasChildren ? (
+                  <div
+                    className={`sidebar-item ${isMenuOpen || isParentActive ? "parent-active" : ""}`}
+                    onClick={() => toggleMenu(item.label)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span className="sidebar-left">
+                      <i className={`bi ${item.icon}`}></i>
+                      {item.label}
+                    </span>
+                    <i className={`bi ${isMenuOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
+                  </div>
+                ) : (
+                  <NavLink
+                    to={item.path!}
+                    onClick={handleNavClick}
+                    className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
+                  >
+                    <span className="sidebar-left">
+                      <i className={`bi ${item.icon}`}></i>
+                      {item.label}
+                    </span>
+                    <i className="bi bi-chevron-right sidebar-arrow"></i>
+                  </NavLink>
+                )}
 
-          {/* ================= BULK SENDER ================= */}
-          <div
-            className={`sidebar-item ${bulkOpen ? "active" : ""}`}
-            onClick={() => setBulkOpen(!bulkOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-send"></i>
-              Bulk Sender
-            </span>
-            <i className={`bi ${bulkOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
-          </div>
-
-          {bulkOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-
-              <NavLink
-                to="/bulk-sender/whatsapp"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-whatsapp"></i>
-                  Bulk WhatsApp
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/bulk-sender/gmail"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-google"></i>
-                  Bulk Gmail
-                </span>
-              </NavLink>
-
-            </div>
-          )}
-
-          {/* ================= CLIENTS ================= */}
-          <NavLink
-            to="/clients"
-            onClick={handleNavClick}
-            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-folder2-open"></i>
-              Clients
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </NavLink>
-
-          {/* ================= REQUESTED DOCUMENTS ================= */}
-          <NavLink
-            to="/requested-documents"
-            onClick={handleNavClick}
-            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-file-earmark-text"></i>
-              Requested Documents
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </NavLink>
-
-          {/* ================= MASTERS DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${mastersOpen ? "active" : ""}`}
-            onClick={() => setMastersOpen(!mastersOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-diagram-3"></i>
-              Masters
-            </span>
-            <i className={`bi ${mastersOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
-          </div>
-
-          {mastersOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-
-              <NavLink
-                to="/masters/company-master"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Company Master
-              </NavLink>
-
-              <NavLink
-                to="/masters/director-kmp"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-person-badge"></i>
-                  Director/KMP Master
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/masters/shareholder"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-people"></i>
-                  Shareholder Master
-                </span>
-              </NavLink>
-              <NavLink
-                to="/masters/debenture-holder"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-journal-text"></i>
-                  Debenture holder Master
-                </span>
-              </NavLink>
-              <NavLink
-                to="/masters/auditors"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Auditor Master
-              </NavLink>
-              <NavLink
-                to="/masters/pcs-firm-master"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-building"></i>
-                  PCS Firm Master
-                </span>
-              </NavLink>
-              <NavLink
-                to="/masters/rta-master"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-building"></i>
-                  RTA Master
-                </span>
-              </NavLink>
-              <NavLink
-                to="/masters/client-groups"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-building"></i>
-                  Client groups
-                </span>
-              </NavLink>
-              <NavLink
-                to="/masters/mis"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  <i className="bi bi-graph-up"></i>
-                  MIS Report
-                </span>
-              </NavLink>
-
-            </div>
-          )}
-
-          {/* ================= OTHER STATIC ITEMS ================= */}
-          {/* ================= INCORPORATION DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${incOpen ? "active" : ""}`}
-            onClick={() => setIncOpen(!incOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-folder2-open"></i>
-              Incorporation
-            </span>
-
-            <i className={`bi ${incOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`} />
-          </div>
-
-          {incOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-
-              <NavLink
-                to="/incorporation/run-llp"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                RUN LLP
-              </NavLink>
-
-              <NavLink
-                to="/incorporation/fillip"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                FILLIP
-              </NavLink>
-
-              <NavLink
-                to="/incorporation/spice"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                SPICE
-              </NavLink>
-
-              <NavLink
-                to="/incorporation/check-company"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Check Company Name
-              </NavLink>
-
-            </div>
-          )}
-
-          {/* ================= SECRETARIAL PRACTICE DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${spOpen ? "active" : ""}`}
-            onClick={() => setSpOpen(!spOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-briefcase"></i>
-              Secretarial Practice
-            </span>
-            <i className={`bi ${spOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
-          </div>
-
-          {spOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <NavLink to="/secretarial-practice/check-annual-filing" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Check Annual Filing Status From MCA
-              </NavLink>
-              <NavLink to="/secretarial-practice/tenure-tracker" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Tenure Tracker
-              </NavLink>
-              <NavLink to="/secretarial-practice/e-form-filing" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                E-form Filing Mgmt.
-              </NavLink>
-              <NavLink to="/secretarial-practice/upcoming-compliances" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Upcoming Compliances
-              </NavLink>
-              <NavLink to="/secretarial-practice/dsc-management" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                DSC Management
-              </NavLink>
-              <NavLink to="/secretarial-practice/dir3-kyc" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                DIR-3-KYC
-              </NavLink>
-              <NavLink to="/secretarial-practice/mca-v2-v3-user" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                MCA V2 & V3 User
-              </NavLink>
-              <NavLink to="/secretarial-practice/mca-transaction" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                MCA Transaction
-              </NavLink>
-              <NavLink to="/secretarial-practice/mca-v3-ac-creation" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                MCA V3 A/C Creation
-              </NavLink>
-              <NavLink to="/secretarial-practice/llp-mca-credentials" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                LLP MCA Credentials
-              </NavLink>
-              <NavLink to="/secretarial-practice/company-mca-credentials" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Company MCA Credentials
-              </NavLink>
-              <NavLink to="/secretarial-practice/director-mca-credentials" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Director MCA Credentials
-              </NavLink>
-              <NavLink to="/secretarial-practice/din-information" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                DIN Information
-              </NavLink>
-              <NavLink to="/secretarial-practice/particulars-of-forms" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Particulars of forms
-              </NavLink>
-              <NavLink to="/secretarial-practice/prepare-dir2" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Prepare DIR-2
-              </NavLink>
-              <NavLink to="/secretarial-practice/search-report" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Search Report
-              </NavLink>
-              <NavLink to="/secretarial-practice/bankers-pan-database" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Banker's PAN Database
-              </NavLink>
-              <NavLink to="/secretarial-practice/csr-calculation" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                CSR Calculation
-              </NavLink>
-            </div>
-          )}
-          {/* ================= RESOLUTIONS MASTER DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${resolutionsOpen ? "active" : ""}`}
-            onClick={() => setResolutionsOpen(!resolutionsOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-journal-check"></i>
-              Resolutions Master
-            </span>
-            <i className={`bi ${resolutionsOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
-          </div>
-
-          {resolutionsOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <NavLink to="/resolutions-master/board-resolutions" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Board Resolutions
-              </NavLink>
-              <NavLink to="/resolutions-master/general-meeting-resolutions" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                General Meeting Resolutions
-              </NavLink>
-            </div>
-          )}
-
-          {/* ================= CHECKLIST DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${checklistOpen ? "active" : ""}`}
-            onClick={() => setChecklistOpen(!checklistOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-check2-square"></i>
-              Checklist
-            </span>
-
-            <i
-              className={`bi ${checklistOpen ? "bi-chevron-down" : "bi-chevron-right"
-                } sidebar-arrow`}
-            />
-          </div>
-
-          {checklistOpen && (
-            <div
-              style={{
-                paddingLeft: "36px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px"
-              }}
-            >
-              <NavLink
-                to="/checklist"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                Standard Checklist
-              </NavLink>
-
-              <NavLink
-                to="/checklist/assign"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                Assign Checklist
-              </NavLink>
-            </div>
-          )}
-
-          {/* ================= ASSIGNMENTS ================= */}
-<div
-  className={`sidebar-item ${assignmentsOpen ? "active" : ""}`}
-  onClick={() => setAssignmentsOpen(!assignmentsOpen)}
-  style={{ cursor: "pointer" }}
->
-  <span className="sidebar-left">
-    <i className="bi bi-kanban"></i>
-    Assignments
-  </span>
-
-  <i
-    className={`bi ${
-      assignmentsOpen ? "bi-chevron-down" : "bi-chevron-right"
-    } sidebar-arrow`}
-  ></i>
-</div>
-
-{assignmentsOpen && (
-  <div
-    style={{
-      paddingLeft: "36px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-    }}
-  >
-
-    <NavLink
-      to="/assignments/tasks"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      Tasks
-    </NavLink>
-
-    <NavLink
-      to="/assignments/call-logs"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      Call Logs
-    </NavLink>
-
-    <NavLink
-      to="/assignments/timesheets"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      Timesheets
-    </NavLink>
-
-  </div>
-)}
-
-          {/* ================= HRMS DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${hrmsOpen ? "active" : ""}`}
-            onClick={() => setHrmsOpen(!hrmsOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-people"></i>
-              HRMS
-            </span>
-            <i className={`bi ${hrmsOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
-          </div>
-
-          {hrmsOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <NavLink
-                to="/hrms/team-member"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Team member
-              </NavLink>
-              <NavLink
-                to="/hrms/time-cards"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Time cards
-              </NavLink>
-              <NavLink
-                to="/hrms/leave"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Leave
-              </NavLink>
-              <NavLink
-                to="/hrms/salary"
-                onClick={handleNavClick}
-                className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-              >
-                Salary
-              </NavLink>
-            </div>
-          )}
-
-          <div
-            className={`sidebar-item ${openMenu ? "active" : ""}`}
-            onClick={() => setOpenMenu(!openMenu)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-person-badge"></i>
-              Business Manager
-            </span>
-
-            <i
-              className={`bi ${openMenu ? "bi-chevron-down" : "bi-chevron-right"
-                } sidebar-arrow`}
-            ></i>
-          </div>
-
-          {openMenu && (
-            <div
-              style={{
-                paddingLeft: "36px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px",
-              }}
-            >
-              <NavLink
-                to="/business-manager/registration"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  Registration/Licence
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/business-manager/insurance"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  Insurance
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/business-manager/agreement"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  Contract/Agreement
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/business-manager/expiry"
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `sidebar-item ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="sidebar-left">
-                  Expiry Manager
-                </span>
-              </NavLink>
-            </div>
-          )}
-
-         {/* ================= FINANCE ================= */}
-<div
-  className={`sidebar-item ${financeOpen ? "active" : ""}`}
-  onClick={() => setFinanceOpen(!financeOpen)}
-  style={{ cursor: "pointer" }}
->
-  <span className="sidebar-left">
-    <i className="bi bi-cash-stack"></i>
-    Finance
-  </span>
-
-  <i
-    className={`bi ${
-      financeOpen ? "bi-chevron-down" : "bi-chevron-right"
-    } sidebar-arrow`}
-  ></i>
-</div>
-
-{financeOpen && (
-  <div
-    style={{
-      paddingLeft: "36px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-    }}
-  >
-
-    {/* ⭐ INVOICES */}
-    <NavLink
-      to="/finance/invoices/monthly"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      <span className="sidebar-left">
-        <i className="bi bi-receipt"></i>
-        Invoices
-      </span>
-    </NavLink>
-
-    {/* ⭐ PAYMENTS */}
-    <NavLink
-      to="/finance/payments/monthly"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      <span className="sidebar-left">
-        <i className="bi bi-credit-card"></i>
-        Payments
-      </span>
-    </NavLink>
-
-    {/* ⭐ EXPENSES */}
-    <NavLink
-      to="/finance/expenses"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      <span className="sidebar-left">
-        <i className="bi bi-wallet2"></i>
-        Expenses
-      </span>
-    </NavLink>
-
-    {/* ⭐ INCOME VS EXPENSE */}
-    <NavLink
-      to="/finance/income-expense"
-      onClick={handleNavClick}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
-    >
-      <span className="sidebar-left">
-        <i className="bi bi-bar-chart-line"></i>
-        Income vs Expenses
-      </span>
-    </NavLink>
-
-  </div>
-)}
-
-          {/* ================= HELP & SUPPORT DROPDOWN ================= */}
-          <div
-            className={`sidebar-item ${location.pathname.startsWith("/help-support") ? "active" : ""}`}
-            onClick={() => setHelpOpen(!helpOpen)}
-            style={{ cursor: "pointer" }}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-question-circle"></i>
-              Help &amp; Support
-            </span>
-            <i className={`bi ${helpOpen ? "bi-chevron-down" : "bi-chevron-right"} sidebar-arrow`}></i>
-          </div>
-
-          {helpOpen && (
-            <div style={{ paddingLeft: "36px", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <NavLink to="/help-support/updates" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Updates
-              </NavLink>
-              <NavLink to="/help-support/user-manual" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                User Manual
-              </NavLink>
-              <NavLink to="/help-support/help-videos" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Help Videos
-              </NavLink>
-              <NavLink to="/help-support/help-center" onClick={handleNavClick} className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}>
-                Help Center
-              </NavLink>
-            </div>
-          )}
-
-          <NavLink
-            to="/announcements"
-            onClick={handleNavClick}
-            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-megaphone"></i>
-              Announcements
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </NavLink>
-
-          <NavLink
-            to="/leads"
-            onClick={handleNavClick}
-            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-person-lines-fill"></i>
-              Leads
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </NavLink>
-
-          <NavLink
-            to="/settings"
-            onClick={handleNavClick}
-            className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
-          >
-            <span className="sidebar-left">
-              <i className="bi bi-gear"></i>
-              Settings
-            </span>
-            <i className="bi bi-chevron-right sidebar-arrow"></i>
-          </NavLink>
-
+                {hasChildren && isMenuOpen && (
+                  <div className="sidebar-sub-menu">
+                    {item.children!.map((child) => (
+                      <NavLink
+                        key={child.path}
+                        to={child.path}
+                        end
+                        onClick={handleNavClick}
+                        className={({ isActive }) => `sub-item ${isActive ? "active" : ""}`}
+                      >
+                        <span className="sidebar-left">
+                          {child.icon && <i className={`bi ${child.icon}`}></i>}
+                          {child.label}
+                        </span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
-  )
+  );
 }

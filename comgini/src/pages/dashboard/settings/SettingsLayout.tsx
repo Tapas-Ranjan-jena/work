@@ -1,8 +1,16 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function SettingsLayout() {
   const [openCategories, setOpenCategories] = useState<string[]>(["app-settings"]);
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const location = useLocation();
+
+  // ⭐ Automatically close mobile nav on route change
+  useEffect(() => {
+    setShowMobileNav(false);
+  }, [location.pathname]);
 
   const toggleCategory = (id: string) => {
     setOpenCategories(prev => 
@@ -59,15 +67,41 @@ export default function SettingsLayout() {
     }
   ];
 
+  const activeLabel = navItems.flatMap(cat => cat.items).find(item => item.path === location.pathname)?.label || "Settings";
+
   return (
-    <div className="settings-layout d-flex h-100 bg-white rounded shadow-sm overflow-hidden" style={{ minHeight: "calc(100vh - 100px)" }}>
-      {/* ⭐ LEFT SUB-SIDEBAR */}
+    <div className="settings-layout d-flex flex-column flex-md-row h-100 bg-white rounded shadow-sm overflow-hidden" style={{ minHeight: "calc(100vh - 100px)" }}>
+      
+      {/* ⭐ MOBILE SELECTOR (VISIBLE ONLY ON SMALL SCREENS) */}
+      <div className="d-md-none border-bottom p-3 bg-white d-flex justify-content-between align-items-center position-sticky top-0" style={{ zIndex: 900 }}>
+        <div>
+           <span className="small text-muted d-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>Settings Menu</span>
+           <h6 className="mb-0 fw-bold text-primary">{activeLabel}</h6>
+        </div>
+        <button 
+          className="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"
+          onClick={() => setShowMobileNav(true)}
+          style={{ borderRadius: '6px' }}
+        >
+          <i className="bi bi-list fs-5"></i>
+          <span>Modules</span>
+        </button>
+      </div>
+
+      {/* ⭐ LEFT SUB-SIDEBAR (DESKTOP) & MOBILE OVERLAY */}
       <div 
-        className="settings-sidebar border-end d-flex flex-column" 
-        style={{ width: "260px", background: "#f8f9fa" }}
+        className={`settings-sidebar border-end d-flex flex-column transition-all ${showMobileNav ? "show-mobile" : "hide-mobile"}`} 
+        style={{ 
+          width: "260px", 
+          background: "#f8f9fa",
+          zIndex: 1100
+        }}
       >
-        <div className="p-3 border-bottom bg-white">
+        <div className="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
           <h6 className="mb-0 fw-bold text-dark">Settings</h6>
+          <button className="btn btn-sm btn-light d-md-none" onClick={() => setShowMobileNav(false)}>
+            <i className="bi bi-x-lg"></i>
+          </button>
         </div>
         <div className="settings-nav py-2 flex-grow-1 overflow-y-auto">
           {navItems.map((cat) => (
@@ -104,8 +138,17 @@ export default function SettingsLayout() {
         </div>
       </div>
 
+      {/* ⭐ MOBILE OVERLAY BACKDROP */}
+      {showMobileNav && (
+        <div 
+          className="d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark opacity-50" 
+          style={{ zIndex: 999 }}
+          onClick={() => setShowMobileNav(false)}
+        ></div>
+      )}
+
       {/* ⭐ MAIN CONTENT AREA */}
-      <div className="settings-content flex-grow-1 overflow-auto p-4 bg-white">
+      <div className="settings-content flex-grow-1 overflow-auto p-3 p-md-4 bg-white text-start">
         <Outlet />
       </div>
 
@@ -121,6 +164,26 @@ export default function SettingsLayout() {
         }
         .settings-nav .NavLink {
            transition: all 0.2s ease;
+        }
+        
+        /* Mobile Specific Transitions */
+        @media (max-width: 767.98px) {
+          .settings-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 85% !important;
+            max-width: 320px;
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+          }
+          .hide-mobile {
+            transform: translateX(-100%);
+          }
+          .show-mobile {
+            transform: translateX(0);
+          }
         }
       `}</style>
     </div>

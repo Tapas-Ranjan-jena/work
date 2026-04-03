@@ -4,7 +4,8 @@ const dashboardService = {
     /** GET DASHBOARD STATS */
     getStats: async () => {
         try {
-            const response = await api.get("/dashboard/stats");
+            // Using a root-relative path if possible, or adjusting prefix
+            const response = await api.get("/dashboard/stats", { baseURL: "http://13.126.81.144:3000/api" });
             return response.data;
         } catch (error) {
             throw error;
@@ -14,7 +15,7 @@ const dashboardService = {
     /** GET PAYMENT OVERVIEW */
     getPayments: async () => {
         try {
-            const response = await api.get("/dashboard/payments");
+            const response = await api.get("/dashboard/payments", { baseURL: "http://13.126.81.144:3000/api" });
             return response.data;
         } catch (error) {
             throw error;
@@ -24,7 +25,7 @@ const dashboardService = {
     /** GET INCOME VS EXPENSES */
     getIncomeExpense: async () => {
         try {
-            const response = await api.get("/dashboard/income-expense");
+            const response = await api.get("/dashboard/income-expense", { baseURL: "http://13.126.81.144:3000/api" });
             return response.data;
         } catch (error) {
             throw error;
@@ -34,7 +35,7 @@ const dashboardService = {
     /** GET FINANCIAL BREAKDOWN */
     getFinanceBreakdown: async () => {
         try {
-            const response = await api.get("/dashboard/finance-breakdown");
+            const response = await api.get("/dashboard/finance-breakdown", { baseURL: "http://13.126.81.144:3000/api" });
             return response.data;
         } catch (error) {
             throw error;
@@ -44,7 +45,7 @@ const dashboardService = {
     /** GET NEW UPDATES */
     getUpdates: async (limit: number = 5) => {
         try {
-            const response = await api.get(`/updates?limit=${limit}`);
+            const response = await api.get(`/updates?limit=${limit}`, { baseURL: "http://13.126.81.144:3000/api" });
             return response.data;
         } catch (error) {
             throw error;

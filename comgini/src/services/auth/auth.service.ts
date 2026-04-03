@@ -28,15 +28,22 @@ const authService = {
         return response.data;
     },
 
+    /**
+     * Stabilized Logout: Clears local session immediately to prevent infinite loops 
+     * even if the server is rate-limited or unreachable.
+     */
     async logout() {
+        // 1. Immediately wipe local session data to stop any further authenticated requests
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('user');
+
         try {
+            // 2. Attempt to notify the backend (optional, won't block local logout)
             await api.post('/auth/logout');
         } catch (error) {
-            console.error('Backend logout failed:', error);
-        } finally {
-            sessionStorage.removeItem('accessToken');
-            sessionStorage.removeItem('refreshToken');
-            sessionStorage.removeItem('user');
+            // Log the error but don't re-throw, as the user is already locally logged out
+            console.warn('Backend logout notification failed (likely already expired):', error);
         }
     },
 };

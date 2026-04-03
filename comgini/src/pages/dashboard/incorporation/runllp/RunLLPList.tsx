@@ -95,7 +95,7 @@ export default function RunLLPList() {
           kindly reach out to us after completing the form.
           <br /><br />
 
-          CompyRelaxis will not be held responsible for any issues arising due to
+          ComGini will not be held responsible for any issues arising due to
           frequent changes in MCA functionality. As MCA updates its systems regularly,
           some changes may not be immediately reflected on our software. While we
           continuously work to keep everything updated, occasional inconsistencies
@@ -105,8 +105,8 @@ export default function RunLLPList() {
         <hr style={{ borderTop: "1px dashed #333" }} />
 
         <small className="text-danger">
-          Re-submission is not supported on CompyRelaxis. If your form is under
-          re-submission, please do not edit or submit it through CompyRelaxis.
+          Re-submission is not supported on ComGini. If your form is under
+          re-submission, please do not edit or submit it through ComGini.
         </small>
 
         <ul className="mb-1">

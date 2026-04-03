@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useNavigate } from "react-router-dom"
+import logo from "../../assets/comgini-logo.png"
 
 type Props = {
   open: boolean
@@ -29,8 +30,8 @@ export default function Topbar({ open, setOpen }: Props) {
       {/* ================= LEFT ================= */}
       <div className="topbar-left">
 
-        <div className="topbar-logo">
-          <img src="../../assets/comgini-logo-nav.jpg" alt="logo" />
+        <div className="topbar-logo" style={{ cursor: 'pointer' }} onClick={() => navigate("/dashboard")}>
+          <img src={logo} alt="ComGini Logo" />
         </div>
 
         {/* DESKTOP SEARCH */}

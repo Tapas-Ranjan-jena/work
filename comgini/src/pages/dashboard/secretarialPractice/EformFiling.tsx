@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import secretarialService from "../../../services/secretarialService";
 
 type ViewLevel = "grid" | "detail" | "pending";
 
@@ -10,6 +11,36 @@ interface FiscalYear {
 export default function EformFiling() {
   const [level, setLevel] = useState<ViewLevel>("grid");
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [filings, setFilings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+
+  useEffect(() => {
+    fetchFilings();
+  }, []);
+
+  const fetchFilings = async (page = 1) => {
+    try {
+      setLoading(true);
+      const res = await secretarialService.getFilings({ page, limit: pagination.limit });
+      setFilings(res.data || []);
+      setPagination(prev => ({ 
+        ...prev, 
+        page, 
+        total: res.total || (res.data?.length === 0 ? 0 : page * pagination.limit) // Fallback if API doesn't return total
+      }));
+    } catch (error) {
+      console.error("Failed to fetch filings", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredFilings = selectedYear 
+    ? filings.filter(f => f.financial_year === selectedYear)
+    : filings;
+
+  const pendingFilings = filings.filter(f => f.status.toLowerCase() === 'pending');
 
   const years: FiscalYear[] = [
     { year: "2019-20", color: "#0ea5e9" }, // Light Blue
@@ -39,7 +70,7 @@ export default function EformFiling() {
   };
 
   return (
-    <div className="eform-filing p-4">
+    <div className="eform-filing p-2 p-md-4">
       {/* ⭐ BREADCRUMBS */}
       <nav aria-label="breadcrumb" className="mb-4 d-flex justify-content-between align-items-center">
         <ol className="breadcrumb mb-0">
@@ -71,7 +102,7 @@ export default function EformFiling() {
       {level === "grid" && (
         <div className="row g-4">
           {years.map((y) => (
-            <div key={y.year} className="col-md-4 col-lg-3">
+            <div key={y.year} className="col-6 col-sm-6 col-md-4 col-lg-3">
               <div className="card border-0 shadow-sm overflow-hidden" 
                    style={{ background: y.color, cursor: "pointer", transition: "transform 0.2s" }}
                    onClick={() => handleYearClick(y.year)}
@@ -94,8 +125,8 @@ export default function EformFiling() {
       {level === "detail" && (
         <div className="detail-view">
           <div className="card shadow-sm border-0 p-4 mb-4">
-            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-              <div className="d-flex align-items-center gap-4">
+            <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4 gap-3">
+              <div className="d-flex align-items-center gap-3 gap-md-4 flex-wrap">
                 <div className="d-flex align-items-center gap-2">
                   <div style={{ width: "16px", height: "16px", background: "#c084fc", borderRadius: "2px" }}></div>
                   <span className="small fw-semibold">In Progress</span>
@@ -109,33 +140,33 @@ export default function EformFiling() {
                   <span className="small fw-semibold">Completed</span>
                 </div>
               </div>
-              <div className="d-flex align-items-center gap-2">
-                 <div className="d-flex align-items-center gap-2">
-                    <span className="small">Status</span>
-                    <select className="form-select form-select-sm border py-1 px-3" style={{ width: "100px" }}>
+              <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 w-100 w-lg-auto">
+                 <div className="d-flex align-items-center gap-2 w-100 w-sm-auto">
+                    <span className="small min-w-50">Status</span>
+                    <select className="form-select form-select-sm border py-1 px-3 w-100 w-sm-auto" style={{ minWidth: "120px" }}>
                        <option>All</option>
                     </select>
                  </div>
-                 <div className="d-flex align-items-center gap-2 ms-2">
-                    <span className="small">Applicablity</span>
-                    <select className="form-select form-select-sm border py-1 px-3" style={{ width: "100px" }}>
+                 <div className="d-flex align-items-center gap-2 w-100 w-sm-auto">
+                    <span className="small min-w-80">Applicablity</span>
+                    <select className="form-select form-select-sm border py-1 px-3 w-100 w-sm-auto" style={{ minWidth: "120px" }}>
                        <option>All</option>
                     </select>
                  </div>
-                 <button className="btn btn-primary btn-sm px-4 ms-2" onClick={handlePendingClick} style={{ background: "#1d4ed8", borderColor: "#1d4ed8" }}>
+                 <button className="btn btn-primary btn-sm px-4 w-100 w-sm-auto" onClick={handlePendingClick} style={{ background: "#1d4ed8", borderColor: "#1d4ed8" }}>
                     Pending Forms
                  </button>
               </div>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center mb-3">
-               <div className="d-flex align-items-center gap-2">
-                  <button className="btn btn-outline-secondary btn-sm border px-3">Show 10 rows</button>
-                  <button className="btn btn-outline-secondary btn-sm border px-3">Excel</button>
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
+               <div className="d-flex align-items-center gap-2 w-100 w-md-auto">
+                  <button className="btn btn-outline-secondary btn-sm border px-3 w-50 w-md-auto">Show 10 rows</button>
+                  <button className="btn btn-outline-secondary btn-sm border px-3 w-50 w-md-auto">Excel</button>
                </div>
-               <div className="d-flex align-items-center gap-2">
+               <div className="d-flex align-items-center gap-2 w-100 w-md-auto">
                   <span className="small">Search:</span>
-                  <input type="text" className="form-control form-control-sm border" style={{ width: "180px" }} />
+                  <input type="text" className="form-control form-control-sm border w-100" style={{ maxWidth: "200px" }} />
                </div>
             </div>
 
@@ -155,19 +186,60 @@ export default function EformFiling() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={9} className="text-center py-4 text-muted">No data available in table</td>
-                  </tr>
+                  {loading ? (
+                    <tr><td colSpan={9} className="text-center py-4">Loading filings...</td></tr>
+                  ) : filteredFilings.length === 0 ? (
+                    <tr><td colSpan={9} className="text-center py-4 text-muted">No data available for {selectedYear}</td></tr>
+                  ) : (
+                    filteredFilings.map((f, idx) => (
+                      <tr key={f.id} className="text-center align-middle">
+                        <td>{idx + 1}</td>
+                        <td className="text-start">{f.company_name}</td>
+                        <td>{f.form_type}</td>
+                        <td>{f.financial_year}</td>
+                        <td>{f.agm_date || "N/A"}</td>
+                        <td>{f.receipt_date || "N/A"}</td>
+                        <td>
+                          <span className={`badge rounded-pill px-3 py-1 ${
+                            f.status.toLowerCase() === 'completed' ? 'bg-success' :
+                            f.status.toLowerCase() === 'in progress' ? 'bg-purple' : 'bg-danger'
+                          }`} style={{ background: f.status.toLowerCase() === 'in progress' ? '#c084fc' : undefined }}>
+                            {f.status}
+                          </span>
+                        </td>
+                        <td>
+                          <button className="btn btn-sm btn-outline-primary py-0 shadow-none">View</button>
+                        </td>
+                        <td className="text-muted small">{f.remarks || "No remarks"}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center mt-3 small text-muted">
-               <div>Showing 0 to 0 of 0 entries</div>
-            <div className="d-flex gap-0 align-items-center">
-               <button className="btn btn-outline-secondary btn-sm px-3 rounded-start" style={{ fontSize: "12px" }}>Previous</button>
-               <span className="border-top border-bottom py-1 px-3 bg-light fw-semibold" style={{ fontSize: "12px", height: "31px", display: "flex", alignItems: "center" }}>1</span>
-               <button className="btn btn-outline-secondary btn-sm px-3 rounded-end" style={{ fontSize: "12px" }}>Next</button>
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-3 small text-muted">
+               <div className="order-2 order-sm-1">Showing {(pagination.page - 1) * pagination.limit + 1} to {Math.min(pagination.page * pagination.limit, pagination.total || filings.length)} of {pagination.total || filings.length} entries</div>
+            <div className="d-flex gap-0 align-items-center order-1 order-sm-2">
+               <button 
+                className="btn btn-outline-secondary btn-sm px-3 rounded-start" 
+                style={{ fontSize: "12px" }}
+                disabled={pagination.page === 1 || loading}
+                onClick={() => fetchFilings(pagination.page - 1)}
+               >
+                Previous
+               </button>
+               <span className="border-top border-bottom py-1 px-3 bg-light fw-semibold" style={{ fontSize: "12px", height: "31px", display: "flex", alignItems: "center" }}>
+                {pagination.page}
+               </span>
+               <button 
+                className="btn btn-outline-secondary btn-sm px-3 rounded-end" 
+                style={{ fontSize: "12px" }}
+                disabled={filings.length < pagination.limit || loading}
+                onClick={() => fetchFilings(pagination.page + 1)}
+               >
+                Next
+               </button>
             </div>
             </div>
           </div>
@@ -178,14 +250,14 @@ export default function EformFiling() {
       {level === "pending" && (
         <div className="pending-forms-view">
            <div className="card shadow-sm border-0 p-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                 <div className="d-flex align-items-center gap-2">
-                    <button className="btn btn-outline-secondary btn-sm border px-3">Show 10 rows</button>
-                    <button className="btn btn-outline-secondary btn-sm border px-3">Excel</button>
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
+                 <div className="d-flex align-items-center gap-2 w-100 w-md-auto">
+                    <button className="btn btn-outline-secondary btn-sm border px-3 w-50 w-md-auto">Show 10 rows</button>
+                    <button className="btn btn-outline-secondary btn-sm border px-3 w-50 w-md-auto">Excel</button>
                  </div>
-                 <div className="d-flex align-items-center gap-2">
+                 <div className="d-flex align-items-center gap-2 w-100 w-md-auto">
                     <span className="small">Search:</span>
-                    <input type="text" className="form-control form-control-sm border" style={{ width: "180px" }} />
+                    <input type="text" className="form-control form-control-sm border w-100" style={{ maxWidth: "200px" }} />
                  </div>
               </div>
 
@@ -200,17 +272,27 @@ export default function EformFiling() {
                       <th className="px-3 py-3">Remarks</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td colSpan={5} className="text-center py-4 text-muted">No data available in table</td>
-                    </tr>
+                   <tbody>
+                    {pendingFilings.length === 0 ? (
+                      <tr><td colSpan={5} className="text-center py-4 text-muted">No pending forms found</td></tr>
+                    ) : (
+                      pendingFilings.map((f, idx) => (
+                        <tr key={f.id} className="text-center align-middle">
+                          <td>{idx + 1}</td>
+                          <td className="text-start">{f.company_name}</td>
+                          <td>{f.form_type}</td>
+                          <td>{f.due_date}</td>
+                          <td className="text-muted small">{f.remarks || "N/A"}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
 
-              <div className="d-flex justify-content-between align-items-center mt-3 small text-muted">
-                 <div>Showing 0 to 0 of 0 entries</div>
-               <div className="d-flex gap-0 align-items-center">
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-3 small text-muted">
+                 <div className="order-2 order-sm-1">Showing 0 to 0 of 0 entries</div>
+               <div className="d-flex gap-0 align-items-center order-1 order-sm-2">
                   <button className="btn btn-outline-secondary btn-sm px-3 rounded-start" style={{ fontSize: "12px" }}>Previous</button>
                   <span className="border-top border-bottom py-1 px-3 bg-light fw-semibold" style={{ fontSize: "12px", height: "31px", display: "flex", alignItems: "center" }}>1</span>
                   <button className="btn btn-outline-secondary btn-sm px-3 rounded-end" style={{ fontSize: "12px" }}>Next</button>

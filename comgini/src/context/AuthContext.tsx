@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (savedUser === 'undefined' || !savedUser) return null;
             return JSON.parse(savedUser);
         } catch (e) {
-            console.error("Error parsing user from localStorage", e);
+            console.error("Error parsing user from sessionStorage", e);
             return null;
         }
     });
@@ -32,17 +32,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const initAuth = async () => {
             const token = sessionStorage.getItem('accessToken');
+            
+            // ⭐ RECURSION GUARD: Only fetch profile if a valid token exists
             if (token && token !== 'undefined') {
                 try {
                     const profile = await authService.getProfile();
                     setUser(profile);
                     sessionStorage.setItem('user', JSON.stringify(profile));
-                } catch (error) {
-                    console.error('Failed to fetch profile:', error);
-                    authService.logout();
-                    setUser(null);
+                } catch (error: any) {
+                    // Log the error but don't loop
+                    console.error('Initial auth check failed:', error.message || 'Network error');
+                    
+                    // IF it's 401 Unauthorized, we clear. 
+                    // IF it's 429 Too many, we JUST STOP loading without clearing current context.
+                    if (error.response?.status === 401) {
+                        await authService.logout();
+                        setUser(null);
+                    }
                 }
+            } else {
+                // If no token exists, ensure local state is clean
+                setUser(null);
             }
+            
             setIsLoading(false);
         };
 
@@ -61,7 +73,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = async (data: RegisterRequest) => {
         await authService.register(data);
-        // We do not set user or tokens here because the user wants to login manually after signup
     };
 
     const forgotPassword = async (email: string) => {

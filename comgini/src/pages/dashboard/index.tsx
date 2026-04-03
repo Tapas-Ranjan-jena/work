@@ -13,6 +13,13 @@ import LineChart from "../../components/dashboard/Charts/LineChart";
 import PieChart from "../../components/dashboard/Charts/PieChart";
 import AssignmentTimeline from "../../components/dashboard/AssignmentTimeline";
 import AddTaskModal from "../dashboard/assignments/modals/AddTaskModal";
+import DashboardTabs from "../../components/dashboard/DashboardTabs";
+import NotesView from "../../components/dashboard/NotesView";
+import MCAServicesView from "../../components/dashboard/MCAServicesView";
+import AnnualFilingView from "../../components/dashboard/AnnualFilingView";
+import ComplianceCalendarView from "../../components/dashboard/ComplianceCalendarView";
+import RTAServicesView from "../../components/dashboard/RTAServicesView";
+import AttendanceLoginView from "../../components/dashboard/AttendanceLoginView";
 
 type LayoutContext = {
     setOpen: (val: boolean | ((prev: boolean) => boolean)) => void;
@@ -30,6 +37,7 @@ export default function Dashboard() {
     const [financeBreakdown, setFinanceBreakdown] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+    const [activeTab, setActiveTab] = useState("Dashboard");
 
     const userName = (user?.firstName && user?.lastName) 
         ? `${user.firstName} ${user.lastName}` 
@@ -104,34 +112,63 @@ export default function Dashboard() {
         { id: 103, title: "V3 Annual Filing Forms", tag: "New", updated_at: "2026-03-26" },
     ];
 
+    const fetchRef = useState({ active: false })[0];
+
+
     const fetchData = async () => {
+        // ⭐ CONCURRENCY GUARD: Prevent multiple concurrent fetches
+        if (fetchRef.active) return;
+        fetchRef.active = true;
+
         try {
             setLoading(true);
-            const [statsRes, tasksRes, updatesRes, paymentsRes, incExpRes, financeRes] = await Promise.all([
-                dashboardService.getStats(),
-                tasksService.getAllTasks(1, 10, undefined, true),
-                dashboardService.getUpdates(10),
-                dashboardService.getPayments(),
-                dashboardService.getIncomeExpense(),
-                dashboardService.getFinanceBreakdown()
-            ]);
+            
+            // 1. Fetch Core Stats First (Fastest)
+            const statsRes = await dashboardService.getStats();
+            const sData = statsRes.data || statsRes;
+            setStats(sData.tasks || {});
+            
+            // 2. Fetch Tasks
+            const tasksRes = await tasksService.getAllTasks(1, 10, undefined, true);
+            const activities = sData.recent_activities || [];
+            setTasks(activities.length > 0 ? activities : extractData(tasksRes));
 
-            setStats(statsRes.data || statsRes);
-            
-            const fetchedTasks = extractData(tasksRes);
-            setTasks(fetchedTasks.length > 0 ? fetchedTasks : mockStarredTasks);
-            
+            // 3. Sequential fetch for remaining charts to avoid 429 spam
+            const updatesRes = await dashboardService.getUpdates(10);
             const uData = extractData(updatesRes);
-            setUpdates(uData.length > 0 ? uData : mockUpdates);
-            
+            setUpdates(uData.length > 0 ? uData.map((u: any) => ({
+                ...u,
+                updated_at: u.date || u.updated_at,
+                tag: u.tag || "New"
+            })) : mockUpdates);
+
+            const paymentsRes = await dashboardService.getPayments();
             const pData = extractData(paymentsRes);
-            setPayments(pData);
-            
-            const ieData = extractData(incExpRes);
-            setIncomeExpense(ieData.length > 0 ? ieData : mockIncomeExpense);
-            
+            setPayments(pData.recent_payments || pData);
+
+            const incExpRes = await dashboardService.getIncomeExpense();
+            const ieRaw = incExpRes.data || incExpRes;
+            if (ieRaw.income || ieRaw.expense) {
+                const months = Array.from(new Set([
+                    ...(ieRaw.income || []).map((i: any) => i.month),
+                    ...(ieRaw.expense || []).map((e: any) => e.month)
+                ]));
+                const merged = months.map(m => ({
+                    month: m,
+                    income: parseFloat((ieRaw.income || []).find((i: any) => i.month === m)?.amount || 0),
+                    expense: parseFloat((ieRaw.expense || []).find((e: any) => e.month === m)?.amount || 0)
+                }));
+                setIncomeExpense(merged);
+            } else {
+                setIncomeExpense(mockIncomeExpense);
+            }
+
+            const financeRes = await dashboardService.getFinanceBreakdown();
             const fbData = extractData(financeRes);
-            setFinanceBreakdown(fbData.length > 0 ? fbData : mockFinance);
+            setFinanceBreakdown(fbData.length > 0 ? fbData.map((f: any) => ({
+                category: f.label || f.category,
+                value: parseFloat(f.value)
+            })) : mockFinance);
 
         } catch (error) {
             console.error("Failed to fetch dashboard data", error);
@@ -142,19 +179,23 @@ export default function Dashboard() {
             setFinanceBreakdown(mockFinance);
         } finally {
             setLoading(false);
+            fetchRef.active = false;
         }
     };
 
     useEffect(() => {
         fetchData();
-        window.addEventListener("taskCreated", fetchData);
-        return () => window.removeEventListener("taskCreated", fetchData);
+        const handleRefresh = () => fetchData();
+        window.addEventListener("taskCreated", handleRefresh);
+        return () => window.removeEventListener("taskCreated", handleRefresh);
     }, []);
 
     if (loading) {
         return (
             <div className="container-fluid p-4 text-center py-5">
+            <div className="d-none d-lg-block">
                 <PageTopBar onMenuClick={() => setOpen((prev: any) => !prev)} />
+            </div>
                 <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
@@ -163,40 +204,71 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="container-fluid p-4" style={{ backgroundColor: "#f3f4f7", minHeight: "100vh" }}>
-            <PageTopBar onMenuClick={() => setOpen((prev: any) => !prev)} />
-
-            <div className="row g-4 mt-2">
-                {/* LEFT COLUMN */}
-                <div className="col-12 col-xl-3">
-                    <div className="d-flex flex-column gap-4 h-100">
-                        <WelcomeCard userName={userName} onCreateTask={() => setShowAddTaskModal(true)} />
-                        <TaskList tasks={tasks} />
-                    </div>
-                </div>
-
-                {/* MIDDLE COLUMN */}
-                <div className="col-12 col-xl-5">
-                    <div className="d-flex flex-column gap-4 h-100">
-                        <StatsCard stats={stats || {}} />
-                        <UpdatesList updates={updates} />
-                        <LineChart data={incomeExpense} />
-                    </div>
-                </div>
-
-                {/* RIGHT COLUMN */}
-                <div className="col-12 col-xl-4">
-                    <div className="d-flex flex-column gap-4">
-                        <AssignmentTimeline />
-                        <BarChart 
-                            monthlyData={payments.length > 0 ? payments.map(d => ({ label: d.month || d.label, amount: d.amount })) : mockPaymentsMonthly} 
-                            yearlyData={mockPaymentsYearly}
-                            dailyData={mockPaymentsDaily}
-                        />
-                        <PieChart data={financeBreakdown} />
-                    </div>
-                </div>
+        <div className="container-fluid p-2 p-md-4" style={{ backgroundColor: "#f3f4f7", minHeight: "100vh" }}>
+            <div className="d-none d-lg-block">
+                <PageTopBar onMenuClick={() => setOpen((prev: any) => !prev)} />
             </div>
+
+            <DashboardTabs 
+                activeTab={activeTab} 
+                onTabChange={setActiveTab} 
+                onAddTask={() => setShowAddTaskModal(true)} 
+            />
+
+            {activeTab === "Dashboard" && (
+                <div className="row g-4">
+                    {/* LEFT COLUMN */}
+                    <div className="col-12 col-xl-3">
+                        <div className="d-flex flex-column gap-4 h-100">
+                            <WelcomeCard userName={userName} onCreateTask={() => setShowAddTaskModal(true)} />
+                            <TaskList tasks={tasks} />
+                        </div>
+                    </div>
+
+                    {/* MIDDLE COLUMN */}
+                    <div className="col-12 col-xl-5">
+                        <div className="d-flex flex-column gap-4 h-100">
+                            <StatsCard stats={stats || {}} />
+                            <UpdatesList updates={updates} />
+                            <LineChart data={incomeExpense} />
+                        </div>
+                    </div>
+
+                    {/* RIGHT COLUMN */}
+                    <div className="col-12 col-xl-4">
+                        <div className="d-flex flex-column gap-4">
+                            <AssignmentTimeline />
+                            <BarChart 
+                                monthlyData={payments.length > 0 ? payments.map(d => ({ label: d.month || d.label, amount: d.amount })) : mockPaymentsMonthly} 
+                                yearlyData={mockPaymentsYearly}
+                                dailyData={mockPaymentsDaily}
+                            />
+                            <PieChart data={financeBreakdown} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === "Notes" && <NotesView />}
+
+            {activeTab === "MCA Services" && <MCAServicesView />}
+            {activeTab === "Annual Filing" && <AnnualFilingView />}
+            {activeTab === "Compliance Calendar" && <ComplianceCalendarView />}
+            {activeTab === "RTA Services" && <RTAServicesView />}
+            {activeTab === "Log in" && <AttendanceLoginView />}
+
+            {(activeTab !== "Dashboard" && activeTab !== "Notes" && activeTab !== "Log in" && activeTab !== "MCA Services" && activeTab !== "Annual Filing" && activeTab !== "Compliance Calendar" && activeTab !== "RTA Services") && (
+                <div className="card shadow-sm border-0 p-5 text-center" style={{ borderRadius: "16px" }}>
+                    <div className="py-5">
+                        <i className="bi bi-cone-striped display-1 text-muted opacity-25"></i>
+                        <h4 className="mt-4 fw-bold text-dark">{activeTab}</h4>
+                        <p className="text-muted">This module is currently under development.</p>
+                        <button className="btn btn-primary rounded-pill px-4" onClick={() => setActiveTab("Dashboard")}>
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <AddTaskModal 
                 open={showAddTaskModal} 
