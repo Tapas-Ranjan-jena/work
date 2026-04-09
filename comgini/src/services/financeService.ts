@@ -61,6 +61,22 @@ const financeService = {
         const response = await api.get<ApiResponse<ProfitLossReport>>('/finance/profit-loss');
         if (!response.data.success) throw new Error(response.data.message || 'Failed to fetch profit/loss report');
         return response.data.data!;
+    },
+
+    // --- Analytics / Charts ---
+    async getFinanceChart(year: number): Promise<any[]> {
+        const response = await api.get('/finance/chart', { params: { year } });
+        return response.data.data || [];
+    },
+
+    async getFinanceSummary(year: number): Promise<any> {
+        const response = await api.get('/finance/summary', { params: { year } });
+        return response.data.data || {};
+    },
+
+    async getFinanceMonthly(year: number): Promise<any[]> {
+        const response = await api.get('/finance/monthly', { params: { year } });
+        return response.data.data || [];
     }
 };
 

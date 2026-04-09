@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import secretarialService from "../../../services/secretarialService";
 
@@ -8,6 +8,22 @@ export default function CompanyMCACredentials() {
   const [view, setView] = useState<ViewType>("list");
   const [showExcelModal, setShowExcelModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [credentials, setCredentials] = useState<any[]>([]);
+
+  const fetchCredentials = async () => {
+    try {
+      setLoading(true);
+      const res = await secretarialService.getCompanyCredentials();
+      const items = res.data?.data || res.data || [];
+      const arrayData = Array.isArray(items) ? items : (items.items ? items.items : []);
+      setCredentials(arrayData);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Form state
   const [formState, setFormState] = useState({
@@ -25,19 +41,37 @@ export default function CompanyMCACredentials() {
     hint_answer: ""
   });
 
+  useEffect(() => {
+    if (view === "list") {
+      fetchCredentials();
+    }
+  }, [view]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
-      await secretarialService.createMcaCredentials({
-        target_id: 1, // Placeholder
-        target_type: "company",
-        user_id: formState.user_id,
+      const payload = {
+        cin: formState.cin,
+        companyName: formState.company_name,
+        userId: formState.user_id,
         password: formState.password,
-        last_updated: new Date().toISOString().split('T')[0]
-      });
+        pan: formState.pan,
+        email: formState.email,
+        contactNo: formState.contact_no,
+        directorNameForOtp: formState.director_name,
+        directorMailId: formState.director_email,
+        directorPhNo: formState.director_phone,
+        hintQuestion: formState.hint_question,
+        hintAnswer: formState.hint_answer
+      };
+      await secretarialService.createCompanyCredentials(payload);
       toast.success("Company MCA Credentials saved successfully");
       setView("list");
+      setFormState({
+        cin: "", company_name: "", user_id: "", password: "", pan: "", email: "", contact_no: "",
+        director_name: "", director_email: "", director_phone: "", hint_question: "", hint_answer: ""
+      });
     } catch (error) {
       toast.error("Failed to save credentials");
     } finally {
@@ -103,7 +137,7 @@ export default function CompanyMCACredentials() {
                     <th className="px-2 py-2 text-center border-end" style={{ minWidth: "50px" }}>#</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "220px" }}>Name of Company</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "150px" }}>CIN</th>
-                    <th className="px-2 py-2 border-end" style={{ minWidth: "150px" }}>User ID/Password</th>
+                    <th className="px-2 py-2 border-end" style={{ minWidth: "150px" }}>User ID</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "120px" }}>PAN</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "180px" }}>Phone/Email</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "200px" }}>Director Name for OTP</th>
@@ -113,15 +147,40 @@ export default function CompanyMCACredentials() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={10} className="text-center py-4 text-muted small">No data available in table</td>
-                  </tr>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-4 text-muted small">Loading...</td>
+                    </tr>
+                  ) : credentials.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-4 text-muted small">No data available in table</td>
+                    </tr>
+                  ) : (
+                    credentials.map((c, i) => (
+                      <tr key={c.id || i} className="align-middle">
+                        <td className="px-2 py-2 text-center border-end">{i + 1}</td>
+                        <td className="px-2 py-2 border-end">{c.companyName}</td>
+                        <td className="px-2 py-2 border-end">{c.cin}</td>
+                        <td className="px-2 py-2 border-end">{c.userId}</td>
+                        <td className="px-2 py-2 border-end">{c.pan}</td>
+                        <td className="px-2 py-2 border-end">{c.contactNo} / {c.email}</td>
+                        <td className="px-2 py-2 border-end">{c.directorNameForOtp}</td>
+                        <td className="px-2 py-2 border-end">{c.directorPhNo} / {c.directorMailId}</td>
+                        <td className="px-2 py-2 border-end">{c.hintQuestion} / {c.hintAnswer}</td>
+                        <td className="px-2 py-2">
+                           <button className="btn btn-sm btn-outline-info rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: "26px", height: "26px" }}>
+                              <i className="bi bi-pencil" style={{ fontSize: "12px" }}></i>
+                           </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
 
             <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-3 small text-muted">
-               <div>Showing 0 to 0 of 0 entries</div>
+               <div>Showing {credentials.length > 0 ? 1 : 0} to {credentials.length} of {credentials.length} entries</div>
                <div className="d-flex gap-0 align-items-center">
                   <button className="btn btn-outline-secondary btn-sm px-3 border-end-0 rounded-start">Previous</button>
                   <button className="btn btn-outline-secondary btn-sm px-3 rounded-end">Next</button>

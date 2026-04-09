@@ -23,10 +23,15 @@ import ClientsPage from "./pages/dashboard/clients/ClientsPage"
 /* ================= REQUESTED DOCUMENTS ================= */
 import RequestedDocuments from "./pages/dashboard/requestedDocuments/RequestedDocuments"
 
+/* ================= SUBSCRIPTION ================= */
+import SubscriptionPlans from "./pages/dashboard/subscription/SubscriptionPlans"
+import CheckoutPage from "./pages/dashboard/subscription/CheckoutPage"
+
 /* ================= BULK SENDER ================= */
 import BulkSenderLayout from "./pages/dashboard/bulkSender/BulkSenderLayout"
 import BulkWhatsApp from "./pages/dashboard/bulkSender/BulkWhatsapp"
 import BulkGmail from "./pages/dashboard/bulkSender/BulkGmail"
+import EditProfile from "./pages/dashboard/profile/EditProfile"
 
 /* ================= LEADS ================= */
 import LeadsLayout from "./pages/dashboard/leads/LeadsLayout"
@@ -268,7 +273,12 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="clients" element={<ClientsPage />} />
 
+            <Route path="subscription">
+              <Route index element={<SubscriptionPlans />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+            </Route>
             <Route path="requested-documents" element={<RequestedDocuments />} />
+            <Route path="profile" element={<EditProfile />} />
 
             {/* ================= LEADS MODULE ================= */}
             <Route path="leads" element={<LeadsLayout />}>
@@ -306,10 +316,12 @@ export default function App() {
               <Route path="shareholder" element={<ShareholderList />} />
               <Route path="shareholder/company-wise" element={<CompanyWiseShareholder />} />
               <Route path="shareholder/add" element={<AddShareholder />} />
+              <Route path="shareholder/edit/:id" element={<AddShareholder />} />
 
               <Route path="debenture-holder" element={<DebentureHolderList />} />
               <Route path="debenture-holder/company-wise" element={<CompanyWiseDebentureHolder />} />
               <Route path="debenture-holder/add" element={<AddDebentureHolder />} />
+              <Route path="debenture-holder/edit/:id" element={<AddDebentureHolder />} />
 
               <Route path="auditors" element={<AuditorLayout />}>
 

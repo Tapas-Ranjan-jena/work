@@ -1,8 +1,37 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"
+import mastersService from "../../../../services/mastersService";
+import toast from "react-hot-toast";
 
 export default function DirectorsList() {
 
   const navigate = useNavigate()
+  
+  const [directors, setDirectors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+
+  const fetchDirectors = async (page = 1) => {
+    try {
+      setLoading(true);
+      const res = await mastersService.getDirectors({ search });
+      const data = res || [];
+      // Calculate frontend pagination
+      const start = (page - 1) * pagination.limit;
+      const paginatedData = data.slice(start, start + pagination.limit);
+      setDirectors(paginatedData);
+      setPagination(prev => ({ ...prev, page, total: data.length }));
+    } catch (error: any) {
+      toast.error(error.message || "Failed to load directors");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDirectors(1);
+  }, [search]);
 
   return (
     <div className="container-fluid">
@@ -84,6 +113,8 @@ export default function DirectorsList() {
               }}
             />
             <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="form-control form-control-sm"
               placeholder="Search"
               style={{
@@ -110,13 +141,43 @@ export default function DirectorsList() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td colSpan={8} className="text-center">
-                  No data available in table
-                </td>
-              </tr>
+              {loading ? (
+                <tr><td colSpan={8} className="text-center py-4 text-muted">Loading directors...</td></tr>
+              ) : directors.length === 0 ? (
+                <tr><td colSpan={8} className="text-center py-4 text-muted">No data available in table</td></tr>
+              ) : (
+                directors.map((d, i) => (
+                  <tr key={d.id || i}>
+                    <td>{(pagination.page - 1) * pagination.limit + i + 1}</td>
+                    <td>{d.companyName || "-"}</td>
+                    <td>{d.din || "-"} // {d.name || ""}</td>
+                    <td>{d.email || d.emailId || "-"}</td>
+                    <td>{d.contactNo || d.mobile || d.phone || "-"}</td>
+                    <td>{d.dscExpiry ? d.dscExpiry.split("T")[0] : "-"}</td>
+                    <td>{d.dinStatus || d.status || "-"}</td>
+                    <td>{d.dir3KycStatus || "-"}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
+        </div>
+
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <small className="text-muted">
+            Showing {directors.length === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
+          </small>
+          
+          <div className="d-flex gap-2">
+            <button className="btn btn-light btn-sm" disabled={pagination.page === 1} onClick={() => {
+                setPagination(p => ({...p, page: p.page - 1}));
+                fetchDirectors(pagination.page - 1);
+            }}>Previous</button>
+            <button className="btn btn-light btn-sm" disabled={pagination.page * pagination.limit >= pagination.total} onClick={() => {
+                setPagination(p => ({...p, page: p.page + 1}));
+                fetchDirectors(pagination.page + 1);
+            }}>Next</button>
+          </div>
         </div>
 
       </div>

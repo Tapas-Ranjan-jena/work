@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom"
 import { useState, useEffect } from "react"
 import Sidebar from "../components/layout/Sidebar"
 import Topbar from "../components/layout/Topbar"
+import AIChatBot from "../components/chatbot/AIChatBot"
 import "../styles/dashboard.css"
 
 
@@ -54,6 +55,8 @@ export default function DashboardLayout() {
         </div>
 
       </div>
+
+      <AIChatBot />
     </div>
   )
 }

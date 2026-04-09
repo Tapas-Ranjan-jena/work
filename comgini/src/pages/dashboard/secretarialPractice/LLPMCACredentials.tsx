@@ -1,10 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import secretarialService from "../../../services/secretarialService";
 
 type ViewType = "list" | "add";
 
 export default function LLPMCACredentials() {
   const [view, setView] = useState<ViewType>("list");
   const [showExcelModal, setShowExcelModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [credentials, setCredentials] = useState<any[]>([]);
+
+  const fetchCredentials = async () => {
+    try {
+      setLoading(true);
+      const res = await secretarialService.getLlpCredentials();
+      const items = res.data?.data || res.data || [];
+      const arrayData = Array.isArray(items) ? items : (items.items ? items.items : []);
+      setCredentials(arrayData);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Form state
+  const [formState, setFormState] = useState({
+    llpin: "",
+    llp_name: "",
+    user_id: "",
+    password: "",
+    pan: "",
+    email: "",
+    contact_no: "",
+    partner_name: "",
+    partner_email: "",
+    partner_phone: "",
+    hint_question: "",
+    hint_answer: ""
+  });
+
+  useEffect(() => {
+    if (view === "list") {
+      fetchCredentials();
+    }
+  }, [view]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const payload = {
+        llpin: formState.llpin,
+        llpName: formState.llp_name,
+        userId: formState.user_id,
+        password: formState.password,
+        pan: formState.pan,
+        email: formState.email,
+        contactNo: formState.contact_no,
+        partnerNameForOtp: formState.partner_name,
+        partnerMailId: formState.partner_email,
+        partnerPhNo: formState.partner_phone,
+        hintQuestion: formState.hint_question,
+        hintAnswer: formState.hint_answer
+      };
+      await secretarialService.createLlpCredentials(payload);
+      toast.success("LLP MCA Credentials saved successfully");
+      setView("list");
+      setFormState({
+        llpin: "", llp_name: "", user_id: "", password: "", pan: "", email: "", contact_no: "",
+        partner_name: "", partner_email: "", partner_phone: "", hint_question: "", hint_answer: ""
+      });
+    } catch (error) {
+      toast.error("Failed to save credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="llp-mca-credentials p-2 p-md-4 text-start">
@@ -64,7 +137,7 @@ export default function LLPMCACredentials() {
                     <th className="px-2 py-2 text-center border-end" style={{ minWidth: "50px" }}>#</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "220px" }}>Name of LLP</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "150px" }}>LLPIN</th>
-                    <th className="px-2 py-2 border-end" style={{ minWidth: "150px" }}>User ID/Password</th>
+                    <th className="px-2 py-2 border-end" style={{ minWidth: "150px" }}>User ID</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "120px" }}>PAN</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "180px" }}>Phone/Email</th>
                     <th className="px-2 py-2 border-end" style={{ minWidth: "200px" }}>Partner Name for OTP</th>
@@ -74,15 +147,40 @@ export default function LLPMCACredentials() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={10} className="text-center py-4 text-muted small">No data available in table</td>
-                  </tr>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-4 text-muted small">Loading...</td>
+                    </tr>
+                  ) : credentials.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-4 text-muted small">No data available in table</td>
+                    </tr>
+                  ) : (
+                    credentials.map((c, i) => (
+                      <tr key={c.id || i} className="align-middle">
+                        <td className="px-2 py-2 text-center border-end">{i + 1}</td>
+                        <td className="px-2 py-2 border-end">{c.llpName}</td>
+                        <td className="px-2 py-2 border-end">{c.llpin}</td>
+                        <td className="px-2 py-2 border-end">{c.userId}</td>
+                        <td className="px-2 py-2 border-end">{c.pan}</td>
+                        <td className="px-2 py-2 border-end">{c.contactNo} / {c.email}</td>
+                        <td className="px-2 py-2 border-end">{c.partnerNameForOtp}</td>
+                        <td className="px-2 py-2 border-end">{c.partnerPhNo} / {c.partnerMailId}</td>
+                        <td className="px-2 py-2 border-end">{c.hintQuestion} / {c.hintAnswer}</td>
+                        <td className="px-2 py-2">
+                           <button className="btn btn-sm btn-outline-info rounded-circle d-flex align-items-center justify-content-center shadow-sm" style={{ width: "26px", height: "26px" }}>
+                              <i className="bi bi-pencil" style={{ fontSize: "12px" }}></i>
+                           </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
 
             <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 gap-3 small text-muted">
-               <div>Showing 0 to 0 of 0 entries</div>
+               <div>Showing {credentials.length > 0 ? 1 : 0} to {credentials.length} of {credentials.length} entries</div>
                <div className="d-flex gap-0 align-items-center">
                   <button className="btn btn-outline-secondary btn-sm px-3 border-end-0 rounded-start">Previous</button>
                   <button className="btn btn-outline-secondary btn-sm px-3 rounded-end">Next</button>
@@ -112,7 +210,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">LLPIN</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="LLPIN" />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="LLPIN"
+                               value={formState.llpin}
+                               onChange={(e) => setFormState(prev => ({ ...prev, llpin: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -125,7 +227,11 @@ export default function LLPMCACredentials() {
                      </div>
                      <label className="col-12 col-sm-4 fw-bold small pt-sm-2">Name of LLP</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="Name of LLP" />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Name of LLP"
+                               value={formState.llp_name}
+                               onChange={(e) => setFormState(prev => ({ ...prev, llp_name: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -135,7 +241,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">User ID</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="User ID" />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="User ID"
+                               value={formState.user_id}
+                               onChange={(e) => setFormState(prev => ({ ...prev, user_id: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -143,7 +253,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Password</label>
                      <div className="col-12 col-sm-8">
-                        <input type="password" className="form-control border-light shadow-sm py-2 px-3" placeholder="Password" />
+                        <input type="password" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Password"
+                               value={formState.password}
+                               onChange={(e) => setFormState(prev => ({ ...prev, password: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -153,7 +267,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">PAN</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="PAN" />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="PAN"
+                               value={formState.pan}
+                               onChange={(e) => setFormState(prev => ({ ...prev, pan: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -161,7 +279,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Email Id</label>
                      <div className="col-12 col-sm-8">
-                        <input type="email" className="form-control border-light shadow-sm py-2 px-3" placeholder="Email id" />
+                        <input type="email" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Email id"
+                               value={formState.email}
+                               onChange={(e) => setFormState(prev => ({ ...prev, email: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -171,7 +293,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Contact No.</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="Contact No." />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Contact No."
+                               value={formState.contact_no}
+                               onChange={(e) => setFormState(prev => ({ ...prev, contact_no: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -179,7 +305,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Partner Name for OTP</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="Partner Name for OTP" />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Partner Name for OTP"
+                               value={formState.partner_name}
+                               onChange={(e) => setFormState(prev => ({ ...prev, partner_name: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -189,7 +319,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Partner Mail ID</label>
                      <div className="col-12 col-sm-8">
-                        <input type="email" className="form-control border-light shadow-sm py-2 px-3" placeholder="Partner Mail ID" />
+                        <input type="email" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Partner Mail ID"
+                               value={formState.partner_email}
+                               onChange={(e) => setFormState(prev => ({ ...prev, partner_email: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -197,7 +331,11 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Partner Ph No.</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="Partner Ph No." />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Partner Ph No."
+                               value={formState.partner_phone}
+                               onChange={(e) => setFormState(prev => ({ ...prev, partner_phone: e.target.value }))} />
                      </div>
                   </div>
                </div>
@@ -207,8 +345,12 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Hint Questions</label>
                      <div className="col-12 col-sm-8">
-                        <select className="form-select border-light shadow-sm py-2 px-3">
-                           <option>Select Hint Question</option>
+                        <select className="form-select border-light shadow-sm py-2 px-3"
+                                value={formState.hint_question}
+                                onChange={(e) => setFormState(prev => ({ ...prev, hint_question: e.target.value }))}>
+                           <option value="">Select Hint Question</option>
+                           <option value="q1">What is your pet's name?</option>
+                           <option value="q2">What is your favorite superhero?</option>
                         </select>
                      </div>
                   </div>
@@ -217,13 +359,22 @@ export default function LLPMCACredentials() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Hint Answer</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="Hint Answer" />
+                        <input type="text" 
+                               className="form-control border-light shadow-sm py-2 px-3" 
+                               placeholder="Hint Answer"
+                               value={formState.hint_answer}
+                               onChange={(e) => setFormState(prev => ({ ...prev, hint_answer: e.target.value }))} />
                      </div>
                   </div>
                </div>
 
                <div className="col-12 mt-4 px-0 px-md-3">
-                  <button className="btn btn-primary px-5 py-2 shadow-sm w-100 w-md-auto" style={{ background: "#2b4cb3" }}>Submit</button>
+                  <button className="btn btn-primary px-5 py-2 shadow-sm w-100 w-md-auto" 
+                          style={{ background: "#2b4cb3" }}
+                          onClick={handleSubmit}
+                          disabled={loading}>
+                     {loading ? "Submitting..." : "Submit"}
+                  </button>
                </div>
             </div>
         </div>

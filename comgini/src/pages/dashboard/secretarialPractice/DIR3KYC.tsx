@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import secretarialService from "../../../services/secretarialService";
+import mastersService from "../../../services/mastersService";
+
 
 type KYCView = "status" | "web";
 
@@ -8,6 +10,8 @@ export default function DIR3KYC() {
   const [view, setView] = useState<KYCView>("status");
   const [showImportModal, setShowImportModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [kycList, setKycList] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
   
   // Form state for Web view
   const [formState, setFormState] = useState({
@@ -18,11 +22,49 @@ export default function DIR3KYC() {
     remarks: ""
   });
 
+  const [companies, setCompanies] = useState<any[]>([]);
+
+  const fetchInitialData = async () => {
+    try {
+      const res = await mastersService.getCompanies(1, 100);
+      setCompanies(res.data || []);
+    } catch (e) {
+      console.error("Failed to fetch companies", e);
+    }
+  };
+
+
   const handleImport = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success("Excel imported successfully");
     setShowImportModal(false);
   };
+
+  const fetchKycList = async (page = 1) => {
+    try {
+      setLoading(true);
+      const res = await secretarialService.getDir3KycList({ page, limit: pagination.limit });
+      const items = res.data?.data || res.data?.items || res.data || [];
+      setKycList(Array.isArray(items) ? items : []);
+      setPagination(prev => ({ ...prev, page, total: res.pagination?.total || res.data?.total || items.length }));
+
+    } catch (error) {
+      console.error("Failed to fetch DIR-3 KYC list", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    if (view === "status") {
+      fetchKycList(pagination.page);
+    }
+  }, [view, pagination.page]);
+
 
   const handleWebSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,8 +142,12 @@ export default function DIR3KYC() {
                <div className="col-12 col-md-4 col-lg-3">
                   <label className="small fw-bold mb-1">Company:</label>
                   <select className="form-select form-select-sm border py-2">
-                     <option>Select Company</option>
+                     <option value="">Select Company</option>
+                     {companies.map(c => (
+                        <option key={c.id} value={c.id}>{c.name || c.companyName}</option>
+                     ))}
                   </select>
+
                </div>
                <div className="col-12 col-md-4 col-lg-3">
                   <label className="small fw-bold mb-1">Group:</label>
@@ -144,9 +190,39 @@ export default function DIR3KYC() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={9} className="text-center py-4 text-muted">No data available in table</td>
-                  </tr>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={9} className="text-center py-4 text-muted">Loading...</td>
+                    </tr>
+                  ) : kycList.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="text-center py-4 text-muted">No data available in table</td>
+                    </tr>
+                  ) : (
+                    kycList.map((item, idx) => (
+                      <tr key={item.id} className="align-middle">
+                        <td className="px-3 py-2 text-center"><input type="checkbox" className="form-check-input" /></td>
+                        <td className="px-3 py-2 text-center">{(pagination.page - 1) * pagination.limit + idx + 1}</td>
+                        <td className="px-3 py-2">{item.directorName} ({item.din})</td>
+                        <td className="px-3 py-2">
+                          <span className={`badge ${item.dinStatus === 'Active' ? 'bg-success' : 'bg-secondary'}`}>
+                            {item.dinStatus}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className={`badge ${item.kycStatus === 'Pending' ? 'bg-warning text-dark' : 'bg-success'}`}>
+                            {item.kycStatus}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">{item.assignedUser || "-"}</td>
+                        <td className="px-3 py-2">{item.userStatus}</td>
+                        <td className="px-3 py-2">{item.remark || "-"}</td>
+                        <td className="px-3 py-2 text-center">
+                          <button className="btn btn-sm btn-outline-primary py-0">Edit</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

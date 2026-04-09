@@ -45,19 +45,50 @@ const mastersService = {
 
     // --- Directors ---
 
-    async getDirectors(companyId: number): Promise<Director[]> {
-        const response = await api.get<ApiResponse<Director[]>>(`/masters/companies/${companyId}/directors`);
-        return response.data.data || [];
+    async getDirectors(params: number | { search?: string; companyId?: string | number }): Promise<any[]> {
+        let queryParams: any = { search: '' };
+        if (typeof params === 'number') {
+            queryParams.companyId = params.toString();
+        } else {
+            queryParams.search = params.search || '';
+            if (params.companyId !== undefined && params.companyId !== '') {
+                queryParams.companyId = params.companyId.toString();
+            }
+        }
+
+        const response = await api.get<ApiResponse<any>>('/directors', { params: queryParams });
+        const resData = response.data.data;
+
+        let dataArray: any[] = [];
+        if (Array.isArray(resData)) {
+            dataArray = resData;
+        } else if (resData && Array.isArray(resData.items)) {
+            dataArray = resData.items;
+        } else if (resData && Array.isArray(resData.data)) {
+            dataArray = resData.data;
+        }
+        
+        // Map camelCase to snake_case for UI compatibility
+        const mappedData = dataArray.map((d: any) => ({
+            ...d,
+            appointment_date: d.appointmentDate || d.appointment_date,
+            tenure_years: d.tenureYears || d.tenure_years,
+            is_active: d.status === 'Active' ? true : (d.status === 'Inactive' ? false : d.is_active),
+            company_id: d.companyId || d.company_id,
+        }));
+        console.log("getDirectors mapped data:", mappedData);
+        return mappedData;
     },
 
     async createDirector(companyId: number, data: CreateDirectorRequest): Promise<Director> {
-        const response = await api.post<ApiResponse<Director>>(`/masters/companies/${companyId}/directors`, data);
+        const payload = { ...data, companyId };
+        const response = await api.post<ApiResponse<Director>>(`/directors`, payload);
         if (!response.data.success) throw new Error(response.data.message || 'Failed to create director');
         return response.data.data!;
     },
 
     async updateDirector(id: number, data: UpdateDirectorRequest): Promise<Director> {
-        const response = await api.put<ApiResponse<Director>>(`/masters/directors/${id}`, data);
+        const response = await api.put<ApiResponse<Director>>(`/directors/${id}`, data);
         if (!response.data.success) throw new Error(response.data.message || 'Failed to update director');
         return response.data.data!;
     },
@@ -170,6 +201,87 @@ const mastersService = {
     async getPrimaryContacts(): Promise<PrimaryContact[]> {
         const response = await api.get<ApiResponse<PrimaryContact[]>>('/clients/primary-contacts');
         return response.data.data || [];
+    },
+
+    // --- Shareholders ---
+    async getShareholders(params?: { search?: string; page?: number; limit?: number; company_id?: string | number }): Promise<PaginatedResponse<any>> {
+        const response = await api.get<ApiResponse<any>>('/shareholders', { params });
+        return {
+            data: response.data.data || [],
+            pagination: (response.data as any).pagination || { page: 1, limit: 10, total: 0 }
+        };
+    },
+
+    async createShareholder(data: any, isMultipart: boolean = false): Promise<any> {
+        const headers = isMultipart ? { 'Content-Type': 'multipart/form-data' } : undefined;
+        const response = await api.post<ApiResponse<any>>('/shareholders', data, { headers });
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to create shareholder');
+        return response.data.data;
+    },
+
+    async getShareholderById(id: number | string): Promise<any> {
+        const response = await api.get<ApiResponse<any>>(`/shareholders/${id}`);
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to get shareholder');
+        return response.data.data;
+    },
+
+    async updateShareholder(id: number | string, data: any, isMultipart: boolean = false): Promise<any> {
+        const headers = isMultipart ? { 'Content-Type': 'multipart/form-data' } : undefined;
+        const response = await api.put<ApiResponse<any>>(`/shareholders/${id}`, data, { headers });
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to update shareholder');
+        return response.data.data;
+    },
+
+    async deleteShareholder(id: number | string): Promise<any> {
+        const response = await api.delete<ApiResponse<any>>(`/shareholders/${id}`);
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to delete shareholder');
+        return response.data.data;
+    },
+
+    // --- Debenture Holders ---
+    async getDebentureHolders(params?: { search?: string; page?: number; limit?: number; company_id?: string | number }): Promise<PaginatedResponse<any>> {
+        const response = await api.get<ApiResponse<any>>('/debenture-holders', { params });
+        return {
+            data: response.data.data || [],
+            pagination: (response.data as any).pagination || { page: 1, limit: 10, total: 0 }
+        };
+    },
+
+    async createDebentureHolder(data: any, isMultipart: boolean = false): Promise<any> {
+        const headers = isMultipart ? { 'Content-Type': 'multipart/form-data' } : undefined;
+        const response = await api.post<ApiResponse<any>>('/debenture-holders', data, { headers });
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to create debenture holder');
+        return response.data.data;
+    },
+
+    async getDebentureHolderById(id: number | string): Promise<any> {
+        const response = await api.get<ApiResponse<any>>(`/debenture-holders/${id}`);
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to get debenture holder');
+        return response.data.data;
+    },
+
+    async updateDebentureHolder(id: number | string, data: any, isMultipart: boolean = false): Promise<any> {
+        const headers = isMultipart ? { 'Content-Type': 'multipart/form-data' } : undefined;
+        const response = await api.put<ApiResponse<any>>(`/debenture-holders/${id}`, data, { headers });
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to update debenture holder');
+        return response.data.data;
+    },
+
+    async deleteDebentureHolder(id: number | string): Promise<any> {
+        const response = await api.delete<ApiResponse<any>>(`/debenture-holders/${id}`);
+        if (!response.data.success) throw new Error(response.data.message || 'Failed to delete debenture holder');
+        return response.data.data;
+    },
+
+
+
+    // --- Requested Documents ---
+    async getRequestedDocuments(params?: { search?: string; page?: number; limit?: number }): Promise<PaginatedResponse<any>> {
+        const response = await api.get<ApiResponse<any>>('/documents/requested', { params });
+        return {
+            data: response.data.data || [],
+            pagination: (response.data as any).pagination || { page: 1, limit: 10, total: 0 }
+        };
     }
 };
 

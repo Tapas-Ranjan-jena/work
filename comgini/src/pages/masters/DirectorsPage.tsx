@@ -15,11 +15,15 @@ export default function DirectorsPage() {
     const [selectedDirector, setSelectedDirector] = useState<Director | null>(null)
 
     const fetchDirectors = async () => {
-        if (!companyId) return
         setIsLoading(true)
         try {
-            const data = await mastersService.getDirectors(Number(companyId))
-            setDirectors(data)
+            if (companyId) {
+                const data = await mastersService.getDirectors(Number(companyId))
+                setDirectors(data)
+            } else {
+                const data = await mastersService.getDirectors({})
+                setDirectors(data)
+            }
         } catch (error) {
             console.error("Failed to fetch directors", error)
         } finally {
@@ -42,8 +46,8 @@ export default function DirectorsPage() {
     }
 
     const filteredDirectors = directors.filter(d =>
-        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.din.toLowerCase().includes(searchQuery.toLowerCase())
+        (d.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.din || "").toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     return (
@@ -117,7 +121,7 @@ export default function DirectorsPage() {
                         ) : filteredDirectors.length === 0 ? (
                             <tr>
                                 <td colSpan={8} className="text-center py-5 text-muted">
-                                    No directors found for this company.
+                                    No directors found.
                                 </td>
                             </tr>
                         ) : (

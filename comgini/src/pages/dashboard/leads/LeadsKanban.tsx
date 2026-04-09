@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import KanbanColumn from "./components/KanbanColumn";
 import AddLeadModal from "./components/AddLeadModal";
+import dropdownService from "../../../services/dropdownService";
+import type { DropdownUser } from "../../../services/dropdownService";
 
 const columns = [
     { title: "To do", color: "#4eb7e2" },
@@ -13,6 +15,24 @@ const columns = [
 
 export default function LeadsKanban() {
     const [showModal, setShowModal] = useState(false);
+    const [owners, setOwners] = useState<DropdownUser[]>([]);
+    const [sources, setSources] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchDropdowns = async () => {
+            try {
+                const [usersRes, sourcesRes] = await Promise.all([
+                    dropdownService.getUsers(),
+                    dropdownService.getLeadsSources()
+                ]);
+                setOwners(usersRes);
+                setSources(sourcesRes);
+            } catch (error) {
+                console.error("Failed to fetch dropdowns", error);
+            }
+        };
+        fetchDropdowns();
+    }, []);
 
     return (
         <div className="leads-page p-1">
@@ -73,9 +93,15 @@ export default function LeadsKanban() {
                     <div className="d-flex align-items-center gap-2">
                         <select className="form-select form-select-sm" style={{ width: "150px", fontSize: "12px", color: "#666" }}>
                             <option>- Owner -</option>
+                            {owners.map(owner => (
+                                <option key={owner.id} value={owner.id}>{owner.first_name} {owner.last_name}</option>
+                            ))}
                         </select>
                         <select className="form-select form-select-sm" style={{ width: "150px", fontSize: "12px", color: "#666" }}>
                             <option>- Source -</option>
+                            {sources.map((source, idx) => (
+                                <option key={idx} value={source}>{source}</option>
+                            ))}
                         </select>
 
                         <div className="position-relative ms-1">

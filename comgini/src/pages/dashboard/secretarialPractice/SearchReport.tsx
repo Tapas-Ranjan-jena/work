@@ -67,20 +67,29 @@ export default function SearchReport() {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
+      
       const payload: SearchReportPayload = {
         ...(formData as SearchReportPayload),
         entity_type: activeTab,
-        signatories: signatories.map(({ id, ...rest }) => rest),
+        signatories: signatories.map(({ id, ...rest }) => rest), // Keep original field names as they were mapped to underscores in state? 
+        // Wait, signatories in state use underscores or spaces? 
+        // signatories: [{ id: 1, name_designation: "", doa: "", din_pan: "" }]
         shareholders: shareholders.map(({ id, ...rest }) => rest),
         charges: charges.map(({ id, ...rest }) => rest),
       };
+
       await secretarialService.createSearchReport(payload);
       toast.success("Search report created successfully");
       setView("list");
-    } catch (error) {
-      toast.error("Failed to create search report");
+      fetchReports();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create search report");
+    } finally {
+      setLoading(false);
     }
   };
+
 
   // Add/Remove Handlers
   const addSignatory = () => setSignatories([...signatories, { id: Date.now(), name_designation: "", doa: "", din_pan: "" }]);

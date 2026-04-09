@@ -12,6 +12,7 @@ interface AuthContextType {
     forgotPassword: (email: string) => Promise<ApiResponse>;
     resetPassword: (data: ResetPasswordRequest) => Promise<ApiResponse>;
     logout: () => Promise<void>;
+    updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,6 +89,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
+    const updateProfile = async (data: Partial<User>) => {
+        const updatedUser = await authService.updateProfile(data);
+        setUser(updatedUser);
+        sessionStorage.setItem('user', JSON.stringify(updatedUser));
+    };
+
     const value = {
         user,
         isAuthenticated: !!user,
@@ -97,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         forgotPassword,
         resetPassword,
         logout,
+        updateProfile,
     };
 
     return (

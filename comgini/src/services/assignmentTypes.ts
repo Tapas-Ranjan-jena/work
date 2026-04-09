@@ -1,16 +1,21 @@
 export interface Assignment {
     id: number;
     company_id: number;
+    companyName?: string; // API field
     company_name: string;
     checklist_id: number;
+    assignment?: string; // API field
     checklist_title: string;
     maker_id: number;
+    maker?: string; // API field
     maker_name: string;
     checker_id: number;
+    checker?: string; // API field
     checker_name: string;
     status: 'pending' | 'completed';
     last_updated_by?: string;
     last_updated_on?: string;
+    dueDate?: string; // API field
     due_date: string;
     created_at: string;
     updated_at: string;

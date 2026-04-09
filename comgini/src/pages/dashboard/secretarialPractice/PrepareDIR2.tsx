@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import secretarialService from "../../../services/secretarialService";
+import toast from "react-hot-toast";
+import mastersService from "../../../services/mastersService";
+
 
 type ViewType = "list" | "add";
 
@@ -16,6 +20,68 @@ export default function PrepareDIR2() {
   const [interests, setInterests] = useState<InterestEntry[]>([
     { id: 1, cin: "U62020KA2026PTC214274", name: "Jameendarx Global Private Limited", doa: "06/06/2023", designation: "Director", other: "" }
   ]);
+  const [forms, setForms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+  const [companies, setCompanies] = useState<any[]>([]);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    companyId: "",
+    din: "",
+    name: "",
+    pan: ""
+  });
+
+  useEffect(() => {
+    if (view === "list") {
+      fetchForms();
+    } else {
+      fetchCompanies();
+    }
+  }, [view]);
+
+  const fetchForms = async (page = 1) => {
+    try {
+      setLoading(true);
+      const res = await secretarialService.getForms({ page, limit: pagination.limit });
+      const items = res.data?.data || res.data?.items || res.data || [];
+      setForms(Array.isArray(items) ? items : []);
+      setPagination(prev => ({ ...prev, page, total: res.pagination?.total || res.data?.total || items.length }));
+    } catch (error) {
+      console.error("Failed to fetch forms", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCompanies = async () => {
+    try {
+      const res = await mastersService.getCompanies(1, 100);
+      setCompanies(res.data || []);
+    } catch (e) {
+      console.error("Failed to fetch companies", e);
+    }
+  };
+
+  const handleFormSubmit = async () => {
+    if (!formData.din || !formData.name || !formData.pan) {
+      toast.error("Please fill required fields (DIN, Name, PAN)");
+      return;
+    }
+    try {
+      setLoading(true);
+      await secretarialService.createDir2(formData);
+      toast.success("DIR-2 prepared successfully");
+      setView("list");
+      fetchForms();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to prepare DIR-2");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const addInterest = () => {
     setInterests([...interests, { id: Date.now(), cin: "", name: "", doa: "", designation: "Director", other: "" }]);
@@ -77,10 +143,31 @@ export default function PrepareDIR2() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={6} className="text-center py-4 text-muted small border-bottom-0">No data available in table</td>
-                  </tr>
+                  {loading ? (
+                    <tr><td colSpan={6} className="text-center py-4 text-muted small border-bottom-0">Loading forms...</td></tr>
+                  ) : forms.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-4 text-muted small border-bottom-0">No data available in table</td></tr>
+                  ) : (
+                    forms.map((f, i) => (
+                      <tr key={f.id || i} className="align-middle">
+                        <td className="text-center">{(pagination.page - 1) * pagination.limit + i + 1}</td>
+                        <td className="text-start">{f.companyName || f.company_name || "-"}</td>
+                        <td className="text-center">{f.appointeeName || f.appointee_name || f.name || "-"}</td>
+                        <td className="text-center">{f.dateOfAppointment || f.date_of_appointment || f.doa || "-"}</td>
+                        <td className="text-center">
+                          <span className={`badge ${f.dir2Status === 'filed' ? 'bg-success' : 'bg-warning text-dark'}`}>
+                            {f.dir2Status || "draft"}
+                          </span>
+                        </td>
+                        <td className="text-center">
+                          <button className="btn btn-sm btn-link p-0 me-2"><i className="bi bi-pencil"></i></button>
+                          <button className="btn btn-sm btn-link p-0 text-danger"><i className="bi bi-trash"></i></button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
+
               </table>
             </div>
 
@@ -113,9 +200,14 @@ export default function PrepareDIR2() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-2 fw-bold small pt-sm-1">Select Company</label>
                      <div className="col-12 col-sm-10">
-                        <select className="form-select border-light shadow-sm py-2 px-3">
-                           <option>Select Company</option>
-                        </select>
+                        <select 
+                            className="form-select border-light shadow-sm py-2 px-3"
+                            value={formData.companyId}
+                            onChange={(e) => setFormData(prev => ({ ...prev, companyId: e.target.value }))}
+                         >
+                            <option value="">Select Company</option>
+                            {companies.map(c => <option key={c.id} value={c.id}>{c.name || c.companyName}</option>)}
+                         </select>
                      </div>
                   </div>
                </div>
@@ -154,7 +246,13 @@ export default function PrepareDIR2() {
                      <label className="col-12 col-sm-4 fw-bold small">DIN</label>
                      <div className="col-12 col-sm-8">
                          <div className="input-group d-flex flex-column flex-sm-row">
-                            <input type="text" className="form-control border-light shadow-sm py-2 px-3 w-100 w-sm-auto" placeholder="Enter DIN" />
+                            <input 
+                                type="text" 
+                                className="form-control border-light shadow-sm py-2 px-3 w-100 w-sm-auto" 
+                                placeholder="Enter DIN" 
+                                value={formData.din}
+                                onChange={(e) => setFormData(prev => ({ ...prev, din: e.target.value }))}
+                             />
                             <button className="btn btn-outline-secondary btn-sm border-light shadow-sm px-3 fw-bold small bg-white text-muted py-2">Prefill from MCA <i className="bi bi-arrow-right-circle"></i></button>
                          </div>
                      </div>
@@ -168,7 +266,13 @@ export default function PrepareDIR2() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">Name</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="Name" />
+                        <input 
+                            type="text" 
+                            className="form-control border-light shadow-sm py-2 px-3" 
+                            placeholder="Name" 
+                            value={formData.name}
+                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                         />
                      </div>
                   </div>
                </div>
@@ -237,7 +341,13 @@ export default function PrepareDIR2() {
                   <div className="row g-2 align-items-start align-items-sm-center">
                      <label className="col-12 col-sm-4 fw-bold small">PAN</label>
                      <div className="col-12 col-sm-8">
-                        <input type="text" className="form-control border-light shadow-sm py-2 px-3" placeholder="PAN" />
+                        <input 
+                            type="text" 
+                            className="form-control border-light shadow-sm py-2 px-3" 
+                            placeholder="PAN" 
+                            value={formData.pan}
+                            onChange={(e) => setFormData(prev => ({ ...prev, pan: e.target.value }))}
+                        />
                      </div>
                   </div>
                </div>
@@ -346,8 +456,11 @@ export default function PrepareDIR2() {
                   </div>
                   <div className="d-flex flex-column flex-sm-row gap-2 mt-3">
                      <button className="btn btn-primary btn-sm px-4 shadow-none py-2" style={{ background: "#2b4cb3" }} onClick={addInterest}>+ Add row</button>
-                     <button className="btn btn-primary btn-sm px-4 shadow-none py-2" style={{ background: "#2b4cb3" }}>Submit</button>
+                     <button className="btn btn-primary btn-sm px-4 shadow-none py-2" style={{ background: "#2b4cb3" }} onClick={handleFormSubmit} disabled={loading}>
+                        {loading ? "Preparing..." : "Submit"}
+                     </button>
                   </div>
+
                </div>
             </div>
         </div>

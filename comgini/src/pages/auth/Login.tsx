@@ -12,6 +12,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -54,7 +55,7 @@ export default function Login() {
                     <input
                         type="email"
                         className="form-control border-0 bg-light px-3"
-                        placeholder="name@company.com"
+                        placeholder=""
                         style={{ height: 48, borderRadius: "10px" }}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -68,15 +69,25 @@ export default function Login() {
                     <label className="form-label small fw-semibold text-secondary mb-0">Password</label>
                     <Link to="/forgot-password" style={{ fontSize: "12px", textDecoration: "none", color: "#2b4cb3" }}>Forgot password?</Link>
                 </div>
-                <input
-                    type="password"
-                    className="form-control border-0 bg-light px-3"
-                    placeholder="••••••••"
-                    style={{ height: 48, borderRadius: "10px" }}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <div className="position-relative">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        className="form-control border-0 bg-light px-3 pe-5"
+                        placeholder=""
+                        style={{ height: 48, borderRadius: "10px" }}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button
+                        type="button"
+                        className="btn position-absolute top-50 end-0 translate-middle-y me-2 border-0 shadow-none text-muted"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ background: "transparent" }}
+                    >
+                        <i className={`bi bi-eye${showPassword ? "-slash" : ""}`}></i>
+                    </button>
+                </div>
             </div>
 
             <button

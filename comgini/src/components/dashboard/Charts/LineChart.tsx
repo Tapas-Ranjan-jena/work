@@ -13,9 +13,9 @@ interface LineChartProps {
 
 const LineChart: React.FC<LineChartProps> = ({ data }) => {
     return (
-        <div className="card shadow-sm border-0 p-4 h-100" style={{ borderRadius: "16px" }}>
+        <div className="h-100 d-flex flex-column">
             <h5 className="fw-bold mb-4 d-flex align-items-center gap-2">
-                <i className="bi bi-graph-up text-primary"></i> Income vs Expenses
+                <i className="bi bi-graph-up text-primary" style={{ fontSize: '18px' }}></i> Income vs Expenses
             </h5>
             <div style={{ width: "100%", height: 250 }}>
                 <ResponsiveContainer>

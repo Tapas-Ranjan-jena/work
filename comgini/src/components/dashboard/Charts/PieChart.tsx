@@ -16,9 +16,9 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
     const totalValue = data.reduce((acc, curr) => acc + curr.value, 0);
 
     return (
-        <div className="card shadow-sm border-0 p-4 h-100" style={{ borderRadius: "16px" }}>
+        <div className="h-100 d-flex flex-column">
             <h5 className="fw-bold mb-4 d-flex align-items-center gap-2">
-                <i className="bi bi-pie-chart text-primary"></i> Financial Management
+                <i className="bi bi-pie-chart text-primary" style={{ fontSize: '18px' }}></i> Financial Management
             </h5>
             <div style={{ width: "100%", height: 300, position: "relative" }}>
                 <ResponsiveContainer>

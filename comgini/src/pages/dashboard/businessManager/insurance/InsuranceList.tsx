@@ -1,14 +1,30 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { NavLink, useNavigate, useLocation } from "react-router-dom"
 import AddInsuranceModal from "./AddInsuranceModal"
+import businessManagerService from "../../../../services/businessManagerService"
+import type { Insurance } from "../../../../services/businessManagerService"
 
 export default function InsuranceList() {
   const [open, setOpen] = useState(false)
+  const [insurances, setInsurances] = useState<Insurance[]>([])
 
   const navigate = useNavigate()
   const location = useLocation()
 
   const currentPath = location.pathname
+
+  const fetchInsurances = async () => {
+    try {
+      const data = await businessManagerService.getInsurance({ page: 1, limit: 100 });
+      setInsurances(data || []);
+    } catch (e) {
+      console.error("Failed to fetch insurances", e);
+    }
+  }
+
+  useEffect(() => {
+    fetchInsurances();
+  }, [])
 
   return (
     <div>
@@ -146,11 +162,29 @@ export default function InsuranceList() {
               </thead>
 
               <tbody>
-                <tr>
-                  <td colSpan={9} className="text-center text-muted py-4">
-                    No record found.
-                  </td>
-                </tr>
+                {insurances.length === 0 ? (
+                    <tr>
+                    <td colSpan={9} className="text-center text-muted py-4">
+                        No record found.
+                    </td>
+                    </tr>
+                ) : (
+                    insurances.map(ins => (
+                    <tr key={ins.id}>
+                        <td>{ins.company_name || ins.company_id}</td>
+                        <td>{ins.insurance_company}</td>
+                        <td>{ins.broker_name}</td>
+                        <td>{ins.policy_type}</td>
+                        <td>{ins.policy_number}</td>
+                        <td>{new Date(ins.start_from).toLocaleDateString()}</td>
+                        <td>{new Date(ins.expiry_date).toLocaleDateString()}</td>
+                        <td>{ins.file_url ? 'Yes' : 'No'}</td>
+                        <td>
+                            <i className="bi bi-three-dots-vertical"></i>
+                        </td>
+                    </tr>
+                    ))
+                )}
               </tbody>
 
             </table>
@@ -174,7 +208,7 @@ export default function InsuranceList() {
 
       </div>
 
-      <AddInsuranceModal open={open} onClose={() => setOpen(false)} />
+      <AddInsuranceModal open={open} onClose={() => { setOpen(false); fetchInsurances(); }} />
 
     </div>
   )

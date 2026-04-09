@@ -23,9 +23,9 @@ export default function TimesheetFilters({ filters, setFilters }: Props) {
         const fetchLookups = async () => {
             try {
                 const [memRes, clientRes, assignRes] = await Promise.all([
-                    assignmentService.lookupUsers('maker'),
-                    assignmentService.lookupCompanies(),
-                    assignmentService.lookupAssignments()
+                    assignmentService.lookupUsers('maker').catch(() => ({ success: false, data: [] })),
+                    assignmentService.lookupCompanies().catch(() => ({ success: false, data: [] })),
+                    assignmentService.lookupAssignments().catch(() => ({ success: false, data: [] }))
                 ])
                 if (memRes.success) setMembers(memRes.data)
                 if (clientRes.success) setClients(clientRes.data)

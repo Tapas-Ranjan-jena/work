@@ -1,10 +1,35 @@
+import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom"
 import PageTopBar from "../../../components/common/PageTopBar"
+import mastersService from "../../../services/mastersService";
+import toast from "react-hot-toast";
 
 export default function RequestedDocuments() {
 
   // ⭐ RECEIVE SIDEBAR CONTROL FROM DASHBOARD LAYOUT
   const { setOpen } = useOutletContext<any>()
+  
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+
+  const fetchDocuments = async (page = 1) => {
+    try {
+      setLoading(true);
+      const res = await mastersService.getRequestedDocuments({ search, page, limit: pagination.limit });
+      setDocuments(res.data || []);
+      setPagination(prev => ({ ...prev, page, total: res.pagination?.total || 0 }));
+    } catch (error: any) {
+      toast.error(error.message || "Failed to load requested documents");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocuments(pagination.page);
+  }, [pagination.page, search]);
 
   return (
     <div className="container-fluid">
@@ -22,6 +47,8 @@ export default function RequestedDocuments() {
 
         <div className="d-flex justify-content-end mb-2">
           <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="form-control form-control-sm"
             placeholder="Search"
             style={{ width: "180px" }}
@@ -43,18 +70,40 @@ export default function RequestedDocuments() {
             </thead>
 
             <tbody>
-              <tr>
-                <td colSpan={7} className="text-center">
-                  No data available in table
-                </td>
-              </tr>
+              {loading ? (
+                <tr><td colSpan={7} className="text-center py-4 text-muted">Loading documents...</td></tr>
+              ) : documents.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-4 text-muted">No data available in table</td></tr>
+              ) : (
+                documents.map((d, i) => (
+                  <tr key={d.id || i}>
+                    <td>{(pagination.page - 1) * pagination.limit + i + 1}</td>
+                    <td>{d.requestedBy || "-"}</td>
+                    <td>{d.requestedOn ? d.requestedOn.split("T")[0] : "-"}</td>
+                    <td>{d.companyName || "-"}</td>
+                    <td>{d.financialYear || "-"}</td>
+                    <td>{d.fileName || "-"}</td>
+                    <td>
+                      <button className="btn btn-sm btn-light border me-1"><i className="bi bi-eye"></i></button>
+                      <button className="btn btn-sm btn-light border"><i className="bi bi-download"></i></button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
-        <small className="mt-2 text-muted">
-          Showing 0 to 0 of 0 entries
-        </small>
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <small className="text-muted">
+            Showing {documents.length === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
+          </small>
+          
+          <div className="d-flex gap-2">
+            <button className="btn btn-light btn-sm" disabled={pagination.page === 1} onClick={() => setPagination(p => ({...p, page: p.page - 1}))}>Previous</button>
+            <button className="btn btn-light btn-sm" disabled={pagination.page * pagination.limit >= pagination.total} onClick={() => setPagination(p => ({...p, page: p.page + 1}))}>Next</button>
+          </div>
+        </div>
 
       </div>
 

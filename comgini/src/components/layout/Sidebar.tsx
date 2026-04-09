@@ -24,6 +24,7 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "Clients", path: "/clients", icon: "bi-folder2-open" },
+  { label: "Subscription Plans", path: "/subscription", icon: "bi-tags" },
   { label: "Requested Documents", path: "/requested-documents", icon: "bi-file-earmark-text" },
   {
     label: "Masters",

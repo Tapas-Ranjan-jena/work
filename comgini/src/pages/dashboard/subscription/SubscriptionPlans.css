@@ -1,0 +1,130 @@
+.subscription-container {
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+.subscription-hero {
+    background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+    padding-bottom: 120px !important;
+    position: relative;
+    z-index: 1;
+}
+
+.billing-toggle-container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: inline-flex;
+    padding: 6px;
+}
+
+.toggle-btn {
+    border: none;
+    background: transparent;
+    color: #fff;
+    padding: 8px 30px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.toggle-btn.active {
+    background-color: #fff;
+    color: #1d3557;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-btn:not(.active):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.font-serif {
+    font-family: 'Outfit', sans-serif;
+}
+
+.btn-dark-blue {
+    background-color: #1d3557;
+    border-color: #1d3557;
+}
+
+.btn-dark-blue:hover {
+    background-color: #14253d;
+    border-color: #14253d;
+}
+
+.btn-outline-dark-blue {
+    border-color: #1d3557;
+    color: #1d3557;
+}
+
+.btn-outline-dark-blue:hover {
+    background-color: #1d3557;
+    color: white;
+}
+
+.text-dark-blue {
+    color: #1d3557 !important;
+}
+
+.bg-light-gray {
+    background-color: #f4f5f6;
+}
+
+.bg-box-gray {
+    background-color: #e9ecef;
+}
+
+.custom-card-radius {
+    border-radius: 12px;
+}
+
+.pro-card {
+    background: linear-gradient(135deg, #2b569e 0%, #1d3557 100%);
+    box-shadow: 0 15px 35px rgba(29, 53, 87, 0.25) !important;
+    transform: translateY(-8px);
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* On small screens, disable scaling so it doesn't break horizontal padding */
+@media (max-width: 991.98px) {
+    .pro-card {
+        transform: translateY(0);
+        margin-bottom: 20px;
+    }
+}
+
+.pricing-box {
+    margin: 0 auto;
+    width: 85%;
+    transition: all 0.3s ease;
+}
+
+.card {
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fs-8 {
+    font-size: 0.85rem;
+}

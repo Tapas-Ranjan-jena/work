@@ -90,15 +90,15 @@ export default function AssignPending() {
               assignments.map((item, index) => (
                 <tr key={item.id}>
                   <td>{(page - 1) * limit + index + 1}</td>
-                  <td>{item.company_name}</td>
-                  <td>{item.checklist_title}</td>
-                  <td>{item.maker_name}</td>
-                  <td>{item.checker_name}</td>
+                  <td>{item.companyName || item.company_name}</td>
+                  <td>{item.assignment || item.checklist_title}</td>
+                  <td>{item.maker || item.maker_name}</td>
+                  <td>{item.checker || item.checker_name}</td>
                   <td>
                     <span className="badge bg-warning text-dark">{item.status}</span>
                   </td>
                   <td>{item.updated_at ? new Date(item.updated_at).toLocaleDateString() : "-"}</td>
-                  <td>{item.due_date ? new Date(item.due_date).toLocaleDateString() : "-"}</td>
+                  <td>{(item.dueDate || item.due_date) ? new Date(item.dueDate || item.due_date).toLocaleDateString() : "-"}</td>
                   <td className="text-center">
                     <button className="btn btn-sm btn-outline-primary border-0 me-1">
                       <i className="bi bi-eye"></i>

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react"
 import { createPortal } from "react-dom"
 import mastersService from "../../services/mastersService"
-import type { Director, CreateDirectorRequest } from "../../types/masters.types"
+import type { Director, CreateDirectorRequest, Company } from "../../types/masters.types"
 
 type Props = {
     open: boolean
     onClose: () => void
     onSuccess?: () => void
-    companyId: number
+    companyId?: number
     director?: Director | null // If provided, we are in Edit mode
 }
 
@@ -21,6 +21,17 @@ export default function DirectorForm({ open, onClose, onSuccess, companyId, dire
     })
 
     const [isLoading, setIsLoading] = useState(false)
+    const [companies, setCompanies] = useState<Company[]>([])
+    const [selectedCompanyId, setSelectedCompanyId] = useState<number | ''>(companyId && !isNaN(companyId) ? companyId : '')
+
+    useEffect(() => {
+        if (!companyId || isNaN(companyId)) {
+            // fetch companies
+            mastersService.getCompanies(1, 100).then(res => setCompanies(res.data)).catch(console.error)
+        } else {
+            setSelectedCompanyId(companyId)
+        }
+    }, [companyId, open])
 
     useEffect(() => {
         if (director) {
@@ -59,7 +70,11 @@ export default function DirectorForm({ open, onClose, onSuccess, companyId, dire
             if (director) {
                 await mastersService.updateDirector(director.id, formData as any)
             } else {
-                await mastersService.createDirector(companyId, formData as any)
+                const targetCompanyId = Number(selectedCompanyId)
+                if (!targetCompanyId || isNaN(targetCompanyId)) {
+                    throw new Error("Please select a company")
+                }
+                await mastersService.createDirector(targetCompanyId, formData as any)
             }
             onSuccess?.()
             onClose()
@@ -96,6 +111,23 @@ export default function DirectorForm({ open, onClose, onSuccess, companyId, dire
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body px-4">
                                 <div className="row g-3">
+                                    {(!companyId || isNaN(companyId)) && !director && (
+                                        <div className="col-12">
+                                            <label className="form-label small fw-semibold">Company <span className="text-danger">*</span></label>
+                                            <select
+                                                className="form-select"
+                                                value={selectedCompanyId}
+                                                onChange={(e) => setSelectedCompanyId(Number(e.target.value))}
+                                                required
+                                            >
+                                                <option value="">Select Company</option>
+                                                {companies.map(c => (
+                                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+
                                     <div className="col-12">
                                         <label className="form-label small fw-semibold">DIN</label>
                                         <input

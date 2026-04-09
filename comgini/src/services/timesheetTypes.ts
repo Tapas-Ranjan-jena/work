@@ -1,19 +1,18 @@
 export interface Timesheet {
-    id: number;
-    member_id: number;
-    member_name: string;
-    assignment_id: number;
-    assignment_title: string;
-    client_id: number;
-    client_name: string;
+    id: string;
+    member: string;
+    client: string;
     task: string;
-    start_date: string;
     start_time: string;
-    end_date: string;
     end_time: string;
-    total_minutes: number;
-    note?: string;
-    created_at: string;
+    total_hours: number | null;
+}
+
+export interface PaginatedTimesheets {
+    total: number;
+    page: number;
+    limit: number;
+    timesheets: Timesheet[];
 }
 
 export interface TimesheetSummary {
@@ -27,12 +26,22 @@ export interface TimesheetSummary {
 export interface CreateTimesheetRequest {
     memberId: number | string;
     clientId: number | string;
-    assignmentId?: number | string;
     task?: string;
     startDate: string;
     startTime: string;
     endDate: string;
     endTime: string;
+    note?: string;
+}
+
+export interface UpdateTimesheetRequest {
+    task?: string;
+    memberId?: number | string;
+    clientId?: number | string;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
     note?: string;
 }
 

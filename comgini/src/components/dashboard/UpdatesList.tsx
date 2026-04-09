@@ -23,12 +23,11 @@ const UpdatesList: React.FC<UpdatesListProps> = ({ updates }) => {
     };
 
     return (
-        <div className="card shadow-sm border-0 p-4" style={{ borderRadius: "16px" }}>
+        <div className="h-100 d-flex flex-column">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
-                    <i className="bi bi-file-earmark-text text-primary"></i> New Updates
+                    <i className="bi bi-bell-fill text-primary" style={{ fontSize: '16px' }}></i> New Updates
                 </h5>
-                <i className="bi bi-caret-up-fill small"></i>
             </div>
 
             <div className="table-responsive">
@@ -43,10 +42,10 @@ const UpdatesList: React.FC<UpdatesListProps> = ({ updates }) => {
                         {updates.length > 0 ? updates.map((update) => (
                             <tr key={update.id} className="border-bottom">
                                 <td className="ps-0 py-3">
-                                    <div className="d-flex align-items-center gap-2">
+                                    <div className="d-flex align-items-center gap-2 flex-wrap dash-wrap-text">
                                         <span className="fw-bold text-dark small">{update.title}</span>
                                         {update.tag && (
-                                            <span className="badge bg-danger rounded-pill px-2 py-1" style={{ fontSize: "10px" }}>{update.tag}</span>
+                                            <span className="badge bg-danger rounded-pill px-2 py-1 flex-shrink-0" style={{ fontSize: "9px", verticalAlign: 'middle' }}>{update.tag}</span>
                                         )}
                                     </div>
                                 </td>

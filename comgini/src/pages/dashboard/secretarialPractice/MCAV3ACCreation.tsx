@@ -1,9 +1,49 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
+import secretarialService from "../../../services/secretarialService";
 
 type Step = 1 | 2 | 3;
 
 export default function MCAV3ACCreation() {
   const [step, setStep] = useState<Step>(1);
+  const [formData, setFormData] = useState({
+    userCategory: "REGISTERED",
+    firstName: "",
+    lastName: "",
+    pan: "",
+    dob: "",
+    address: "",
+    email: "",
+    mobile: "",
+    username: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const payload = { ...formData };
+      delete (payload as any).confirmPassword;
+      await secretarialService.createMcaV3Account(payload);
+      toast.success("MCA V3 Account Created Successfully");
+      setStep(1); // Reset
+      setFormData({
+        userCategory: "REGISTERED", firstName: "", lastName: "", pan: "",
+        dob: "", address: "", email: "", mobile: "", username: "", password: "", confirmPassword: ""
+      });
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create MCA V3 account");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="mca-v3-ac-creation p-4">
@@ -41,16 +81,24 @@ export default function MCAV3ACCreation() {
               <h5 className="fw-bold mb-4">Step 1: Select User Category</h5>
               <div className="row g-4 mb-5">
                  <div className="col-md-6">
-                    <div className="card p-4 border text-center shadow-hover h-100 cursor-pointer border-primary bg-light bg-opacity-10" style={{ cursor: "pointer" }}>
-                       <i className="bi bi-person-check text-primary h1 mb-3"></i>
-                       <h6 className="fw-bold mb-2">Registered User</h6>
+                    <div 
+                      className={`card p-4 border text-center shadow-hover h-100 cursor-pointer ${formData.userCategory === 'REGISTERED' ? 'border-primary bg-light bg-opacity-10' : ''}`} 
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setFormData({...formData, userCategory: 'REGISTERED'})}
+                    >
+                       <i className={`bi bi-person-check h1 mb-3 ${formData.userCategory === 'REGISTERED' ? 'text-primary' : 'text-muted'}`}></i>
+                       <h6 className={`fw-bold mb-2 ${formData.userCategory === 'REGISTERED' ? '' : 'text-muted'}`}>Registered User</h6>
                        <p className="small text-muted mb-0">For individuals who want to access basic services and view data.</p>
                     </div>
                  </div>
                  <div className="col-md-6">
-                    <div className="card p-4 border text-center shadow-hover h-100 cursor-pointer">
-                       <i className="bi bi-briefcase text-muted h1 mb-3"></i>
-                       <h6 className="fw-bold mb-2 text-muted">Business User</h6>
+                    <div 
+                      className={`card p-4 border text-center shadow-hover h-100 cursor-pointer ${formData.userCategory === 'BUSINESS' ? 'border-primary bg-light bg-opacity-10' : ''}`}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setFormData({...formData, userCategory: 'BUSINESS'})}
+                    >
+                       <i className={`bi bi-briefcase h1 mb-3 ${formData.userCategory === 'BUSINESS' ? 'text-primary' : 'text-muted'}`}></i>
+                       <h6 className={`fw-bold mb-2 ${formData.userCategory === 'BUSINESS' ? '' : 'text-muted'}`}>Business User</h6>
                        <p className="small text-muted mb-0">For Professionals, Directors, and Authorized Representatives.</p>
                     </div>
                  </div>
@@ -68,23 +116,23 @@ export default function MCAV3ACCreation() {
               <div className="row g-4 mb-5">
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">First Name <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control border-light shadow-sm" placeholder="First Name" />
+                    <input type="text" className="form-control border-light shadow-sm" placeholder="First Name" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} />
                  </div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Last Name <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control border-light shadow-sm" placeholder="Last Name" />
+                    <input type="text" className="form-control border-light shadow-sm" placeholder="Last Name" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} />
                  </div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">PAN <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control border-light shadow-sm" placeholder="Enter PAN" />
+                    <input type="text" className="form-control border-light shadow-sm" placeholder="Enter PAN" value={formData.pan} onChange={e => setFormData({...formData, pan: e.target.value})} />
                  </div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Date of Birth <span className="text-danger">*</span></label>
-                    <input type="date" className="form-control border-light shadow-sm" />
+                    <input type="date" className="form-control border-light shadow-sm" value={formData.dob} onChange={e => setFormData({...formData, dob: e.target.value})} />
                  </div>
                  <div className="col-md-12">
                     <label className="fw-bold small mb-2">Address <span className="text-danger">*</span></label>
-                    <textarea className="form-control border-light shadow-sm" rows={3} placeholder="Full Address"></textarea>
+                    <textarea className="form-control border-light shadow-sm" rows={3} placeholder="Full Address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
                  </div>
               </div>
               <div className="d-flex justify-content-between">
@@ -101,29 +149,29 @@ export default function MCAV3ACCreation() {
               <div className="row g-4 mb-5">
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Email Address <span className="text-danger">*</span></label>
-                    <input type="email" className="form-control border-light shadow-sm" placeholder="email@example.com" />
+                    <input type="email" className="form-control border-light shadow-sm" placeholder="email@example.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                  </div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Mobile Number <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control border-light shadow-sm" placeholder="+91" />
+                    <input type="text" className="form-control border-light shadow-sm" placeholder="+91" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
                  </div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Desired Username <span className="text-danger">*</span></label>
-                    <input type="text" className="form-control border-light shadow-sm" placeholder="Enter Username" />
+                    <input type="text" className="form-control border-light shadow-sm" placeholder="Enter Username" value={formData.username} onChange={e => setFormData({...formData, username: e.target.value})} />
                  </div>
                  <div className="col-md-6"></div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Password <span className="text-danger">*</span></label>
-                    <input type="password" className="form-control border-light shadow-sm" placeholder="Password" />
+                    <input type="password" className="form-control border-light shadow-sm" placeholder="Password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                  </div>
                  <div className="col-md-6">
                     <label className="fw-bold small mb-2">Confirm Password <span className="text-danger">*</span></label>
-                    <input type="password" className="form-control border-light shadow-sm" placeholder="Confirm Password" />
+                    <input type="password" className="form-control border-light shadow-sm" placeholder="Confirm Password" value={formData.confirmPassword} onChange={e => setFormData({...formData, confirmPassword: e.target.value})} />
                  </div>
               </div>
               <div className="d-flex justify-content-between">
                  <button className="btn btn-outline-secondary px-5" onClick={() => setStep(2)}>Back</button>
-                 <button className="btn btn-primary px-5 py-2" style={{ background: "#2b4cb3" }} onClick={() => alert("Registration Submitted!")}>Submit</button>
+                 <button className="btn btn-primary px-5 py-2" style={{ background: "#2b4cb3" }} onClick={handleSubmit} disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
               </div>
            </div>
          )}

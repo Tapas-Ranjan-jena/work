@@ -2,9 +2,9 @@ import React from "react";
 
 const AssignmentTimeline: React.FC = () => {
     return (
-        <div className="card shadow-sm border-0 p-4 h-100 text-muted" style={{ borderRadius: "16px", backgroundColor: "#fff" }}>
+        <div className="h-100 d-flex flex-column text-muted">
             <h5 className="fw-bold mb-4 text-dark d-flex align-items-center gap-2">
-                <i className="bi bi-clock-history"></i> Assignment Timeline
+                <i className="bi bi-clock-history text-primary" style={{ fontSize: '18px' }}></i> Assignment Timeline
             </h5>
             
             <p className="small mb-4">

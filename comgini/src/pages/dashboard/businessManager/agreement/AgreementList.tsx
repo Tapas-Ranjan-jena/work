@@ -1,14 +1,30 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { NavLink, useNavigate, useLocation } from "react-router-dom"
 import AddAgreementModal from "./AddAgreementModal"
+import businessManagerService from "../../../../services/businessManagerService"
+import type { Contract } from "../../../../services/businessManagerService"
 
 export default function AgreementList() {
   const [open, setOpen] = useState(false)
-
+  const [agreements, setAgreements] = useState<Contract[]>([])
+  
   const navigate = useNavigate()
   const location = useLocation()
 
   const currentPath = location.pathname
+
+  const fetchAgreements = async () => {
+    try {
+        const data = await businessManagerService.getContracts({ page: 1, limit: 100 });
+        setAgreements(data.data || []);
+    } catch (e) {
+        console.error("Failed to fetch agreements", e);
+    }
+  }
+
+  useEffect(() => {
+    fetchAgreements();
+  }, [])
 
   return (
     <div>
@@ -149,11 +165,29 @@ export default function AgreementList() {
               </thead>
 
               <tbody>
-                <tr>
-                  <td colSpan={9} className="text-center text-muted py-4">
-                    No record found.
-                  </td>
-                </tr>
+                {agreements.length === 0 ? (
+                    <tr>
+                    <td colSpan={9} className="text-center text-muted py-4">
+                        No record found.
+                    </td>
+                    </tr>
+                ) : (
+                    agreements.map((agr) => (
+                    <tr key={agr.id}>
+                        <td>{agr.company_name || agr.company_id}</td>
+                        <td>{agr.category}</td>
+                        <td>{agr.name_of_party}</td>
+                        <td>{agr.contract_name}</td>
+                        <td>{agr.contract_value}</td>
+                        <td>{agr.start_from ? new Date(agr.start_from).toLocaleDateString() : '-'}</td>
+                        <td>{agr.expiry_date ? new Date(agr.expiry_date).toLocaleDateString() : '-'}</td>
+                        <td>{agr.file_url ? 'Yes' : 'No'}</td>
+                        <td>
+                            <i className="bi bi-three-dots-vertical"></i>
+                        </td>
+                    </tr>
+                    ))
+                )}
               </tbody>
 
             </table>
@@ -177,7 +211,7 @@ export default function AgreementList() {
 
       </div>
 
-      <AddAgreementModal open={open} onClose={() => setOpen(false)} />
+      <AddAgreementModal open={open} onClose={() => { setOpen(false); fetchAgreements(); }} />
 
     </div>
   )

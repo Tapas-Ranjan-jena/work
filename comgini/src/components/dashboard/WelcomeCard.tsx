@@ -15,14 +15,14 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ userName, onCreateTask }) => 
 
     return (
         <div 
-            className="card border-0 shadow-lg p-4 text-white overflow-hidden position-relative" 
+            className="w-100 p-4 text-white overflow-hidden position-relative h-100" 
             style={{ 
                 background: "linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)",
-                borderRadius: "20px",
-                minHeight: "180px",
+                borderRadius: "24px",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between"
+                justifyContent: "space-between",
+                boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)"
             }}
         >
             <div className="position-absolute top-0 end-0 p-3 opacity-25">

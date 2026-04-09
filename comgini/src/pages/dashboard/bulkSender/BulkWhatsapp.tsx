@@ -1,4 +1,71 @@
+import { useState, useEffect } from "react";
+import bulkService from "../../../services/bulkService";
+import toast from "react-hot-toast";
+
 export default function BulkWhatsapp() {
+    const [loading, setLoading] = useState(false);
+    const [campaigns, setCampaigns] = useState<any[]>([]);
+    const [formState, setFormState] = useState({
+        contacts: "",
+        message: ""
+    });
+
+    const fetchCampaigns = async () => {
+        try {
+            setLoading(true);
+            const res = await bulkService.getWhatsAppCampaigns();
+            const data = res.data?.data || res.data || [];
+            setCampaigns(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCampaigns();
+    }, []);
+
+    const handleSend = async () => {
+        if (!formState.contacts || !formState.message) {
+            toast.error("Please provide contacts and a message");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const contactList = formState.contacts.split(",").map(c => c.trim()).filter(c => c !== "");
+            await bulkService.sendWhatsApp({
+                message: formState.message,
+                contacts: contactList
+            });
+            toast.success("WhatsApp campaign initiated successfully");
+            setFormState({ contacts: "", message: "" });
+            fetchCampaigns();
+        } catch (error: any) {
+            toast.error(error.message || "Failed to send WhatsApp messages");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            setLoading(true);
+            await bulkService.uploadWhatsAppExcel(file);
+            toast.success("Excel uploaded and processed");
+            fetchCampaigns();
+        } catch (error: any) {
+            toast.error(error.message || "Failed to upload file");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
     return (
         <div className="container-fluid">
@@ -52,34 +119,19 @@ export default function BulkWhatsapp() {
 
                     {/* LEFT PANEL */}
                     <div className="col-lg-6 p-3">
-
-                        <div className="dark-green p-2 rounded mb-2">
-                            Upload Excel of Phone Number
-                        </div>
-
-                        <div className="row g-2 align-items-center">
-                            <div className="col-9">
-                                <input type="file" className="form-control" />
-                            </div>
-                            <div className="col-3">
-                                <button className="btn btn-sm w-100 primary-btn">
-                                    Add Manually
-                                </button>
+                        <div className="row g-2 align-items-center mb-3">
+                            <div className="col-12">
+                                <input type="file" className="form-control" onChange={handleFileUpload} disabled={loading} />
                             </div>
                         </div>
 
-                        <div className="d-flex gap-2 mt-3">
-                            <button className="btn btn-sm primary-btn">
-                                <i className="bi bi-download me-1"></i>
-                                Excel Template
-                            </button>
-
-                            <button className="btn btn-sm primary-btn">
-                                Clear Contacts
+                        <div className="d-flex gap-2">
+                            <button className="btn btn-sm primary-btn" onClick={handleSend} disabled={loading}>
+                                {loading ? "Processing..." : "Send Bulk WhatsApp"}
                             </button>
                         </div>
-
                     </div>
+
 
 
                     {/* RIGHT PANEL */}
@@ -112,7 +164,10 @@ export default function BulkWhatsapp() {
                             className="form-control mb-3"
                             rows={6}
                             placeholder="Type your message here..."
+                            value={formState.message}
+                            onChange={(e) => setFormState(prev => ({ ...prev, message: e.target.value }))}
                         />
+
 
                         {/* ATTACHMENT */}
                         <div className="dark-green p-2 rounded mb-2">
@@ -201,12 +256,35 @@ export default function BulkWhatsapp() {
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td colSpan={9} className="text-center">
-                                    No data available in table
-                                </td>
-                            </tr>
+                            {loading && campaigns.length === 0 ? (
+                                <tr>
+                                    <td colSpan={9} className="text-center py-4 text-muted small">Loading...</td>
+                                </tr>
+                            ) : campaigns.length === 0 ? (
+                                <tr>
+                                    <td colSpan={9} className="text-center py-4 text-muted small">No data available in table</td>
+                                </tr>
+                            ) : (
+                                campaigns.map((c, i) => (
+                                    <tr key={c.id || i} className="align-middle small">
+                                        <td className="text-center">{i + 1}</td>
+                                        <td>{c.dateOfSending ? new Date(c.dateOfSending).toLocaleString() : "-"}</td>
+                                        <td>{c.sentBy || "Tapas Jena"}</td>
+                                        <td className="text-center">{c.totalContacts || 0}</td>
+                                        <td className="text-center text-success fw-bold">{c.sent || 0}</td>
+                                        <td className="text-center text-danger fw-bold">{c.failed || 0}</td>
+                                        <td title={c.message}>{c.message?.substring(0, 50)}...</td>
+                                        <td className="text-center">{c.attachment ? "Yes" : "No"}</td>
+                                        <td className="text-center">
+                                            <button className="btn btn-sm btn-outline-info p-1" style={{ fontSize: "10px" }}>
+                                                <i className="bi bi-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
+
                     </table>
                 </div>
 

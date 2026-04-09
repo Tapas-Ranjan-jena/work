@@ -20,6 +20,7 @@ import AnnualFilingView from "../../components/dashboard/AnnualFilingView";
 import ComplianceCalendarView from "../../components/dashboard/ComplianceCalendarView";
 import RTAServicesView from "../../components/dashboard/RTAServicesView";
 import AttendanceLoginView from "../../components/dashboard/AttendanceLoginView";
+import "../../styles/dashboard_redesign.css";
 
 type LayoutContext = {
     setOpen: (val: boolean | ((prev: boolean) => boolean)) => void;
@@ -120,6 +121,8 @@ export default function Dashboard() {
         if (fetchRef.active) return;
         fetchRef.active = true;
 
+        const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
         try {
             setLoading(true);
             
@@ -128,10 +131,14 @@ export default function Dashboard() {
             const sData = statsRes.data || statsRes;
             setStats(sData.tasks || {});
             
+            await delay(150); // Small stagger
+
             // 2. Fetch Tasks
             const tasksRes = await tasksService.getAllTasks(1, 10, undefined, true);
             const activities = sData.recent_activities || [];
             setTasks(activities.length > 0 ? activities : extractData(tasksRes));
+
+            await delay(150); // Small stagger
 
             // 3. Sequential fetch for remaining charts to avoid 429 spam
             const updatesRes = await dashboardService.getUpdates(10);
@@ -142,9 +149,13 @@ export default function Dashboard() {
                 tag: u.tag || "New"
             })) : mockUpdates);
 
+            await delay(150); // Small stagger
+
             const paymentsRes = await dashboardService.getPayments();
             const pData = extractData(paymentsRes);
             setPayments(pData.recent_payments || pData);
+
+            await delay(150); // Small stagger
 
             const incExpRes = await dashboardService.getIncomeExpense();
             const ieRaw = incExpRes.data || incExpRes;
@@ -163,6 +174,8 @@ export default function Dashboard() {
                 setIncomeExpense(mockIncomeExpense);
             }
 
+            await delay(150); // Small stagger
+
             const financeRes = await dashboardService.getFinanceBreakdown();
             const fbData = extractData(financeRes);
             setFinanceBreakdown(fbData.length > 0 ? fbData.map((f: any) => ({
@@ -172,11 +185,12 @@ export default function Dashboard() {
 
         } catch (error) {
             console.error("Failed to fetch dashboard data", error);
-            setTasks(mockStarredTasks);
-            setUpdates(mockUpdates);
-            setPayments(mockPaymentsMonthly);
-            setIncomeExpense(mockIncomeExpense);
-            setFinanceBreakdown(mockFinance);
+            // Fallback to mocks so user sees SOMETHING
+            setTasks(prev => prev.length > 0 ? prev : mockStarredTasks);
+            setUpdates(prev => prev.length > 0 ? prev : mockUpdates);
+            setPayments(prev => prev.length > 0 ? prev : mockPaymentsMonthly);
+            setIncomeExpense(prev => prev.length > 0 ? prev : mockIncomeExpense);
+            setFinanceBreakdown(prev => prev.length > 0 ? prev : mockFinance);
         } finally {
             setLoading(false);
             fetchRef.active = false;
@@ -204,7 +218,19 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="container-fluid p-2 p-md-4" style={{ backgroundColor: "#f3f4f7", minHeight: "100vh" }}>
+        <div 
+            className="container-fluid p-3 p-md-5" 
+            style={{ 
+                backgroundColor: "#0f172a",
+                background: `
+                    radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                    radial-gradient(at 50% 100%, rgba(147, 51, 234, 0.1) 0px, transparent 50%)
+                `,
+                backgroundAttachment: "fixed",
+                minHeight: "100vh" 
+            }}
+        >
             <div className="d-none d-lg-block">
                 <PageTopBar onMenuClick={() => setOpen((prev: any) => !prev)} />
             </div>
@@ -216,34 +242,60 @@ export default function Dashboard() {
             />
 
             {activeTab === "Dashboard" && (
-                <div className="row g-4">
-                    {/* LEFT COLUMN */}
-                    <div className="col-12 col-xl-3">
-                        <div className="d-flex flex-column gap-4 h-100">
+                <div className="dash-content-area">
+                    {/* ROW 1: WELCOME & QUICK STATS */}
+                    <div className="row g-4 mb-4">
+                        <div className="col-12 col-xl-3 d-flex">
                             <WelcomeCard userName={userName} onCreateTask={() => setShowAddTaskModal(true)} />
-                            <TaskList tasks={tasks} />
                         </div>
-                    </div>
-
-                    {/* MIDDLE COLUMN */}
-                    <div className="col-12 col-xl-5">
-                        <div className="d-flex flex-column gap-4 h-100">
+                        <div className="col-12 col-xl-9 d-flex">
                             <StatsCard stats={stats || {}} />
-                            <UpdatesList updates={updates} />
-                            <LineChart data={incomeExpense} />
                         </div>
                     </div>
 
-                    {/* RIGHT COLUMN */}
-                    <div className="col-12 col-xl-4">
-                        <div className="d-flex flex-column gap-4">
-                            <AssignmentTimeline />
-                            <BarChart 
-                                monthlyData={payments.length > 0 ? payments.map(d => ({ label: d.month || d.label, amount: d.amount })) : mockPaymentsMonthly} 
-                                yearlyData={mockPaymentsYearly}
-                                dailyData={mockPaymentsDaily}
-                            />
-                            <PieChart data={financeBreakdown} />
+                    {/* ROW 2: CORE ANALYTICS (Charts with Equal Height) */}
+                    <div className="row g-4 mb-4">
+                        <div className="col-12 col-xl-7 d-flex">
+                            <div className="dash-card w-100">
+                                <LineChart data={incomeExpense} />
+                            </div>
+                        </div>
+                        <div className="col-12 col-xl-5 d-flex">
+                            <div className="dash-card w-100">
+                                <PieChart data={financeBreakdown} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ROW 3: RECENT ACTIVITIES & TASKS */}
+                    <div className="row g-4 mb-4">
+                        <div className="col-12 col-xl-4 d-flex">
+                            <div className="dash-card w-100">
+                                <TaskList tasks={tasks} />
+                            </div>
+                        </div>
+                        <div className="col-12 col-xl-4 d-flex">
+                            <div className="dash-card w-100">
+                                <AssignmentTimeline />
+                            </div>
+                        </div>
+                        <div className="col-12 col-xl-4 d-flex">
+                            <div className="dash-card w-100">
+                                <UpdatesList updates={updates} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ROW 4: PAYMENTS & OTHER DATA */}
+                    <div className="row g-4">
+                        <div className="col-12">
+                            <div className="dash-card w-100">
+                                <BarChart 
+                                    monthlyData={payments.length > 0 ? payments.map(d => ({ label: d.month || d.label, amount: d.amount })) : mockPaymentsMonthly} 
+                                    yearlyData={mockPaymentsYearly}
+                                    dailyData={mockPaymentsDaily}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

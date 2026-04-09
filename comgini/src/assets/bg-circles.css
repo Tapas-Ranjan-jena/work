@@ -86,12 +86,12 @@
 }
 
 .logo-block img {
-  width: 64px;
-  margin-bottom: 10px;
+  width: 180px;
+  margin-bottom: 20px;
 }
 
 .logo-underline {
-  width: 160px;
+  width: 260px;
   height: 2px;
   margin: 0 auto;
   background: rgba(255,255,255,0.4);

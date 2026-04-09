@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import secretarialService from "../../../services/secretarialService";
+import toast from "react-hot-toast";
+
 
 type TransactionView = "main" | "v2-list" | "v2-fetch" | "v3-list" | "v3-fetch";
 
@@ -7,24 +9,68 @@ export default function MCATransaction() {
   const [view, setView] = useState<TransactionView>("main");
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [mcaUsers, setMcaUsers] = useState<any[]>([]);
+
+  // Fetch form state
+  const [fetchForm, setFetchForm] = useState({
+    userId: "",
+    fromDate: "",
+    toDate: ""
+  });
+
 
   useEffect(() => {
-    if (view === "v3-list") {
+    if (view === "v3-list" || view === "v2-list") {
       fetchTransactions();
     }
+    if (view === "v2-fetch" || view === "v3-fetch" || view === "v3-list") {
+      fetchMcaUsers();
+    }
   }, [view]);
+
+  const fetchMcaUsers = async () => {
+    try {
+      const res = await secretarialService.getMcaV2Users();
+      setMcaUsers(res.data || []);
+    } catch (error) {
+      console.error("Failed to fetch MCA users", error);
+    }
+  };
 
   const fetchTransactions = async () => {
     try {
       setLoading(true);
       const res = await secretarialService.getMcaTransactions();
-      setTransactions(res.data || []);
+      const items = res.data?.data || res.data || [];
+      setTransactions(Array.isArray(items) ? items : (items.items || []));
     } catch (error) {
       console.error("Failed to fetch transactions", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleV2FetchSubmit = async () => {
+    if (!fetchForm.userId || !fetchForm.fromDate || !fetchForm.toDate) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    try {
+      setLoading(true);
+      await secretarialService.fetchMcaV2Transactions({
+        userId: Number(fetchForm.userId),
+        fromDate: fetchForm.fromDate,
+        toDate: fetchForm.toDate
+      });
+      toast.success("Fetch process initiated");
+      setView("v2-list");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to initiate fetch");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const SummaryCard = ({ title, color, onClick }: { title: string, color: string, onClick: () => void }) => (
     <div className="col-12 col-md-5">
@@ -149,11 +195,32 @@ export default function MCATransaction() {
                           <th className="px-2 py-2" style={{ minWidth: "150px" }}>Remark</th>
                        </tr>
                     </thead>
-                    <tbody>
-                       <tr>
-                          <td colSpan={14} className="text-center py-4 text-muted small">No data available in table</td>
-                       </tr>
-                    </tbody>
+                     <tbody>
+                        {loading && transactions.length === 0 ? (
+                           <tr><td colSpan={14} className="text-center py-4 text-muted small">Loading transactions...</td></tr>
+                        ) : transactions.length === 0 ? (
+                           <tr><td colSpan={14} className="text-center py-4 text-muted small">No data available in table</td></tr>
+                        ) : (
+                           transactions.map((t, idx) => (
+                              <tr key={t.id || idx} className="align-middle text-start">
+                                 <td className="text-center border-end">{idx + 1}</td>
+                                 <td className="border-end px-2">{t.company_name || "-"}</td>
+                                 <td className="border-end px-2">{t.srn || "-"}</td>
+                                 <td className="border-end px-2">{t.form_name || "-"}</td>
+                                 <td className="border-end px-2">{t.amount || "-"}</td>
+                                 <td className="border-end px-2">{t.payment_status || "-"}</td>
+                                 <td className="border-end px-2">{t.status || "-"}</td>
+                                 <td className="border-end px-2">{t.transaction_date || "-"}</td>
+                                 <td className="border-end px-2">{t.payment_date || "-"}</td>
+                                 <td className="border-end px-2">{t.assigned_member || "-"}</td>
+                                 <td className="border-end px-2 text-truncate" style={{maxWidth: "120px"}}>{t.payment_details || "-"}</td>
+                                 <td className="border-end px-2">{t.due_date || "-"}</td>
+                                 <td className="border-end px-2">{t.mca_user || "-"}</td>
+                                 <td className="px-2">{t.remark || "-"}</td>
+                              </tr>
+                           ))
+                        )}
+                     </tbody>
                  </table>
               </div>
            </div>
@@ -167,21 +234,45 @@ export default function MCATransaction() {
               <div className="mb-4 small"><a href="#" className="text-primary text-decoration-none" onClick={() => setView("v2-list")}><i className="bi bi-arrow-left"></i> Back to List</a></div>
               <h6 className="fw-bold mb-4">Fetch MCA Transactions</h6>
               <div className="row g-3 align-items-center bg-light p-3 rounded text-start mx-0">
-                 <div className="col-12 col-md-4">
-                    <select className="form-select border-light py-2">
-                       <option>Select User Name</option>
-                    </select>
-                 </div>
-                 <div className="col-12 col-sm-6 col-md-3">
-                    <input type="text" className="form-control border-light py-2 shadow-sm" placeholder="From (YYYY-MM-DD)" />
-                 </div>
-                 <div className="col-12 col-sm-6 col-md-3">
-                    <input type="text" className="form-control border-light py-2 shadow-sm" placeholder="To (YYYY-MM-DD)" />
-                 </div>
-                 <div className="col-12 col-md-2">
-                    <button className="btn btn-primary w-100 py-2" style={{ background: "#2b4cb3" }}>Submit</button>
-                 </div>
-              </div>
+                  <div className="col-12 col-md-4">
+                     <select 
+                        className="form-select border-light py-2"
+                        value={fetchForm.userId}
+                        onChange={(e) => setFetchForm(prev => ({ ...prev, userId: e.target.value }))}
+                     >
+                        <option value="">Select User Name</option>
+                        {mcaUsers.map(u => <option key={u.id} value={u.id}>{u.username || u.label || u.firstName || u.email}</option>)}
+                     </select>
+                  </div>
+                  <div className="col-12 col-sm-6 col-md-3">
+                     <input 
+                        type="date" 
+                        className="form-control border-light py-2 shadow-sm" 
+                        placeholder="From (YYYY-MM-DD)" 
+                        value={fetchForm.fromDate}
+                        onChange={(e) => setFetchForm(prev => ({ ...prev, fromDate: e.target.value }))}
+                     />
+                  </div>
+                  <div className="col-12 col-sm-6 col-md-3">
+                     <input 
+                        type="date" 
+                        className="form-control border-light py-2 shadow-sm" 
+                        placeholder="To (YYYY-MM-DD)" 
+                        value={fetchForm.toDate}
+                        onChange={(e) => setFetchForm(prev => ({ ...prev, toDate: e.target.value }))}
+                     />
+                  </div>
+                  <div className="col-12 col-md-2">
+                     <button 
+                        className="btn btn-primary w-100 py-2" 
+                        style={{ background: "#2b4cb3" }}
+                        onClick={handleV2FetchSubmit}
+                        disabled={loading}
+                     >
+                        {loading ? "Fetching..." : "Submit"}
+                     </button>
+                  </div>
+               </div>
            </div>
         </div>
       )}
@@ -208,7 +299,8 @@ export default function MCATransaction() {
                  <div className="col-12 col-md-4 col-lg-3">
                     <label className="fw-bold small d-block mb-1">MCA User:</label>
                     <select className="form-select form-select-sm border py-2">
-                       <option>View All</option>
+                       <option value="">View All</option>
+                       {mcaUsers.map(u => <option key={u.id} value={u.id}>{u.label || u.firstName || u.email}</option>)}
                     </select>
                  </div>
                  <div className="col-12 col-md-4 col-lg-3">
@@ -307,7 +399,10 @@ export default function MCATransaction() {
                     <label className="col-12 col-md-3 fw-bold small">USER ID <span className="text-danger">*</span></label>
                     <div className="col-12 col-md-9 border-start-md ps-md-4">
                        <select className="form-select border py-2">
-                          <option>Select MCA User</option>
+                          <option value="">Select MCA User</option>
+                          {mcaUsers.map(u => (
+                            <option key={u.id} value={u.id}>{u.label || u.firstName || u.email}</option>
+                          ))}
                        </select>
                     </div>
                  </div>

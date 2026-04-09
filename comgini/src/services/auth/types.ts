@@ -4,7 +4,11 @@ export interface User {
     firstName: string;
     lastName: string;
     phone: string;
+    gender?: string;
+    companyName?: string;
+    gstNo?: string;
     role?: string;
+    avatar?: string;
 }
 
 export interface ApiResponse<T = any> {

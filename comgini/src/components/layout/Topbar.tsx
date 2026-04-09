@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useNavigate } from "react-router-dom"
 import logo from "../../assets/comgini-logo.png"
+import LogoutModal from "../common/LogoutModal"
 
 type Props = {
   open: boolean
@@ -12,13 +13,23 @@ export default function Topbar({ open, setOpen }: Props) {
   const { logout, user } = useAuth()
   const navigate = useNavigate()
 
-  // ⭐ DROPDOWN STATE
+  // ⭐ UI STATE
   const [showMenu, setShowMenu] = useState(false)
   const [showDesktopMenu, setShowDesktopMenu] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {
-    await logout()
-    navigate("/login")
+    try {
+      setIsLoggingOut(true)
+      await logout()
+      setShowLogoutModal(false)
+      navigate("/login")
+    } catch (error) {
+      console.error("Logout failed:", error)
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   const initials = user ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : "U"
@@ -89,12 +100,12 @@ export default function Topbar({ open, setOpen }: Props) {
           {/* ================= MOBILE DROPDOWN ================= */}
           {showMenu && (
             <div
+              className="mobile-dropdown-menu"
               style={{
                 position: "absolute",
                 top: "46px",
                 right: 0,
-                background:
-                  "linear-gradient(90deg,#3346a8 0%,#2f64c6 45%,#2fa0dc 100%)",
+                background: "linear-gradient(90deg,#3346a8 0%,#2f64c6 45%,#2fa0dc 100%)",
                 borderRadius: 10,
                 padding: "8px",
                 minWidth: "180px",
@@ -102,50 +113,20 @@ export default function Topbar({ open, setOpen }: Props) {
                 zIndex: 5000
               }}
             >
-
-              {/* NOTIFICATIONS */}
               <div
-                className="d-flex align-items-center gap-2"
-                style={{
-                  padding: "10px",
-                  color: "#fff",
-                  borderRadius: 6,
-                  cursor: "pointer"
-                }}
+                className="dropdown-item-custom"
+                onClick={() => { navigate("/profile"); setShowMenu(false); }}
               >
-                <i className="bi bi-bell"></i>
-                Notifications
+                <i className="bi bi-person-gear"></i>
+                Edit Profile
               </div>
-
-              {/* MESSAGES */}
               <div
-                className="d-flex align-items-center gap-2"
-                style={{
-                  padding: "10px",
-                  color: "#fff",
-                  borderRadius: 6,
-                  cursor: "pointer"
-                }}
-              >
-                <i className="bi bi-envelope"></i>
-                Messages
-              </div>
-
-              {/* LOGOUT */}
-              <div
-                className="d-flex align-items-center gap-2"
-                onClick={handleLogout}
-                style={{
-                  padding: "10px",
-                  color: "#ffcccc",
-                  borderRadius: 6,
-                  cursor: "pointer"
-                }}
+                className="dropdown-item-custom mt-2"
+                onClick={() => setShowLogoutModal(true)}
               >
                 <i className="bi bi-box-arrow-right"></i>
                 Logout
               </div>
-
             </div>
           )}
 
@@ -158,36 +139,62 @@ export default function Topbar({ open, setOpen }: Props) {
           style={{ position: "relative", cursor: "pointer" }}
         >
           <div className="avatar">{initials}</div>
-          <span className="profile-name">{fullName}</span>
+          <span className="profile-name text-white">{fullName}</span> {/* Ensure text is white or high contrast */}
+          <i className="bi bi-chevron-down text-white small ms-1"></i>
 
           {showDesktopMenu && (
             <div
-              className="shadow-sm border"
+              className="desktop-dropdown shadow-lg border-0"
               style={{
                 position: "absolute",
-                top: "45px",
+                top: "55px",
                 right: 0,
                 background: "#fff",
-                borderRadius: 8,
-                padding: "8px",
-                minWidth: "150px",
-                zIndex: 5000
+                borderRadius: "12px",
+                padding: "10px",
+                minWidth: "200px",
+                zIndex: 5000,
+                animation: 'fadeInDown 0.2s ease-out'
               }}
             >
+              {/* EDIT PROFILE */}
               <div
-                className="d-flex align-items-center gap-2 text-danger logout-item"
+                className="d-flex align-items-center gap-3 profile-dropdown-item"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleLogout();
+                  setShowDesktopMenu(false);
+                  navigate("/profile");
                 }}
                 style={{
-                  padding: "8px 12px",
-                  borderRadius: 6,
+                  padding: "12px 15px",
+                  borderRadius: "8px",
                   cursor: "pointer",
+                  color: "#333",
+                  transition: 'all 0.2s'
                 }}
               >
-                <i className="bi bi-box-arrow-right"></i>
-                <span style={{ fontSize: "0.9rem", fontWeight: 500 }}>Logout</span>
+                <i className="bi bi-pencil-square fs-5 text-muted"></i>
+                <span style={{ fontSize: "0.95rem", fontWeight: 500 }}>Edit Profile</span>
+              </div>
+
+              {/* LOGOUT */}
+              <div
+                className="d-flex align-items-center gap-3 profile-dropdown-item logout-red mt-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDesktopMenu(false);
+                  setShowLogoutModal(true);
+                }}
+                style={{
+                  padding: "12px 15px",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  color: "#ff4d4d",
+                  transition: 'all 0.2s'
+                }}
+              >
+                <i className="bi bi-box-arrow-right fs-5"></i>
+                <span style={{ fontSize: "0.95rem", fontWeight: 500 }}>Log Out</span>
               </div>
             </div>
           )}
@@ -195,6 +202,40 @@ export default function Topbar({ open, setOpen }: Props) {
 
       </div>
 
+      {/* Global Logout Confirmation */}
+      <LogoutModal 
+        show={showLogoutModal} 
+        onHide={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+        isLoading={isLoggingOut}
+      />
+
+      <style>{`
+        .profile-dropdown-item:hover {
+          background-color: #f8f9fa;
+        }
+        .logout-red:hover {
+          background-color: #fff1f1;
+        }
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .dropdown-item-custom {
+            padding: 10px;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dropdown-item-custom:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+      `}</style>
+
     </div>
   )
 }
+

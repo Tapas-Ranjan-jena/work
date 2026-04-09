@@ -191,13 +191,34 @@ const secretarialService = {
         return apiRequest(`/secretarial/search-reports${queryString}`);
     },
 
-    /** CREATE SEARCH REPORT */
-    createSearchReport: async (payload: SearchReportPayload) => {
+    /** CREATE SEARCH REPORT (FULL) */
+    createSearchReport: async (payload: SearchReportPayload | { companyId: string | number; type: string; srn: string }) => {
         return apiRequest("/secretarial/search-reports", {
             method: "POST",
             body: JSON.stringify(payload)
         });
     },
+
+
+    /** GET FORMS / DIR-2 LIST */
+    getForms: async (params?: { search?: string; page?: number; limit?: number }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.search) queryParams.append("search", params.search);
+        if (params?.page) queryParams.append("page", params.page.toString());
+        if (params?.limit) queryParams.append("limit", params.limit.toString());
+        
+        const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+        return apiRequest(`/forms${queryString}`);
+    },
+
+    /** CREATE DIR-2 */
+    createDir2: async (payload: { din: string; name: string; pan: string }) => {
+        return apiRequest("/dir2", {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+    },
+
 
     /** GET CSR CALCULATIONS */
     getCSRCalculations: async (params?: { page?: number; limit?: number }) => {
@@ -219,10 +240,20 @@ const secretarialService = {
 
     /** POST DIR3 KYC */
     postDir3Kyc: async (payload: DIR3KYCPayload) => {
-        return apiRequest("/secretarial/dir3-kyc", {
+        return apiRequest("/dir3-kyc", {
             method: "POST",
             body: JSON.stringify(payload)
         });
+    },
+
+    /** GET DIR3 KYC LIST */
+    getDir3KycList: async (params?: { page?: number; limit?: number }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.page) queryParams.append("page", params.page.toString());
+        if (params?.limit) queryParams.append("limit", params.limit.toString());
+        
+        const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+        return apiRequest(`/dir3-kyc${queryString}`);
     },
 
     /** CREATE MCA CREDENTIALS */
@@ -257,6 +288,85 @@ const secretarialService = {
         
         const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
         return apiRequest(`/secretarial/mca-transactions${queryString}`);
+    },
+
+    /** GET MCA V2 USERS */
+    getMcaV2Users: async () => {
+        return apiRequest('/mca/v2/users');
+    },
+
+    /** CREATE MCA V3 ACCOUNT */
+    createMcaV3Account: async (payload: any) => {
+        return apiRequest('/mca/v3/accounts', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+    /** FETCH MCA V2 TRANSACTIONS */
+    fetchMcaV2Transactions: async (payload: { userId: number; fromDate: string; toDate: string }) => {
+        return apiRequest('/mca/v2/transactions/fetch', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+
+    /** GET ANNUAL FILING LIST */
+    getAnnualFilingList: async (params?: { search?: string; page?: number; limit?: number }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.search) queryParams.append("search", params.search);
+        if (params?.page) queryParams.append("page", params.page.toString());
+        if (params?.limit) queryParams.append("limit", params.limit.toString());
+        
+        const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+        return apiRequest(`/annual-filing${queryString}`);
+    },
+
+    /** CHECK ANNUAL FILING STATUS */
+    checkAnnualFilingStatus: async (payload: { mcaUser: string; companyId: string; cin: string }) => {
+        return apiRequest('/annual-filing/status', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+    /** GET LLP CREDENTIALS */
+    getLlpCredentials: async (params?: { search?: string; page?: number; limit?: number }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.search) queryParams.append("search", params.search);
+        if (params?.page) queryParams.append("page", params.page.toString());
+        if (params?.limit) queryParams.append("limit", params.limit.toString());
+        
+        const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+        return apiRequest(`/llp/credentials${queryString}`);
+    },
+
+    /** CREATE LLP CREDENTIALS */
+    createLlpCredentials: async (payload: any) => {
+        return apiRequest('/llp/credentials', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+    /** GET COMPANY CREDENTIALS */
+    getCompanyCredentials: async (params?: { search?: string; page?: number; limit?: number }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.search) queryParams.append("search", params.search);
+        if (params?.page) queryParams.append("page", params.page.toString());
+        if (params?.limit) queryParams.append("limit", params.limit.toString());
+        
+        const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+        return apiRequest(`/company/credentials${queryString}`);
+    },
+
+    /** CREATE COMPANY CREDENTIALS */
+    createCompanyCredentials: async (payload: any) => {
+        return apiRequest('/company/credentials', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
     }
 };
 

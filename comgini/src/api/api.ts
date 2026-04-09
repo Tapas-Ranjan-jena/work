@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://13.126.81.144:3000/api/v1',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://13.126.81.144:3000/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -19,9 +19,27 @@ const clearSession = () => {
 // Helper to wait
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Request interceptor for attaching the token
+// ⭐ GLOBAL RATE LIMIT GATEKEEPER
+let rateLimitCooldownUntil = 0;
+
+const checkRateLimit = async () => {
+    const now = Date.now();
+    if (now < rateLimitCooldownUntil) {
+        const waitTime = rateLimitCooldownUntil - now;
+        await delay(waitTime);
+    }
+};
+
+const triggerRateLimitCooldown = (ms: number = 2000) => {
+    rateLimitCooldownUntil = Date.now() + ms;
+};
+
+// Request interceptor for attaching the token and checking rate limit
 api.interceptors.request.use(
-    (config) => {
+    async (config) => {
+        // Wait if we are in a global cooldown
+        await checkRateLimit();
+
         const token = sessionStorage.getItem('accessToken');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -56,22 +74,23 @@ api.interceptors.response.use(
         if (error.response && error.response.status === 429) {
             const originalRequest = error.config;
             
+            // Trigger a global cooldown for other requests
+            triggerRateLimitCooldown(2000);
+
             // Use custom header to track retries because Axios strips unknown config properties
             const retryCount = Number(originalRequest.headers['X-Retry-Count'] || 0);
             
             if (retryCount < 3) {
-                console.warn(`Rate limit (429) hit. Retrying attempt ${retryCount + 1} in a moment...`);
+                console.warn(`Axios Rate limit (429) hit. Retrying attempt ${retryCount + 1}...`);
                 originalRequest.headers['X-Retry-Count'] = (retryCount + 1).toString();
                 
-                // Wait for an exponentially increasing delay before retrying
-                const waitTime = Math.pow(2, retryCount + 1) * 1000 + Math.random() * 500;
+                // Exponential backoff with jitter
+                const waitTime = Math.pow(2, retryCount + 1) * 1000 + (Math.random() * 1000);
                 await delay(waitTime);
                 
-                // Re-try the original request
                 return api(originalRequest);
             } else {
-                console.error("Rate limit (429) hit 3 times. Exhausted retries. Failing request.");
-                // If we exhausted retries, we MUST reject so the UI stops spinning
+                console.error("Rate limit (429) exhausted. Failing request.");
                 return Promise.reject(error);
             }
         }
@@ -86,8 +105,11 @@ export default api;
  * Refactored to include global error handling for stability and automatic retries for 429s.
  */
 export async function apiRequest(endpoint: string, options: RequestInit & { _retryCount?: number } = {}) {
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://13.126.81.144:3000/api/v1';
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://13.126.81.144:3000/api';
     const token = sessionStorage.getItem('accessToken');
+
+    // Wait if we are in a global cooldown
+    await checkRateLimit();
 
     const headers = {
         'Content-Type': 'application/json',
@@ -114,13 +136,13 @@ export async function apiRequest(endpoint: string, options: RequestInit & { _ret
 
             if (response.status === 429) {
                 console.warn(`Fetch Rate limit (429) hit for ${endpoint}.`);
+                triggerRateLimitCooldown(2500);
                 
                 // Retry logic for fetch
                 options._retryCount = options._retryCount || 0;
                 if (options._retryCount < 3) {
                     options._retryCount += 1;
-                    const waitTime = Math.pow(2, options._retryCount) * 1000 + Math.random() * 500;
-                    console.warn(`Retrying fetch for ${endpoint} in ${Math.round(waitTime)}ms... (Attempt ${options._retryCount})`);
+                    const waitTime = Math.pow(2, options._retryCount) * 1200 + (Math.random() * 1000);
                     await delay(waitTime);
                     return apiRequest(endpoint, options);
                 }

@@ -13,11 +13,14 @@ export default function TimesheetSummary() {
         setLoading(true)
         try {
             const res = await timesheetService.getSummary(filters.fromDate, filters.toDate)
-            if (res.success) {
+            if (res && res.success && Array.isArray(res.data)) {
                 setReports(res.data)
+            } else {
+                setReports([])
             }
         } catch (error) {
             console.error("Failed to fetch timesheet report", error)
+            setReports([])
             toast.error("Failed to load summary report")
         } finally {
             setLoading(false)

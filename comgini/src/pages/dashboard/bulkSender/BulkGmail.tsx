@@ -1,4 +1,57 @@
+import { useState, useEffect } from "react";
+import bulkService from "../../../services/bulkService";
+import toast from "react-hot-toast";
+
 export default function BulkGmail() {
+    const [loading, setLoading] = useState(false);
+    const [campaigns, setCampaigns] = useState<any[]>([]);
+    const [formState, setFormState] = useState({
+        emails: "",
+        subject: "",
+        body: ""
+    });
+
+    const fetchCampaigns = async () => {
+        try {
+            setLoading(true);
+            const res = await bulkService.getGmailCampaigns();
+            const data = res.data?.data || res.data || [];
+            setCampaigns(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCampaigns();
+    }, []);
+
+    const handleSend = async () => {
+        if (!formState.emails || !formState.subject || !formState.body) {
+            toast.error("Please fill all fields");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const emailList = formState.emails.split(",").map(e => e.trim()).filter(e => e !== "");
+            await bulkService.sendGmail({
+                subject: formState.subject,
+                body: formState.body,
+                emails: emailList
+            });
+            toast.success("Gmail campaign initiated successfully");
+            setFormState({ emails: "", subject: "", body: "" });
+            fetchCampaigns();
+        } catch (error: any) {
+            toast.error(error.message || "Failed to send Gmails");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <div className="container-fluid">
@@ -35,49 +88,49 @@ export default function BulkGmail() {
 
                     {/* LEFT SIDE */}
                     <div className="col-lg-6 p-3">
-
                         <div className="bg-danger text-white p-2 rounded mb-3">
-                            Upload Excel of Emails
+                            Emails (Comma separated)
                         </div>
-
-                        <div className="row align-items-center g-2">
-
-                            <div className="col-lg-10">
-                                <input type="file" className="form-control" />
-                            </div>
-
-                            <div className="col-lg-2">
-                                <button className="btn btn-danger btn-sm w-100">
-                                    Add Manually
-                                </button>
-                            </div>
-
+                        <textarea 
+                            className="form-control mb-2" 
+                            rows={3} 
+                            placeholder="e.g. user1@example.com, user2@example.com"
+                            value={formState.emails}
+                            onChange={(e) => setFormState(prev => ({ ...prev, emails: e.target.value }))}
+                        />
+                        <div className="bg-danger text-white p-2 rounded mb-3 small py-1">
+                            Subject
                         </div>
-
+                        <input 
+                            type="text" 
+                            className="form-control mb-2" 
+                            placeholder="Enter Subject"
+                            value={formState.subject}
+                            onChange={(e) => setFormState(prev => ({ ...prev, subject: e.target.value }))}
+                        />
                         <div className="d-flex gap-2 mt-3">
-                            <button className="btn btn-danger btn-sm">
-                                <i className="bi bi-download me-1"></i>
-                                Excel Template
-                            </button>
-
-                            <button className="btn btn-danger btn-sm">
-                                Clear Mails
+                            <button className="btn btn-danger btn-sm" onClick={handleSend} disabled={loading}>
+                                {loading ? "Processing..." : "Send Bulk Gmail"}
                             </button>
                         </div>
-
                     </div>
+
 
 
                     {/* RIGHT SIDE */}
-                    <div className="col-lg-6 border-start p-3 d-flex justify-content-center">
-
-                        <div className="d-flex justify-content-end align-items-center w-100">
-                            <button className="btn btn-danger btn-sm">
-                                Clear Contacts
-                            </button>
+                    <div className="col-lg-6 border-start p-3">
+                        <div className="bg-danger text-white p-2 rounded mb-3 w-100">
+                            Email Body
                         </div>
-
+                        <textarea 
+                            className="form-control" 
+                            rows={8} 
+                            placeholder="Type your email content here..."
+                            value={formState.body}
+                            onChange={(e) => setFormState(prev => ({ ...prev, body: e.target.value }))}
+                        />
                     </div>
+
 
                 </div>
 
@@ -147,12 +200,35 @@ export default function BulkGmail() {
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td colSpan={9} className="text-center">
-                                    No data available in table
-                                </td>
-                            </tr>
+                            {loading && campaigns.length === 0 ? (
+                                <tr>
+                                    <td colSpan={9} className="text-center py-4 text-muted">Loading...</td>
+                                </tr>
+                            ) : campaigns.length === 0 ? (
+                                <tr>
+                                    <td colSpan={9} className="text-center">No data available in table</td>
+                                </tr>
+                            ) : (
+                                campaigns.map((c, i) => (
+                                    <tr key={c.id || i}>
+                                        <td>{i + 1}</td>
+                                        <td>{c.dateOfSending ? new Date(c.dateOfSending).toLocaleString() : "-"}</td>
+                                        <td>{c.sentBy || "Tapas Jena"}</td>
+                                        <td>{c.totalContacts || 0}</td>
+                                        <td className="text-success">{c.sent || 0}</td>
+                                        <td className="text-danger">{c.failed || 0}</td>
+                                        <td title={c.message}>{c.subject || "-"}</td>
+                                        <td>{c.attachment ? "Yes" : "No"}</td>
+                                        <td>
+                                            <button className="btn btn-sm btn-outline-info">
+                                                <i className="bi bi-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
+
 
                     </table>
                 </div>

@@ -44,23 +44,20 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
     };
 
     return (
-        <div className="card shadow-sm border-0 p-4" style={{ borderRadius: "20px" }}>
+        <div className="h-100 d-flex flex-column">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="fw-bold mb-0" style={{ letterSpacing: "-0.3px" }}>Recent Activity</h5>
-                <div className="bg-light rounded-circle p-1 cursor-pointer">
-                    <i className="bi bi-three-dots small text-muted"></i>
-                </div>
             </div>
 
-            <div className="task-list position-relative">
+            <div className="task-list position-relative flex-grow-1">
                 {/* Timeline Line */}
                 <div 
                     className="position-absolute h-100" 
                     style={{ 
                         left: "22.5px", 
                         top: "20px", 
-                        width: "1px", 
-                        backgroundColor: "#e2e8f0",
+                        width: "1.5px", 
+                        background: "linear-gradient(to bottom, #e2e8f0, #f8fafc)",
                         zIndex: 0
                     }} 
                 />
@@ -94,13 +91,10 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
                                 </div>
                                 <div className="flex-grow-1" style={{ minWidth: 0 }}>
                                     <div 
-                                        className="fw-bold text-dark text-capitalize" 
+                                        className="fw-bold text-dark text-capitalize dash-wrap-text" 
                                         style={{ 
                                             fontSize: "14px", 
                                             letterSpacing: "-0.2px",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            whiteSpace: "nowrap",
                                             width: "100%"
                                         }}
                                         title={task.activity || task.title || ""}

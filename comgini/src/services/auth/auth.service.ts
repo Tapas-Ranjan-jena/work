@@ -28,10 +28,6 @@ const authService = {
         return response.data;
     },
 
-    /**
-     * Stabilized Logout: Clears local session immediately to prevent infinite loops 
-     * even if the server is rate-limited or unreachable.
-     */
     async logout() {
         // 1. Immediately wipe local session data to stop any further authenticated requests
         sessionStorage.removeItem('accessToken');
@@ -45,6 +41,12 @@ const authService = {
             // Log the error but don't re-throw, as the user is already locally logged out
             console.warn('Backend logout notification failed (likely already expired):', error);
         }
+    },
+
+    async updateProfile(data: Partial<User>): Promise<User> {
+        const response = await api.put<ApiResponse<User>>('/auth/profile', data);
+        if (!response.data.data) throw new Error('No data returned from profile update');
+        return response.data.data;
     },
 };
 
