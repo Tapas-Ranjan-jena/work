@@ -249,7 +249,9 @@ export default function Dashboard() {
                             <WelcomeCard userName={userName} onCreateTask={() => setShowAddTaskModal(true)} />
                         </div>
                         <div className="col-12 col-xl-9 d-flex">
-                            <StatsCard stats={stats || {}} />
+                            <div className="dash-card w-100">
+                                <StatsCard stats={stats || {}} />
+                            </div>
                         </div>
                     </div>
 

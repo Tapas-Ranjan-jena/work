@@ -19,11 +19,44 @@ const clearSession = () => {
 // Helper to wait
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// ⭐ GLOBAL RATE LIMIT GATEKEEPER
+// ⭐ GLOBAL RATE LIMIT & CONCURRENCY GATEKEEPER
 let rateLimitCooldownUntil = 0;
+let activeRequests = 0;
+const MAX_CONCURRENT = 3; // Limit active requests to prevent 429
+const requestQueue: (() => void)[] = [];
+
+const processQueue = () => {
+    if (activeRequests < MAX_CONCURRENT && requestQueue.length > 0) {
+        const nextRequest = requestQueue.shift();
+        if (nextRequest) {
+            activeRequests++;
+            nextRequest();
+        }
+    }
+};
+
+const waitForSlot = () => {
+    if (activeRequests < MAX_CONCURRENT) {
+        activeRequests++;
+        return Promise.resolve();
+    }
+    return new Promise<void>((resolve) => {
+        requestQueue.push(resolve);
+    });
+};
+
+const releaseSlot = () => {
+    activeRequests--;
+    processQueue();
+};
 
 const checkRateLimit = async () => {
     const now = Date.now();
+    
+    // 1. Proactive Staggering: Add a small random delay (0-150ms) to EVERY request 
+    await delay(Math.floor(Math.random() * 150));
+
+    // 2. Cooldown check: Wait if we are in a global cooldown from a previous 429
     if (now < rateLimitCooldownUntil) {
         const waitTime = rateLimitCooldownUntil - now;
         await delay(waitTime);
@@ -37,6 +70,9 @@ const triggerRateLimitCooldown = (ms: number = 2000) => {
 // Request interceptor for attaching the token and checking rate limit
 api.interceptors.request.use(
     async (config) => {
+        // Wait for a concurrency slot
+        await waitForSlot();
+        
         // Wait if we are in a global cooldown
         await checkRateLimit();
 
@@ -53,10 +89,17 @@ api.interceptors.request.use(
 
 // Response interceptor for handling 401s and 429s with retry logic
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        releaseSlot(); // Release slot on success
+        return response;
+    },
     async (error) => {
+        // Release slot on error, UNLESS it's a 429 (we retry within the same slot)
+        if (!error.response || error.response.status !== 429) {
+            releaseSlot();
+        }
+
         const isAuthPage = window.location.pathname.includes('/login') || window.location.pathname.includes('/signup');
-        // Exclude logout from triggering redirects to prevent reload loops
         const isExcludedRequest = 
             error.config?.url?.includes('/auth/login') || 
             error.config?.url?.includes('/auth/register') ||
@@ -75,22 +118,25 @@ api.interceptors.response.use(
             const originalRequest = error.config;
             
             // Trigger a global cooldown for other requests
-            triggerRateLimitCooldown(2000);
+            triggerRateLimitCooldown(3000);
 
-            // Use custom header to track retries because Axios strips unknown config properties
+            // Use custom header to track retries
             const retryCount = Number(originalRequest.headers['X-Retry-Count'] || 0);
             
-            if (retryCount < 3) {
-                console.warn(`Axios Rate limit (429) hit. Retrying attempt ${retryCount + 1}...`);
-                originalRequest.headers['X-Retry-Count'] = (retryCount + 1).toString();
+            if (retryCount < 4) {
+                const currentAttempt = retryCount + 1;
+                console.warn(`Axios Rate limit (429) hit at ${originalRequest.url}. Retrying attempt ${currentAttempt}...`);
+                originalRequest.headers['X-Retry-Count'] = currentAttempt.toString();
                 
-                // Exponential backoff with jitter
-                const waitTime = Math.pow(2, retryCount + 1) * 1000 + (Math.random() * 1000);
+                // Enhanced Exponential backoff with random jitter
+                const waitTime = Math.pow(2, currentAttempt) * 1000 + (Math.random() * 1000);
                 await delay(waitTime);
                 
+                // Note: We don't release the slot here because we are still using it for the retry
                 return api(originalRequest);
             } else {
-                console.error("Rate limit (429) exhausted. Failing request.");
+                releaseSlot(); // Finally release slot after max retries exhausted
+                console.error("Rate limit (429) exhausted after 4 attempts. Failing request.");
                 return Promise.reject(error);
             }
         }
@@ -108,9 +154,6 @@ export async function apiRequest(endpoint: string, options: RequestInit & { _ret
     const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://13.126.81.144:3000/api';
     const token = sessionStorage.getItem('accessToken');
 
-    // Wait if we are in a global cooldown
-    await checkRateLimit();
-
     const headers = {
         'Content-Type': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -118,10 +161,19 @@ export async function apiRequest(endpoint: string, options: RequestInit & { _ret
     };
 
     try {
+        // Wait for a concurrency slot
+        await waitForSlot();
+        
+        // Wait if we are in a global cooldown
+        await checkRateLimit();
+
         const response = await fetch(`${baseURL}${endpoint}`, {
             ...options,
             headers,
         });
+
+        // Release slot immediately after fetch completes (either success or error)
+        releaseSlot();
 
         if (!response.ok) {
             // Handle 401/429 in fetch-based requests

@@ -12,7 +12,10 @@ export default function AssignmentLayout() {
     const location = useLocation()
     const navigate = useNavigate()
 
+    const fetchRef = useState({ active: false })[0];
     const fetchTaskCount = async () => {
+        if (fetchRef.active) return;
+        fetchRef.active = true;
         try {
             setLoading(true)
             const res = await tasksService.getAllTasks(1, 1)
@@ -29,6 +32,7 @@ export default function AssignmentLayout() {
             console.error("Failed to fetch task count", error)
         } finally {
             setLoading(false)
+            fetchRef.active = false;
         }
     }
 

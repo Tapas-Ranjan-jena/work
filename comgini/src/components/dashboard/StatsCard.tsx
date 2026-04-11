@@ -50,32 +50,48 @@ const StatsCard: React.FC<StatsCardProps> = ({ stats }) => {
 
     return (
         <div className="h-100 d-flex flex-column">
-            <ul className="nav nav-tabs border-0 mb-4 gap-4">
-                {tabs.map((tab) => (
-                    <li className="nav-item" key={tab}>
-                        <button 
-                            className={`nav-link border-0 px-0 fw-bold ${activeTab === tab ? "dash-stats-active" : "text-muted"}`}
-                            onClick={() => setActiveTab(tab)}
-                            style={{ background: "none" }}
-                        >
-                            {tab}
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            <div className="dash-card-header">
+                <ul className="nav nav-tabs border-0 flex-nowrap gap-4 overflow-x-auto overflow-y-hidden no-scrollbar">
+                    {tabs.map((tab) => (
+                        <li className="nav-item" key={tab}>
+                            <button 
+                                className={`nav-link border-0 px-0 fw-bold text-nowrap ${activeTab === tab ? "dash-stats-active" : "text-muted"}`}
+                                onClick={() => setActiveTab(tab)}
+                                style={{ background: "none" }}
+                            >
+                                {tab}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
 
-            <div className="row g-4 justify-content-between text-center">
-                {statItems.map((item, idx) => (
-                    <div className="col-6 col-sm-3" key={idx}>
-                        <div className="d-flex flex-column align-items-center">
-                            <h2 className="fw-bold mb-1" style={{ fontSize: "2.8rem", letterSpacing: "-1.5px" }}>{item.value}</h2>
-                            <div className="d-flex align-items-center gap-2">
-                                <span className="rounded-circle shadow-sm" style={{ width: "10px", height: "10px", backgroundColor: item.color }}></span>
-                                <span className="small text-muted fw-bold" style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{item.label}</span>
+            <div className="dash-card-body d-flex align-items-center">
+                <div className="row g-4 w-100 justify-content-between text-center px-lg-4">
+                    {statItems.map((item, idx) => (
+                        <div className="col-6 col-md-3" key={idx}>
+                            <div className="d-flex flex-column align-items-center stats-hover-effect">
+                                <h2 className="fw-bold mb-0" 
+                                    style={{ 
+                                        fontSize: "3.5rem", 
+                                        lineHeight: "1.1",
+                                        letterSpacing: "-2px",
+                                        background: `linear-gradient(180deg, #1e293b 0%, ${item.color}cc 100%)`,
+                                        WebkitBackgroundClip: "text",
+                                        WebkitTextFillColor: "transparent",
+                                        filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.05))"
+                                    }}
+                                >
+                                    {item.value}
+                                </h2>
+                                <div className="d-flex align-items-center gap-2 mt-2">
+                                    <span className="rounded-circle shadow-sm" style={{ width: "12px", height: "12px", backgroundColor: item.color, border: '2px solid white' }}></span>
+                                    <span className="small text-muted fw-bold" style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "1px" }}>{item.label}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );

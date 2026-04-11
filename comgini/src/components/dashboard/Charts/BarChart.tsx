@@ -19,9 +19,9 @@ const BarChart: React.FC<BarChartProps> = ({ monthlyData, yearlyData, dailyData 
     const dataKey = "label";
 
     return (
-        <div className="card shadow-sm border-0 p-4 h-100" style={{ borderRadius: "16px" }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
+        <div className="h-100 d-flex flex-column">
+            <div className="dash-card-header">
+                <h5 className="dash-card-title">
                     <i className="bi bi-bar-chart text-primary"></i> Payment Overview
                 </h5>
                 <select 
@@ -35,32 +35,35 @@ const BarChart: React.FC<BarChartProps> = ({ monthlyData, yearlyData, dailyData 
                     <option value="Yearly">Yearly</option>
                 </select>
             </div>
-            <div style={{ width: "100%", height: 250 }}>
-                <ResponsiveContainer>
-                    <RBChart data={activeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-                        <XAxis 
-                            dataKey={dataKey} 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{ fontSize: 10, fill: "#888" }} 
-                        />
-                        <YAxis 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{ fontSize: 10, fill: "#888" }}
-                            tickFormatter={(value) => value >= 1000 ? `${value/1000}k` : value}
-                        />
-                        <Tooltip />
-                        <Bar dataKey="amount" fill="#36a2eb" radius={[4, 4, 0, 0]} barSize={25} />
-                    </RBChart>
-                </ResponsiveContainer>
-            </div>
-            <div className="text-center mt-3">
-                <span className="small text-muted fw-bold"> 
-                    <span className="rounded-circle d-inline-block me-1" style={{ width: 8, height: 8, backgroundColor: "#36a2eb" }}></span> 
-                    {view === "Yearly" ? "2020 - 2026" : "2026"}
-                </span>
+
+            <div className="dash-card-body">
+                <div style={{ width: "100%", height: 250 }}>
+                    <ResponsiveContainer>
+                        <RBChart data={activeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                            <XAxis 
+                                dataKey={dataKey} 
+                                axisLine={false} 
+                                tickLine={false} 
+                                tick={{ fontSize: 10, fill: "#888" }} 
+                            />
+                            <YAxis 
+                                axisLine={false} 
+                                tickLine={false} 
+                                tick={{ fontSize: 10, fill: "#888" }}
+                                tickFormatter={(value) => value >= 1000 ? `${value/1000}k` : value}
+                            />
+                            <Tooltip />
+                            <Bar dataKey="amount" fill="#36a2eb" radius={[4, 4, 0, 0]} barSize={25} />
+                        </RBChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="text-center mt-3">
+                    <span className="small text-muted fw-bold"> 
+                        <span className="rounded-circle d-inline-block me-1" style={{ width: 8, height: 8, backgroundColor: "#36a2eb" }}></span> 
+                        {view === "Yearly" ? "2020 - 2026" : "2026"}
+                    </span>
+                </div>
             </div>
         </div>
     );

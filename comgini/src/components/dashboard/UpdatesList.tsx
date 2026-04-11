@@ -24,45 +24,47 @@ const UpdatesList: React.FC<UpdatesListProps> = ({ updates }) => {
 
     return (
         <div className="h-100 d-flex flex-column">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
+            <div className="dash-card-header">
+                <h5 className="dash-card-title">
                     <i className="bi bi-bell-fill text-primary" style={{ fontSize: '16px' }}></i> New Updates
                 </h5>
             </div>
 
-            <div className="table-responsive">
-                <table className="table table-borderless align-middle mb-0">
-                    <thead className="text-muted small fw-bold">
-                        <tr>
-                            <th className="ps-0 border-bottom py-3">Particulars of Update</th>
-                            <th className="text-end border-bottom py-3 pe-0">Updated on</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {updates.length > 0 ? updates.map((update) => (
-                            <tr key={update.id} className="border-bottom">
-                                <td className="ps-0 py-3">
-                                    <div className="d-flex align-items-center gap-2 flex-wrap dash-wrap-text">
-                                        <span className="fw-bold text-dark small">{update.title}</span>
-                                        {update.tag && (
-                                            <span className="badge bg-danger rounded-pill px-2 py-1 flex-shrink-0" style={{ fontSize: "9px", verticalAlign: 'middle' }}>{update.tag}</span>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="text-end py-3 pe-0 text-muted small fw-medium">
-                                    {formatDate(update.updated_at)}
-                                </td>
-                            </tr>
-                        )) : (
+            <div className="dash-card-body pb-0 flex-grow-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+                <div className="table-responsive">
+                    <table className="table table-borderless align-middle mb-0">
+                        <thead className="text-muted small fw-bold">
                             <tr>
-                                <td colSpan={2} className="text-center py-4 text-muted">No updates available</td>
+                                <th className="ps-0 border-bottom py-3">Particulars of Update</th>
+                                <th className="text-end border-bottom py-3 pe-0">Updated on</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {updates.length > 0 ? updates.map((update) => (
+                                <tr key={update.id} className="border-bottom">
+                                    <td className="ps-0 py-3">
+                                        <div className="d-flex align-items-center gap-2 flex-wrap dash-wrap-text">
+                                            <span className="fw-bold text-dark small">{update.title}</span>
+                                            {update.tag && (
+                                                <span className="badge bg-danger rounded-pill px-2 py-1 flex-shrink-0" style={{ fontSize: "9px", verticalAlign: 'middle' }}>{update.tag}</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="text-end py-3 pe-0 text-muted small fw-medium">
+                                        {formatDate(update.updated_at)}
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan={2} className="text-center py-4 text-muted">No updates available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div className="text-center mt-4 pt-2">
+            <div className="dash-card-body pt-0 text-center mt-3 flex-grow-0">
                 <Link to="#" className="text-decoration-none fw-bold text-primary small d-flex align-items-center justify-content-center">
                     View More <i className="bi bi-arrow-right ms-2"></i>
                 </Link>
